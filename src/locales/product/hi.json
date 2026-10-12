@@ -1,0 +1,23 @@
+{
+  "details": {
+    "selectPackSize": "पैक का आकार चुनें",
+    "inStock": "स्टॉक में उपलब्ध",
+    "soldOut": "स्टॉक समाप्त",
+    "freeShippingNote": "₹४९९ से अधिक के ऑर्डर पर निःशुल्क एक्सप्रेस डिलीवरी",
+    "dispatchNotice": "वाराणसी रसोई से २४ घंटों के भीतर सीलबंद सुरक्षा पैकेजिंग में सीधे प्रेषित।",
+    "deliveryEstimate": "अनुमानित वितरण: पूरे भारत में २-४ कार्य दिवस।"
+  },
+  "attributes": {
+    "ingredients": "सामग्री",
+    "allergens": "एलर्जेन जानकारी",
+    "shelfLife": "उपयोग की अवधि",
+    "storageInstructions": "भंडारण निर्देश",
+    "fssaiLicense": "FSSAI खाद्य सुरक्षा पंजीकरण",
+    "spiceLevel": "तीखापन",
+    "oilBase": "तेल का आधार",
+    "preservativeType": "संरक्षक का प्रकार",
+    "countryOfOrigin": "मूल देश",
+    "manufacturedBy": "निर्माता",
+    "heritageNotes": "पारंपरिक नुस्खे का विवरण"
+  }
+}

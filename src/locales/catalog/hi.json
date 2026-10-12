@@ -1,0 +1,38 @@
+{
+  "filters": {
+    "title": "फ़िल्टर",
+    "sortBy": "क्रमबद्ध करें",
+    "spiceLevel": "तीखापन",
+    "priceRange": "मूल्य सीमा",
+    "inStockOnly": "केवल उपलब्ध स्टॉक",
+    "reset": "फ़िल्टर रीसेट करें",
+    "activeFilters": "सक्रिय फ़िल्टर"
+  },
+  "sort": {
+    "featured": "विशेष उत्पाद",
+    "priceAsc": "मूल्य: कम से अधिक",
+    "priceDesc": "मूल्य: अधिक से कम",
+    "rating": "सर्वोच्च रेटिंग",
+    "newest": "नवीनतम उत्पाद"
+  },
+  "spiceLevels": {
+    "all": "सभी प्रकार",
+    "mild": "हल्का तीखा",
+    "medium": "मध्यम",
+    "hot": "तीखा",
+    "extraHot": "अत्यधिक तीखा"
+  },
+  "priceRanges": {
+    "all": "सभी मूल्य",
+    "under300": "₹३०० से कम",
+    "between300And500": "₹३०० - ₹५००",
+    "above500": "₹५०० से अधिक"
+  },
+  "results": {
+    "showingResults": "{count} विशिष्ट व्यंजन दिखाए जा रहे हैं",
+    "zeroResultsTitle": "कोई उत्पाद नहीं मिला",
+    "zeroResultsMessage": "हमें आपके मापदंडों से मेल खाता कोई उत्पाद नहीं मिला। कृपया फ़िल्टर रीसेट करें या किसी अन्य नाम से खोजें।",
+    "searchResultsFor": "\"{query}\" के लिए खोज परिणाम",
+    "searchRefinePlaceholder": "अपनी खोज को परिष्कृत करें..."
+  }
+}

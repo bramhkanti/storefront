@@ -1,0 +1,46 @@
+{
+  "checkout": {
+    "title": "Secure Checkout",
+    "deliveryDetails": "Delivery Address",
+    "deliverySubtext": "Enter your shipping details for fresh dispatch directly from our kitchen in Varanasi.",
+    "fields": {
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Rajesh Sharma",
+      "phone": "10-Digit Mobile Number",
+      "phonePlaceholder": "9876543210",
+      "pinCode": "6-Digit Indian PIN Code",
+      "pinCodePlaceholder": "221001",
+      "address": "Flat / House No., Street, Landmark",
+      "addressPlaceholder": "Flat 302, Ghat Road, Near Assi Ghat",
+      "city": "City",
+      "cityPlaceholder": "Varanasi",
+      "state": "State",
+      "statePlaceholder": "Uttar Pradesh"
+    },
+    "payment": {
+      "methodTitle": "Payment Method",
+      "codTitle": "Cash on Delivery (COD)",
+      "codDescription": "Pay cash or scan QR upon delivery at your doorstep.",
+      "upiTitle": "Instant UPI / Cards / Net Banking",
+      "upiDescription": "Pay securely via Google Pay, PhonePe, Paytm, or Credit/Debit Cards."
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "free": "FREE",
+      "total": "Total Amount",
+      "placeOrder": "Place Order",
+      "submitting": "Securing Order...",
+      "securityAssurance": "256-bit encrypted secure checkout. 100% vegetarian culinary authenticity."
+    },
+    "validation": {
+      "nameRequired": "Full name is required (at least 2 characters).",
+      "phoneInvalid": "Please enter a valid 10-digit Indian mobile number.",
+      "pinCodeInvalid": "Please enter a valid 6-digit Indian PIN code.",
+      "addressRequired": "Street address is required (at least 5 characters).",
+      "cityRequired": "City is required.",
+      "stateRequired": "State is required."
+    }
+  }
+}

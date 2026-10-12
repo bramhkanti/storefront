@@ -1,0 +1,10 @@
+# pnpm 12 settings (single-package repo; no workspaces).
+# Install scripts are denied by default. Only allow packages that genuinely need them.
+allowBuilds:
+  # Ships prebuilt native bindings via optionalDependencies; postinstall is not required.
+  unrs-resolver: false
+
+# Supply-chain guard: pnpm refuses versions published < minimumReleaseAge ago.
+# Exclusions must be explicit and reviewed.
+minimumReleaseAgeExclude:
+  - zod@4.6.6

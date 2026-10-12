@@ -1,0 +1,17 @@
+{
+  "cart": {
+    "title": "Shopping Bag",
+    "itemCount": "{count} items",
+    "emptyTitle": "Your Bag is Empty",
+    "emptyMessage": "Your bag is empty. Explore our authentic hand-crafted specialties!",
+    "exploreCatalog": "Explore Catalog",
+    "freeShippingThreshold": "Add {amount} more for Free Delivery!",
+    "freeShippingQualified": "You have unlocked Free Delivery!",
+    "subtotalLabel": "Subtotal (Incl. of all taxes)",
+    "shippingNote": "Shipping and discount codes calculated at checkout.",
+    "proceedToCheckout": "Proceed to Checkout",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "packPrefix": "Pack: {pack}"
+  }
+}

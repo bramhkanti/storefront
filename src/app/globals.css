@@ -1,0 +1,147 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Brand Primary Tokens */
+  --color-primary: #dc2b1b;
+  --color-primary-hover: #bb2417;
+  --color-primary-dark: #8f1c11;
+  --color-primary-light: #fdedec;
+
+  /* Heritage Semantic Tokens */
+  --color-heritage-cream: #fcfaf7;
+  --color-heritage-cream-dark: #f4ede4;
+  --color-heritage-maroon: #dc2b1b;
+  --color-heritage-maroon-hover: #bb2417;
+  --color-heritage-maroon-dark: #8f1c11;
+  --color-heritage-maroon-light: #fdedec;
+  --color-heritage-saffron: #d97706;
+  --color-heritage-saffron-dark: #78350f;
+  --color-heritage-saffron-light: #fef3c7;
+  --color-heritage-gold: #f6ce40;
+  --color-heritage-charcoal: #241814;
+  --color-heritage-muted: #685950;
+  --color-heritage-border: #e7ded3;
+  --color-heritage-green: #14532d;
+  --color-heritage-green-bg: #ecfdf5;
+
+  --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-heritage-cream);
+  color: var(--color-heritage-charcoal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom focus ring for accessible keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-heritage-maroon);
+  outline-offset: 2px;
+}
+
+/* Form inputs: clean crisp borders on selection without outer halo ring */
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+select:focus,
+select:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Smooth Hardware-Accelerated Drawer Slide Animations */
+@keyframes sheetSlideInLeft {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sheetSlideOutLeft {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes sheetSlideInRight {
+  from {
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sheetSlideOutRight {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.sheet-animate-left[data-state='open'] {
+  animation: sheetSlideInLeft 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+.sheet-animate-left[data-state='closed'] {
+  animation: sheetSlideOutLeft 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+.sheet-animate-right[data-state='open'] {
+  animation: sheetSlideInRight 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+.sheet-animate-right[data-state='closed'] {
+  animation: sheetSlideOutRight 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+@keyframes sheetSlideInBottom {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sheetSlideOutBottom {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+.sheet-animate-bottom[data-state='open'] {
+  animation: sheetSlideInBottom 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+.sheet-animate-bottom[data-state='closed'] {
+  animation: sheetSlideOutBottom 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}

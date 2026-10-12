@@ -1,0 +1,38 @@
+{
+  "filters": {
+    "title": "Filters",
+    "sortBy": "Sort By",
+    "spiceLevel": "Spice Level",
+    "priceRange": "Price Range",
+    "inStockOnly": "In Stock Only",
+    "reset": "Reset Filters",
+    "activeFilters": "Active Filters"
+  },
+  "sort": {
+    "featured": "Featured",
+    "priceAsc": "Price: Low to High",
+    "priceDesc": "Price: High to Low",
+    "rating": "Highest Rated",
+    "newest": "Newest Arrivals"
+  },
+  "spiceLevels": {
+    "all": "All Spiciness",
+    "mild": "Mild",
+    "medium": "Medium",
+    "hot": "Hot",
+    "extraHot": "Extra Hot"
+  },
+  "priceRanges": {
+    "all": "All Prices",
+    "under300": "Under ₹300",
+    "between300And500": "₹300 - ₹500",
+    "above500": "Above ₹500"
+  },
+  "results": {
+    "showingResults": "Showing {count} culinary specialties",
+    "zeroResultsTitle": "No Specialties Found",
+    "zeroResultsMessage": "We could not find items matching your criteria. Try resetting filters or searching with another term.",
+    "searchResultsFor": "Search Results for \"{query}\"",
+    "searchRefinePlaceholder": "Refine your search..."
+  }
+}

@@ -1,0 +1,33 @@
+# deps
+/node_modules
+/.pnp
+.pnp.*
+
+# next
+/.next/
+/out/
+next-env.d.ts
+
+# build / test output
+/build
+/coverage
+/playwright-report
+/test-results
+/blob-report
+/.lighthouseci
+*.tsbuildinfo
+
+# env (only .env.example is committed)
+.env
+.env.*
+!.env.example
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+pnpm-debug.log*
+.vercel
+.idea
+.vscode/*
+!.vscode/extensions.json

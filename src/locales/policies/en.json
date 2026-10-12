@@ -1,0 +1,25 @@
+{
+  "policies": {
+    "shipping": {
+      "title": "Shipping & Express Delivery Policy",
+      "summary": "Fast, insulated express shipping across 28 states in India. Dispatched from Varanasi kitchen."
+    },
+    "refund": {
+      "title": "Refund & Replacement Policy",
+      "summary": "100% replacement guarantee for damaged or compromised seals within 24 hours of delivery."
+    },
+    "privacy": {
+      "title": "Privacy & Data Protection Policy",
+      "summary": "We respect your culinary privacy. Zero third-party data selling, 256-bit encryption."
+    },
+    "terms": {
+      "title": "Terms of Service & Food Safety Standards",
+      "summary": "FSSAI compliance, consumer protection e-commerce rules 2020, and Varanasi legal jurisdiction."
+    },
+    "common": {
+      "effectiveDate": "Effective Date: January 1, 2026",
+      "jurisdiction": "Governing Law: Courts of Varanasi, Uttar Pradesh, India",
+      "supportNotice": "For statutory disclosures or grievances, reach out directly to care@bramhkanti.com"
+    }
+  }
+}

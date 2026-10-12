@@ -1,0 +1,57 @@
+services:
+  storefront:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bramhkanti/storefront:latest
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - API_ADAPTER=mock
+      - NEXT_PUBLIC_SITE_URL=https://bramhkanti.com
+      - NEXT_PUBLIC_BRAND_NAME=Bramhkanti
+      - PORT=3000
+    expose:
+      - '3000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://127.0.0.1:3000/api/health',
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  caddy:
+    image: caddy:2.9-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      storefront:
+        condition: service_healthy
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+volumes:
+  caddy_data:
+  caddy_config:

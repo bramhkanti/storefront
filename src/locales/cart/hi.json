@@ -1,0 +1,17 @@
+{
+  "cart": {
+    "title": "खरीदारी की थैली",
+    "itemCount": "{count} वस्तुएं",
+    "emptyTitle": "आपकी थैली खाली है",
+    "emptyMessage": "आपकी थैली खाली है। हमारे प्रामाणिक धूप में पके अचार और शुद्ध देसी घी की मिठाइयों का स्वाद चखें!",
+    "exploreCatalog": "उत्पाद सूची देखें",
+    "freeShippingThreshold": "निःशुल्क डिलीवरी के लिए {amount} और जोड़ें!",
+    "freeShippingQualified": "आपने निःशुल्क डिलीवरी प्राप्त कर ली है!",
+    "subtotalLabel": "उप-योग (सभी करों सहित)",
+    "shippingNote": "शिपिंग और छूट कोड चेकआउट पर जोड़े जाएंगे।",
+    "proceedToCheckout": "चेकआउट की ओर बढ़ें",
+    "remove": "हटाएं",
+    "quantity": "मात्रा",
+    "packPrefix": "पैक: {pack}"
+  }
+}

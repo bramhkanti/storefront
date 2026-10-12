@@ -1,0 +1,28 @@
+{
+  # Global options
+  email {$ACME_EMAIL:admin@bramhkanti.com}
+  admin off
+}
+
+{$DOMAIN:localhost} {
+  # Modern compression algorithms
+  encode zstd gzip
+
+  # Static assets with content hashing are immutable
+  @immutable path /_next/static/*
+  header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+  # Public brand assets & SEO files
+  @publicAssets path /favicon.ico /robots.txt /sitemap* /images/*
+  header @publicAssets Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
+
+  # Reverse proxy upstream to Next.js 16 standalone container
+  reverse_proxy storefront:3000 {
+    header_up Host {host}
+    header_up X-Real-IP {remote_host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    header_up Connection {>Connection}
+    header_up Upgrade {>Upgrade}
+  }
+}

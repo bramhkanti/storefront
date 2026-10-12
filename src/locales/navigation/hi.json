@@ -1,0 +1,29 @@
+{
+  "menu": {
+    "home": "मुख्य पृष्ठ",
+    "allProducts": "सभी उत्पाद",
+    "giftingFestive": "उपहार और उत्सव",
+    "varietiesSuffix": "प्रकार",
+    "mainNavigation": "मुख्य नेविगेशन",
+    "mobileMenuTitle": "विशेषताएं देखें"
+  },
+  "sections": {
+    "categories": "श्रेणियां",
+    "customerCare": "ग्राहक सहायता",
+    "policiesTrust": "नीतियां एवं सुरक्षा",
+    "aboutTitle": "ब्रह्मकांति के बारे में",
+    "aboutCopy": "भारत की कालजयी पाक परंपराओं में रची-बसी, ब्रह्मकांति शुद्ध और प्रामाणिक सामग्री के साथ पारंपरिक पारिवारिक व्यंजनों को पुनः जीवंत करती है।",
+    "contact": "संपर्क एवं रसोई"
+  },
+  "contact": {
+    "supportEmail": "care@bramhkanti.com",
+    "supportPhone": "+91 98765 43210",
+    "whatsapp": "व्हाट्सएप सहायता",
+    "operatingHours": "सोमवार - शनिवार: सुबह ९:०० से शाम ७:०० IST",
+    "location": "वाराणसी, उत्तर प्रदेश, भारत"
+  },
+  "legal": {
+    "rightsReserved": "सर्वाधिकार सुरक्षित।",
+    "fssaiLicense": "FSSAI लाइसेंस क्र. 10024011000123"
+  }
+}

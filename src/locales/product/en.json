@@ -1,0 +1,23 @@
+{
+  "details": {
+    "selectPackSize": "Select Pack Size",
+    "inStock": "In Stock",
+    "soldOut": "Sold Out",
+    "freeShippingNote": "Free express shipping on orders above ₹499",
+    "dispatchNotice": "Dispatched directly from Varanasi within 24 hours in sealed aroma-lock packaging.",
+    "deliveryEstimate": "Estimated delivery: 2-4 business days across India."
+  },
+  "attributes": {
+    "ingredients": "Ingredients",
+    "allergens": "Allergen Information",
+    "shelfLife": "Shelf Life",
+    "storageInstructions": "Storage Instructions",
+    "fssaiLicense": "FSSAI Food Safety Registration",
+    "spiceLevel": "Spice Level",
+    "oilBase": "Oil Base",
+    "preservativeType": "Preservative Type",
+    "countryOfOrigin": "Country of Origin",
+    "manufacturedBy": "Manufactured By",
+    "heritageNotes": "Ancestral Recipe Notes"
+  }
+}

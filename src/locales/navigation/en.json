@@ -1,0 +1,29 @@
+{
+  "menu": {
+    "home": "Home",
+    "allProducts": "All Products",
+    "giftingFestive": "Gifting & Festive",
+    "varietiesSuffix": "Varieties",
+    "mainNavigation": "Main Navigation",
+    "mobileMenuTitle": "Browse Specialties"
+  },
+  "sections": {
+    "categories": "Categories",
+    "customerCare": "Customer Care",
+    "policiesTrust": "Policies & Trust",
+    "aboutTitle": "About Bramhkanti",
+    "aboutCopy": "Rooted in the timeless culinary traditions of India, Bramhkanti revives nostalgic family recipes with uncompromised ingredient integrity.",
+    "contact": "Contact & Kitchen"
+  },
+  "contact": {
+    "supportEmail": "care@bramhkanti.com",
+    "supportPhone": "+91 98765 43210",
+    "whatsapp": "WhatsApp Support",
+    "operatingHours": "Mon - Sat: 9:00 AM - 7:00 PM IST",
+    "location": "Varanasi, Uttar Pradesh, India"
+  },
+  "legal": {
+    "rightsReserved": "All rights reserved.",
+    "fssaiLicense": "FSSAI Lic. No. 10024011000123"
+  }
+}

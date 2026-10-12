@@ -1,0 +1,13 @@
+.git
+.github
+.next
+node_modules
+.lighthouseci
+coverage
+tests
+docs
+*.tsbuildinfo
+.DS_Store
+.env*.local
+.npmrc
+*.log

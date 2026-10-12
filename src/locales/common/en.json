@@ -1,0 +1,59 @@
+{
+  "brand": {
+    "name": "Bramhkanti",
+    "legalName": "Bramhkanti Foods Private Limited",
+    "tagline": "Authentic Indian Flavours, Crafted with Purity & Heritage",
+    "description": "Handcrafted traditional Indian pickles (achar), authentic sweets (mithai), and artisanal foxnuts (makhana), prepared using slow-cooked ancestral recipes and pure cold-pressed oils.",
+    "subTagline": "Pure Indian Heritage"
+  },
+  "certifications": {
+    "pureVeg": "100% Pure Vegetarian",
+    "vegBadge": "100% Vegetarian",
+    "vegShort": "Veg",
+    "fssaiLicense": "FSSAI Lic. No. {licenseNumber}",
+    "fssaiBadge": "FSSAI Lic. No. 10024011000123 • 100% Pure Vegetarian"
+  },
+  "announcements": {
+    "shipping": "Free Express Shipping across India on orders above ₹499",
+    "purity": "100% Traditional Vegetarian Purity"
+  },
+  "actions": {
+    "addToBag": "Add to Bag",
+    "adding": "Adding...",
+    "added": "Added to Bag",
+    "soldOut": "Sold Out",
+    "viewDetails": "View Details",
+    "viewOptions": "View Options",
+    "exploreCatalog": "Explore Catalog",
+    "search": "Search",
+    "close": "Close",
+    "apply": "Apply",
+    "reset": "Reset",
+    "tryAgain": "Try Again",
+    "backToHome": "Back to Home",
+    "reload": "Reload Application"
+  },
+  "ui": {
+    "skipToContent": "Skip to main content",
+    "searchPlaceholder": "Search achar, mithai, makhana...",
+    "currencySymbol": "₹"
+  },
+  "guarantees": {
+    "sunCured": {
+      "title": "Sun-Cured in Cold-Pressed Oil",
+      "description": "Aged slowly in Indian sunshine with kachi ghani mustard oil, rock salt, and whole hand-ground spices. Zero chemical preservatives."
+    },
+    "desiGhee": {
+      "title": "Pure Desi Ghee Mithai",
+      "description": "Traditional Indian sweets prepared using 100% pure cow ghee, saffron threads, and hand-selected dry fruits."
+    },
+    "makhana": {
+      "title": "Artisanal Foxnuts (Makhana)",
+      "description": "Slow-roasted Himalayan foxnuts seasoned with organic herbs and cold-pressed olive oil for a wholesome, guilt-free crunch."
+    },
+    "vegetarian": {
+      "title": "100% Vegetarian Certified",
+      "description": "Processed exclusively in a certified pure vegetarian kitchen following rigorous FSSAI food hygiene standards."
+    }
+  }
+}
