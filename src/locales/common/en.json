@@ -38,6 +38,12 @@
     "searchPlaceholder": "Search achar, mithai, makhana...",
     "currencySymbol": "₹"
   },
+  "language": {
+    "selectLanguage": "Select Language",
+    "chooseLanguage": "Choose Language",
+    "english": "English",
+    "hindi": "हिन्दी"
+  },
   "guarantees": {
     "sunCured": {
       "title": "Sun-Cured in Cold-Pressed Oil",

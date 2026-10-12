@@ -66,3 +66,48 @@ export function resolveLocale(candidate: string | undefined | null): Locale {
   }
   return DEFAULT_LOCALE;
 }
+
+/**
+ * Strips any registered locale prefix from a pathname.
+ *
+ * @example
+ * getPathnameWithoutLocale('/') // '/'
+ * getPathnameWithoutLocale('/hi') // '/'
+ * getPathnameWithoutLocale('/hi/achar') // '/achar'
+ * getPathnameWithoutLocale('/en/achar') // '/achar'
+ * getPathnameWithoutLocale('/achar') // '/achar'
+ */
+export function getPathnameWithoutLocale(pathname: string): string {
+  if (!pathname || pathname === '/') return '/';
+
+  for (const loc of SUPPORTED_LOCALES) {
+    if (pathname === `/${loc}`) {
+      return '/';
+    }
+    if (pathname.startsWith(`/${loc}/`)) {
+      const stripped = pathname.slice(loc.length + 1);
+      return stripped.startsWith('/') ? stripped : `/${stripped}`;
+    }
+  }
+
+  return pathname.startsWith('/') ? pathname : `/${pathname}`;
+}
+
+/**
+ * Builds the localized destination path for a given target locale.
+ *
+ * @example
+ * getLocalizedPath('/achar', 'hi') // '/hi/achar'
+ * getLocalizedPath('/hi/achar', 'en') // '/achar'
+ * getLocalizedPath('/', 'hi') // '/hi'
+ * getLocalizedPath('/hi', 'en') // '/'
+ */
+export function getLocalizedPath(pathname: string, targetLocale: Locale): string {
+  const cleanPath = getPathnameWithoutLocale(pathname);
+
+  if (targetLocale === DEFAULT_LOCALE) {
+    return cleanPath;
+  }
+
+  return cleanPath === '/' ? `/${targetLocale}` : `/${targetLocale}${cleanPath}`;
+}

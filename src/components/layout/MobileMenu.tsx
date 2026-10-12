@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ChevronDown, User, LogIn, LogOut, Package } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { SITE_CONFIG } from '@/content/site';
 import { useAuth, useToast } from '@/lib/store';
 import type { Category } from '@/lib/api/contracts/domain';
@@ -108,7 +109,12 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
           )}
         </div>
 
-        <nav aria-label="Mobile Navigation" className="mt-6 flex flex-col space-y-4">
+        {/* Mobile Language Switcher Section */}
+        <div className="border-heritage-border/70 bg-heritage-cream-dark/40 mt-3 rounded-lg border p-3">
+          <LanguageSwitcher variant="drawer" onSelect={onClose} />
+        </div>
+
+        <nav aria-label="Mobile Navigation" className="mt-5 flex flex-col space-y-4">
           <div className="text-heritage-muted text-xs font-semibold tracking-wider uppercase">
             Shop by Category
           </div>

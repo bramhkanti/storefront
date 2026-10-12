@@ -8,6 +8,7 @@ import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
 import { MobileMenu } from './MobileMenu';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { Button } from '@/components/ui/Button';
 import { SITE_CONFIG } from '@/content/site';
@@ -48,8 +49,8 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
               <span>Free shipping across India above ₹499</span>
             </div>
 
-            {/* Desktop utility links: Track Order and Contact (No WhatsApp) */}
-            <div className="hidden items-center gap-5 text-xs text-white/90 md:flex">
+            {/* Desktop utility links: Track Order, Contact, and Language Switcher */}
+            <div className="hidden items-center gap-4 text-xs text-white/90 md:flex">
               <Link href="/account/orders" className="transition-colors hover:text-white">
                 Track Order
               </Link>
@@ -59,6 +60,10 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
               >
                 Contact
               </Link>
+              <span className="text-white/30" aria-hidden="true">
+                |
+              </span>
+              <LanguageSwitcher variant="banner" />
             </div>
           </div>
         </Container>

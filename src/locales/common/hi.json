@@ -38,6 +38,12 @@
     "searchPlaceholder": "अचार, मिठाई, मखाना खोजें...",
     "currencySymbol": "₹"
   },
+  "language": {
+    "selectLanguage": "भाषा चुनें",
+    "chooseLanguage": "भाषा चुनें",
+    "english": "English",
+    "hindi": "हिन्दी"
+  },
   "guarantees": {
     "sunCured": {
       "title": "कच्ची घानी तेल और धूप में पका",
