@@ -28,22 +28,64 @@
 
   --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-sans:
-    var(--font-locale),
-    var(--font-anek-latin),
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
+    var(--font-plus-jakarta-sans), var(--font-noto-sans-devanagari), system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
     sans-serif;
 }
 
 :root {
-  --font-locale: var(--font-anek-latin, system-ui);
   color-scheme: light;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.25;
+}
+
+/* Base English Typography */
+:lang(en),
+:lang(en-IN) {
+  --line-height-body: 1.5;
+  --line-height-heading: 1.25;
+  --font-size-base: 100%;
+}
+
+/* Indic Typography Rules - Multi-Language Baseline for Hindi and future Indian scripts */
+:lang(hi),
+:lang(hi-IN),
+:lang(mr),
+:lang(te),
+:lang(ta),
+:lang(kn),
+:lang(ml),
+:lang(bn),
+:lang(gu),
+:lang(pa),
+:lang(or) {
+  --line-height-body: 1.65;
+  --line-height-heading: 1.35;
+  --font-size-base: 104%;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-style: normal !important;
+  font-synthesis: none;
+}
+
+/* Deep override: neutralize tracking, uppercase, and italic classes across all Indic text */
+:is(
+    :lang(hi),
+    :lang(hi-IN),
+    :lang(mr),
+    :lang(te),
+    :lang(ta),
+    :lang(kn),
+    :lang(ml),
+    :lang(bn),
+    :lang(gu),
+    :lang(pa),
+    :lang(or)
+  )
+  :is(.uppercase, .capitalize, [class*='tracking-'], .italic, em, i) {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-style: normal !important;
 }
 
 html.dark {
@@ -59,11 +101,43 @@ body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans);
+  line-height: var(--line-height-body, 1.5);
   background-color: var(--color-heritage-cream);
   color: var(--color-heritage-charcoal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: var(--line-height-heading, 1.25);
+}
+
+/* Form controls: ensure font family, line height, and font features inherit cleanly */
+input,
+button,
+textarea,
+select,
+optgroup {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  line-height: inherit;
+}
+
+/* Tabular numerals for prices, cart subtotals, and counters */
+.tabular-nums,
+[data-tabular-nums] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 /* Custom focus ring for accessible keyboard navigation */
@@ -81,6 +155,20 @@ select:focus,
 select:focus-visible {
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* Print Stylesheet for clean order receipts and documentation */
+@media print {
+  body {
+    font-family:
+      system-ui,
+      -apple-system,
+      'Noto Sans Devanagari',
+      'Segoe UI',
+      sans-serif !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
 }
 
 /* Smooth Hardware-Accelerated Drawer Slide Animations */

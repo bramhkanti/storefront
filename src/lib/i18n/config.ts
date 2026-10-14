@@ -41,7 +41,7 @@ export const LOCALE_METADATA: Record<
     bcp47: 'en-IN',
     direction: 'ltr',
     script: 'Latin',
-    fontFamily: 'Anek Latin',
+    fontFamily: 'Plus Jakarta Sans',
   },
   hi: {
     name: 'Hindi',
@@ -49,7 +49,7 @@ export const LOCALE_METADATA: Record<
     bcp47: 'hi-IN',
     direction: 'ltr',
     script: 'Devanagari',
-    fontFamily: 'Anek Devanagari',
+    fontFamily: 'Noto Sans Devanagari',
   },
 };
 

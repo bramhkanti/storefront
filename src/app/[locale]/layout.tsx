@@ -24,7 +24,7 @@ import {
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { WebVitals } from '@/components/analytics/WebVitals';
 import { publicEnv } from '@/lib/env.public';
-import { getFontForLocale, anekLatin } from '@/lib/fonts';
+import { getFontForLocale } from '@/lib/fonts';
 import { cn } from '@/lib/utils/cn';
 
 export const instant = false;
@@ -71,8 +71,7 @@ export default async function LocaleLayout({
     <html
       lang={localeMeta.bcp47}
       dir={localeMeta.direction}
-      className={cn('scroll-smooth', fontConfig.variable, anekLatin.variable)}
-      style={{ ['--font-locale' as string]: `var(${fontConfig.variableName})` }}
+      className={cn('scroll-smooth', fontConfig.allVariablesClass)}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

@@ -1,11 +1,20 @@
 import { ImageResponse } from 'next/og';
 import { COLOR_TOKENS } from '@/lib/tokens';
+import { getOgFonts } from '@/lib/fonts/og-font';
 
 export const alt = 'Bramhkanti — Pure Indian Heritage Foods';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default function Image(): ImageResponse {
+export default async function Image({
+  params,
+}: {
+  params?: Promise<{ locale?: string }>;
+} = {}): Promise<ImageResponse> {
+  const resolvedParams = params ? await params : undefined;
+  const locale = resolvedParams?.locale || 'en';
+  const fonts = await getOgFonts(locale);
+
   return new ImageResponse(
     <div
       style={{
@@ -105,6 +114,9 @@ export default function Image(): ImageResponse {
         </span>
       </div>
     </div>,
-    { ...size },
+    {
+      ...size,
+      ...(fonts.length > 0 ? { fonts } : {}),
+    },
   );
 }
