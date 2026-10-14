@@ -17,8 +17,10 @@
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "verify:fonts": "node scripts/verify-fonts.mjs",
+    "test:fonts": "node scripts/verify-fonts.mjs",
     "lhci": "lhci autorun",
-    "check": "pnpm lint && pnpm typecheck && pnpm build",
+    "check": "pnpm lint && pnpm typecheck && pnpm verify:fonts && pnpm build",
     "prepare": "husky"
   },
   "dependencies": {
