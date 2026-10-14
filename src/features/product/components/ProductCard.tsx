@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import Link from 'next/link';
 import type { Product } from '@/lib/api/contracts/domain';
@@ -5,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { formatPrice } from '@/lib/utils/money';
 import { cn } from '@/lib/utils/cn';
+import { WishlistButton } from './WishlistButton';
 
 export interface ProductCardProps {
   product: Product;
@@ -25,18 +28,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
       )}
     >
       <div>
-        {/* Top Badges */}
+        {/* Top Badges & Wishlist */}
         <div className="mb-3 flex items-center justify-between text-xs">
-          <Badge variant="vegetarian">Veg</Badge>
-          {!inStock ? (
-            <Badge variant="saffron">Sold Out</Badge>
-          ) : (
-            product.foodAttributes.shelfLife && (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="vegetarian">Veg</Badge>
+            {!inStock && <Badge variant="saffron">Sold Out</Badge>}
+            {inStock && product.foodAttributes.shelfLife && (
               <span className="text-heritage-muted text-[11px]">
                 {product.foodAttributes.shelfLife}
               </span>
-            )
-          )}
+            )}
+          </div>
+          <WishlistButton product={product} size="sm" />
         </div>
 
         {/* Title */}

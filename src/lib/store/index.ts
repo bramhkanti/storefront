@@ -4,5 +4,6 @@ export * from './slices/search-ui.slice';
 export * from './slices/filters-ui.slice';
 export * from './slices/auth.slice';
 export * from './slices/navigation-ui.slice';
+export * from './slices/wishlist.slice';
 export * from './root-store';
 export * from './StoreProvider';

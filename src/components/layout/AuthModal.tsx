@@ -10,11 +10,17 @@ import {
   DialogDescription,
 } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
-import { useAuth, useToast, type UserProfile } from '@/lib/store';
+import { useAuth, useToast, useWishlist, type UserProfile } from '@/lib/store';
 
 export function AuthModal(): React.JSX.Element {
   const { isAuthModalOpen, closeAuthModal, login } = useAuth();
   const { addToast } = useToast();
+  const {
+    pendingWishlistProduct,
+    addToWishlist,
+    setPendingWishlistProduct,
+    loadWishlistForUser,
+  } = useWishlist();
 
   const [step, setStep] = React.useState<'phone' | 'otp'>('phone');
   const [phoneNumber, setPhoneNumber] = React.useState('');
@@ -37,6 +43,7 @@ export function AuthModal(): React.JSX.Element {
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       closeAuthModal();
+      setPendingWishlistProduct(null);
       resetForm();
     }
   };
@@ -99,12 +106,24 @@ export function AuthModal(): React.JSX.Element {
       };
 
       login(profile);
+      loadWishlistForUser(profile.id);
+
+      if (pendingWishlistProduct) {
+        addToWishlist(pendingWishlistProduct);
+        addToast({
+          type: 'success',
+          message: `Signed in & added "${pendingWishlistProduct.title}" to your Wishlist!`,
+        });
+        setPendingWishlistProduct(null);
+      } else {
+        addToast({
+          type: 'success',
+          message: `Welcome to Bramhkanti, ${profile.name}!`,
+        });
+      }
+
       setIsSubmitting(false);
       resetForm();
-      addToast({
-        type: 'success',
-        message: `Welcome to Bramhkanti, ${profile.name}!`,
-      });
     }, 600);
   };
 
@@ -120,7 +139,9 @@ export function AuthModal(): React.JSX.Element {
           </DialogTitle>
           <DialogDescription className="text-heritage-muted text-sm">
             {step === 'phone'
-              ? 'Access your orders, saved addresses, and authentic heritage delicacies.'
+              ? pendingWishlistProduct
+                ? `Verify your mobile number to add "${pendingWishlistProduct.title}" to your Wishlist.`
+                : 'Access your orders, saved addresses, and authentic heritage delicacies.'
               : `Enter the 6-digit code sent to +91 ${phoneNumber}`}
           </DialogDescription>
         </DialogHeader>

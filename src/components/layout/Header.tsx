@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, Search, ShoppingBag } from 'lucide-react';
+import { ChevronDown, Menu, Search, ShoppingBag, Heart } from 'lucide-react';
 import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
@@ -12,7 +12,7 @@ import { MobileMenu } from './MobileMenu';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { Button } from '@/components/ui/Button';
 import { SITE_CONFIG } from '@/content/site';
-import { useCartUi, useSearchUi, useNavigationUi } from '@/lib/store';
+import { useCartUi, useSearchUi, useNavigationUi, useWishlist } from '@/lib/store';
 import { useCart } from '@/lib/cart';
 import type { Category } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
@@ -30,6 +30,7 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
   const { openSearch } = useSearchUi();
   const { isMobileMenuOpen, openMobileMenu, closeMobileMenu } = useNavigationUi();
   const { optimisticCart } = useCart();
+  const { wishlistCount } = useWishlist();
 
   const liveCartCount = optimisticCart?.itemCount ?? cartCount;
 
@@ -134,7 +135,7 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
             </Link>
           </nav>
 
-          {/* Right Action Icons: Search, Profile, Cart */}
+          {/* Right Action Icons: Search, Wishlist, Profile, Cart */}
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Search */}
             <button
@@ -146,6 +147,34 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
               <Search className="h-5 w-5" aria-hidden="true" />
               <span className="sr-only">Search</span>
             </button>
+
+            {/* Wishlist */}
+            <Link
+              href="/wishlist"
+              aria-label={
+                wishlistCount > 0 ? `Wishlist with ${wishlistCount} items` : 'Wishlist'
+              }
+              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
+            >
+              <Heart
+                fill={wishlistCount > 0 ? '#dc2626' : 'none'}
+                color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
+                className={cn(
+                  'h-5 w-5 transition-transform duration-200',
+                  wishlistCount > 0 && 'text-red-600 scale-105',
+                )}
+                aria-hidden="true"
+              />
+              <span className="sr-only">Wishlist</span>
+              {wishlistCount > 0 && (
+                <span
+                  className="bg-red-600 absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white shadow-xs"
+                  aria-hidden="true"
+                >
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
+                </span>
+              )}
+            </Link>
 
             {/* Profile menu */}
             <ProfileMenu />
@@ -200,24 +229,53 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
             />
           </Link>
 
-          {/* Right: Cart Bag with badge to maintain balance */}
-          <button
-            type="button"
-            onClick={openCart}
-            aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
-            className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-          >
-            <ShoppingBag className="h-5 w-5" aria-hidden="true" />
-            <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
-            {liveCartCount > 0 && (
-              <span
-                className="bg-heritage-maroon absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white shadow-xs"
+          {/* Right: Wishlist & Cart Bag with badge */}
+          <div className="flex items-center gap-0.5">
+            <Link
+              href="/wishlist"
+              aria-label={
+                wishlistCount > 0 ? `Wishlist with ${wishlistCount} items` : 'Wishlist'
+              }
+              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+            >
+              <Heart
+                fill={wishlistCount > 0 ? '#dc2626' : 'none'}
+                color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
+                className={cn(
+                  'h-5 w-5 transition-transform duration-200',
+                  wishlistCount > 0 && 'text-red-600',
+                )}
                 aria-hidden="true"
-              >
-                {liveCartCount > 99 ? '99+' : liveCartCount}
-              </span>
-            )}
-          </button>
+              />
+              <span className="sr-only">Wishlist</span>
+              {wishlistCount > 0 && (
+                <span
+                  className="bg-red-600 absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white shadow-xs"
+                  aria-hidden="true"
+                >
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
+                </span>
+              )}
+            </Link>
+
+            <button
+              type="button"
+              onClick={openCart}
+              aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
+              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+            >
+              <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+              <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
+              {liveCartCount > 0 && (
+                <span
+                  className="bg-heritage-maroon absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white shadow-xs"
+                  aria-hidden="true"
+                >
+                  {liveCartCount > 99 ? '99+' : liveCartCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </Container>
 

@@ -39,18 +39,57 @@ export interface AuthSlice {
   setDefaultAddress: (id: string) => void;
 }
 
+export const AUTH_STORAGE_KEY = 'bramhkanti_auth_user';
+
+export function readStoredUser(): UserProfile | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.id) {
+        return parsed as UserProfile;
+      }
+    }
+  } catch {
+    // Ignore storage read errors
+  }
+  return null;
+}
+
+export function writeStoredUser(user: UserProfile | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (user) {
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage write errors
+  }
+}
+
 export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
   user: null,
   isAuthenticated: false,
   isAuthModalOpen: false,
   openAuthModal: () => set({ isAuthModalOpen: true }),
   closeAuthModal: () => set({ isAuthModalOpen: false }),
-  login: (user) => set({ user, isAuthenticated: true, isAuthModalOpen: false }),
-  logout: () => set({ user: null, isAuthenticated: false }),
+  login: (user) => {
+    writeStoredUser(user);
+    set({ user, isAuthenticated: true, isAuthModalOpen: false });
+  },
+  logout: () => {
+    writeStoredUser(null);
+    set({ user: null, isAuthenticated: false });
+  },
   updateProfile: (updates) =>
-    set((state) => ({
-      user: state.user ? { ...state.user, ...updates } : null,
-    })),
+    set((state) => {
+      const updatedUser = state.user ? { ...state.user, ...updates } : null;
+      writeStoredUser(updatedUser);
+      return { user: updatedUser };
+    }),
   addAddress: (newAddr) =>
     set((state) => {
       if (!state.user) return state;
@@ -68,12 +107,15 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
       const defaultAddr = updatedAddresses.find((a) => a.isDefault) || formatted;
       const addressSummary = `${defaultAddr.street}, ${defaultAddr.city}, ${defaultAddr.state} ${defaultAddr.pincode}`;
 
+      const updatedUser = {
+        ...currentUser,
+        addresses: updatedAddresses,
+        addressSummary,
+      };
+      writeStoredUser(updatedUser);
+
       return {
-        user: {
-          ...currentUser,
-          addresses: updatedAddresses,
-          addressSummary,
-        },
+        user: updatedUser,
         isAuthenticated: true,
       };
     }),
@@ -97,12 +139,15 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
         ? `${defaultAddr.street}, ${defaultAddr.city}, ${defaultAddr.state} ${defaultAddr.pincode}`
         : (currentUser.addressSummary ?? '');
 
+      const updatedUser = {
+        ...currentUser,
+        addresses: updatedAddresses,
+        addressSummary,
+      };
+      writeStoredUser(updatedUser);
+
       return {
-        user: {
-          ...currentUser,
-          addresses: updatedAddresses,
-          addressSummary,
-        },
+        user: updatedUser,
       };
     }),
   deleteAddress: (id) =>
@@ -124,12 +169,15 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
         ? `${defaultAddr.street}, ${defaultAddr.city}, ${defaultAddr.state} ${defaultAddr.pincode}`
         : '';
 
+      const updatedUser = {
+        ...currentUser,
+        addresses: updatedAddresses,
+        addressSummary,
+      };
+      writeStoredUser(updatedUser);
+
       return {
-        user: {
-          ...currentUser,
-          addresses: updatedAddresses,
-          addressSummary,
-        },
+        user: updatedUser,
       };
     }),
   setDefaultAddress: (id) =>
@@ -147,12 +195,15 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
         ? `${defaultAddr.street}, ${defaultAddr.city}, ${defaultAddr.state} ${defaultAddr.pincode}`
         : (currentUser.addressSummary ?? '');
 
+      const updatedUser = {
+        ...currentUser,
+        addresses: updatedAddresses,
+        addressSummary,
+      };
+      writeStoredUser(updatedUser);
+
       return {
-        user: {
-          ...currentUser,
-          addresses: updatedAddresses,
-          addressSummary,
-        },
+        user: updatedUser,
       };
     }),
 });

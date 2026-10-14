@@ -8,6 +8,10 @@ import {
   createNavigationUiSlice,
   type NavigationUiSlice,
 } from './slices/navigation-ui.slice';
+import {
+  createWishlistSlice,
+  type WishlistSlice,
+} from './slices/wishlist.slice';
 
 export interface RootStoreState
   extends
@@ -16,7 +20,8 @@ export interface RootStoreState
     SearchUiSlice,
     FiltersUiSlice,
     AuthSlice,
-    NavigationUiSlice {
+    NavigationUiSlice,
+    WishlistSlice {
   resetStore: () => void;
 }
 
@@ -30,6 +35,7 @@ export function createRootStore(initProps: Partial<RootStoreState> = {}) {
     ...createFiltersUiSlice(set, get, api),
     ...createAuthSlice(set, get, api),
     ...createNavigationUiSlice(set, get, api),
+    ...createWishlistSlice(set, get, api),
     ...initProps,
     resetStore: () =>
       set({
@@ -39,6 +45,7 @@ export function createRootStore(initProps: Partial<RootStoreState> = {}) {
         ...createFiltersUiSlice(set, get, api),
         ...createAuthSlice(set, get, api),
         ...createNavigationUiSlice(set, get, api),
+        ...createWishlistSlice(set, get, api),
       }),
   }));
 }

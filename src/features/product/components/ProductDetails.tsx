@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/utils/money';
 import { SITE_CONFIG } from '@/content/site';
 import { useCart } from '@/lib/cart';
 import { useCartUi, useToast } from '@/lib/store';
+import { WishlistButton } from './WishlistButton';
 import { cn } from '@/lib/utils/cn';
 
 export interface ProductDetailsProps {
@@ -59,12 +60,15 @@ export function ProductDetails({
 
   return (
     <div className={cn('space-y-6', className)}>
-      {/* Category & Veg indicator */}
-      <div className="flex items-center gap-2">
-        <Badge variant="vegetarian">100% Pure Veg</Badge>
-        <span className="text-heritage-saffron-dark text-xs font-semibold tracking-wider uppercase">
-          {categoryName ?? 'Heritage Collection'}
-        </span>
+      {/* Category & Veg indicator & Wishlist */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Badge variant="vegetarian">100% Pure Veg</Badge>
+          <span className="text-heritage-saffron-dark text-xs font-semibold tracking-wider uppercase">
+            {categoryName ?? 'Heritage Collection'}
+          </span>
+        </div>
+        <WishlistButton product={product} size="md" />
       </div>
 
       {/* Product Title */}
@@ -186,6 +190,13 @@ export function ProductDetails({
             <span>Sold Out</span>
           )}
         </Button>
+
+        <WishlistButton
+          product={product}
+          variant="button"
+          size="md"
+          className="h-11 px-4 sm:w-auto shrink-0"
+        />
       </div>
 
       {/* Trust & Guarantee Markers */}

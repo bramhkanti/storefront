@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { createRootStore, type RootStore, type RootStoreState } from './root-store';
+import { readStoredUser } from './slices/auth.slice';
 
 /**
  * Per-request Zustand Store Context.
@@ -23,6 +24,20 @@ export function StoreProvider({
   initialState,
 }: StoreProviderProps): React.JSX.Element {
   const [store] = React.useState(() => createRootStore(initialState));
+
+  React.useEffect(() => {
+    try {
+      const storedUser = readStoredUser();
+      if (storedUser) {
+        store.getState().login(storedUser);
+        store.getState().loadWishlistForUser(storedUser.id);
+      } else {
+        store.getState().loadWishlistForUser();
+      }
+    } catch {
+      store.getState().loadWishlistForUser();
+    }
+  }, [store]);
 
   return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>;
 }
@@ -127,6 +142,26 @@ export function useNavigationUi() {
       openMobileMenu: state.openMobileMenu,
       closeMobileMenu: state.closeMobileMenu,
       toggleMobileMenu: state.toggleMobileMenu,
+    })),
+  );
+}
+
+/**
+ * Wishlist management hook.
+ */
+export function useWishlist() {
+  return useAppStore(
+    useShallow((state) => ({
+      wishlistItems: state.wishlistItems,
+      wishlistCount: state.wishlistItems.length,
+      pendingWishlistProduct: state.pendingWishlistProduct,
+      addToWishlist: state.addToWishlist,
+      removeFromWishlist: state.removeFromWishlist,
+      toggleWishlist: state.toggleWishlist,
+      isInWishlist: state.isInWishlist,
+      clearWishlist: state.clearWishlist,
+      setPendingWishlistProduct: state.setPendingWishlistProduct,
+      loadWishlistForUser: state.loadWishlistForUser,
     })),
   );
 }

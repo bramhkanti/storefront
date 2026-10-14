@@ -3,12 +3,12 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronDown, User, LogIn, LogOut, Package } from 'lucide-react';
+import { ChevronDown, User, LogIn, LogOut, Package, Heart } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { SITE_CONFIG } from '@/content/site';
-import { useAuth, useToast } from '@/lib/store';
+import { useAuth, useToast, useWishlist } from '@/lib/store';
 import type { Category } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
@@ -24,6 +24,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
   >({});
   const { user, isAuthenticated, openAuthModal, logout } = useAuth();
   const { addToast } = useToast();
+  const { wishlistCount } = useWishlist();
 
   const toggleCategory = (id: string) => {
     setExpandedCategories((prev) => ({
@@ -205,6 +206,30 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                 className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium"
               >
                 Grandma&apos;s Heritage Specials
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/wishlist"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon flex items-center justify-between text-sm font-medium"
+              >
+                <div className="flex items-center gap-2">
+                  <Heart
+                    fill={wishlistCount > 0 ? '#dc2626' : 'none'}
+                    color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
+                    className={cn(
+                      'h-4 w-4 transition-colors',
+                      wishlistCount > 0 ? 'text-red-600' : 'text-heritage-muted',
+                    )}
+                  />
+                  <span>My Wishlist</span>
+                </div>
+                {wishlistCount > 0 && (
+                  <span className="bg-red-600 rounded-full px-2 py-0.5 text-[10px] font-bold text-white">
+                    {wishlistCount}
+                  </span>
+                )}
               </Link>
             </li>
             {isAuthenticated && (
