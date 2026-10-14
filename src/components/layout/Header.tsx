@@ -71,7 +71,7 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
           {/* Desktop Navigation (Center) - Categories & Collections Mega Menus */}
           <nav
             aria-label="Main Navigation"
-            className="flex items-center gap-7 text-sm font-medium"
+            className="flex items-center gap-7 text-sm font-semibold"
           >
             {/* Single Group Category with 3-Column Popover */}
             <CategoryMegaMenu categories={categories} />
@@ -82,7 +82,7 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             {/* Brand Story */}
             <Link
               href="/policies/contact"
-              className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-medium transition-colors focus-visible:outline-2"
+              className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-semibold transition-colors focus-visible:outline-2"
             >
               Our Story
             </Link>
@@ -114,14 +114,14 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
                 className={cn(
                   'h-5 w-5 transition-transform duration-200',
-                  wishlistCount > 0 && 'text-red-600 scale-105',
+                  wishlistCount > 0 && 'scale-105 text-red-600',
                 )}
                 aria-hidden="true"
               />
               <span className="sr-only">Wishlist</span>
               {wishlistCount > 0 && (
                 <span
-                  className="bg-red-600 absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white shadow-xs"
+                  className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
                   aria-hidden="true"
                 >
                   {wishlistCount > 99 ? '99+' : wishlistCount}
@@ -203,7 +203,7 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
               <span className="sr-only">Wishlist</span>
               {wishlistCount > 0 && (
                 <span
-                  className="bg-red-600 absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white shadow-xs"
+                  className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
                   aria-hidden="true"
                 >
                   {wishlistCount > 99 ? '99+' : wishlistCount}

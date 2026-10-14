@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronDown, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { ChevronDown, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { Category } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
@@ -33,21 +33,21 @@ const DEFAULT_SUBCATEGORY_META: Record<
     altText: 'Traditional sun-dried mango pickle in ceramic barnie',
     badge: 'Bestseller',
   },
-  'nimbu': {
+  nimbu: {
     tagline: 'Khatta-Meetha sun-cured Kagzi lemon, oil-free',
     imageUrl:
       'https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=300&auto=format&fit=crop&q=80',
     altText: 'Ayurvedic digestive sweet and tangy lemon pickle',
     badge: 'Digestive',
   },
-  'suran': {
+  suran: {
     tagline: 'Traditional Banarasi Oal/Yam spiced relish',
     imageUrl:
       'https://images.unsplash.com/photo-1628294895950-9805252327bc?w=300&auto=format&fit=crop&q=80',
     altText: 'Traditional Banarasi Oal Suran Jimikand Achar',
     badge: 'Heirloom',
   },
-  'gobhi': {
+  gobhi: {
     tagline: 'Crunchy winter spiced cauliflower',
     imageUrl:
       'https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=300&auto=format&fit=crop&q=80',
@@ -61,7 +61,7 @@ const DEFAULT_SUBCATEGORY_META: Record<
     altText: 'Banarasi stuffed red chilli bhara marcha achar',
     badge: 'Signature',
   },
-  'kathal': {
+  kathal: {
     tagline: 'Tender raw jackfruit steeped in cold-pressed oil',
     imageUrl:
       'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=300&auto=format&fit=crop&q=80',
@@ -100,7 +100,7 @@ const DEFAULT_SUBCATEGORY_META: Record<
   },
 
   // --- SWEETS SUBCATEGORIES (4) ---
-  'thekua': {
+  thekua: {
     tagline: 'Crisp wheat & organic jaggery Chhath delicacy',
     imageUrl:
       'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300&auto=format&fit=crop&q=80',
@@ -143,7 +143,9 @@ const DEFAULT_SUBCATEGORY_META: Record<
   },
 };
 
-export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.JSX.Element {
+export function CategoryMegaMenu({
+  categories,
+}: CategoryMegaMenuProps): React.JSX.Element {
   const [isOpen, setIsOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const closeTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -221,8 +223,8 @@ export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.J
         aria-haspopup="true"
         aria-label="Browse all product categories"
         className={cn(
-          'text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex items-center gap-1.5 rounded-md px-1 py-2 font-medium transition-colors focus-visible:outline-2',
-          isOpen && 'text-heritage-maroon font-semibold',
+          'text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex items-center gap-1.5 rounded-md px-1 py-2 font-semibold transition-colors focus-visible:outline-2',
+          isOpen && 'text-heritage-maroon',
         )}
       >
         <span>Categories</span>
@@ -240,14 +242,13 @@ export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.J
         <div
           role="region"
           aria-label="Categories Mega Menu"
-          className="animate-in fade-in-0 zoom-in-95 absolute top-full left-1/2 -translate-x-1/2 z-50 w-[940px] max-w-[calc(100vw-2.5rem)] pt-2 duration-150"
+          className="animate-in fade-in-0 zoom-in-95 absolute top-full left-1/2 z-50 w-[940px] max-w-[calc(100vw-2.5rem)] -translate-x-1/2 pt-2 duration-150"
         >
-          <div className="border-heritage-border bg-heritage-cream dark:bg-[#1c1815] dark:border-neutral-800 rounded-2xl border p-6 shadow-2xl backdrop-blur-md">
+          <div className="border-heritage-border bg-heritage-cream rounded-2xl border p-6 shadow-2xl backdrop-blur-md dark:border-neutral-800 dark:bg-[#1c1815]">
             {/* Top Micro-Header */}
             <div className="border-heritage-border/70 mb-5 flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="text-heritage-saffron h-4 w-4" />
-                <span className="text-heritage-charcoal dark:text-neutral-200 font-serif text-sm font-bold tracking-wide">
+                <span className="text-heritage-charcoal font-serif text-sm font-bold tracking-wide dark:text-neutral-200">
                   Explore Traditional Delicacies
                 </span>
                 <span className="bg-heritage-saffron-light/60 text-heritage-saffron-dark rounded-full px-2 py-0.5 text-[10px] font-semibold">
@@ -296,7 +297,7 @@ export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.J
                     className={cn(
                       'flex flex-col justify-between space-y-3',
                       idx > 0 &&
-                        'relative before:absolute before:-left-3 before:top-1 before:bottom-1 before:w-px before:bg-heritage-border/70 dark:before:bg-neutral-800',
+                        'before:bg-heritage-border/70 relative before:absolute before:top-1 before:bottom-1 before:-left-3 before:w-px dark:before:bg-neutral-800',
                     )}
                   >
                     <div>
@@ -327,7 +328,7 @@ export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.J
                               <Link
                                 href={href}
                                 onClick={handleClose}
-                                className="group/item hover:bg-heritage-cream-dark/70 dark:hover:bg-neutral-800/70 border-heritage-border/50 hover:border-heritage-maroon/30 relative flex items-center gap-3 rounded-xl border p-2.5 transition-all hover:shadow-2xs"
+                                className="group/item hover:bg-heritage-cream-dark/70 border-heritage-border/50 hover:border-heritage-maroon/30 relative flex items-center gap-3 rounded-xl border p-2.5 transition-all hover:shadow-2xs dark:hover:bg-neutral-800/70"
                               >
                                 {/* Thumbnail Image */}
                                 <div className="border-heritage-border/80 bg-heritage-cream-dark relative h-11 w-11 shrink-0 overflow-hidden rounded-lg border shadow-2xs">
@@ -342,10 +343,10 @@ export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.J
 
                                 {/* Text & Meta with reserved right padding for top-right corner tag */}
                                 <div className="min-w-0 flex-1 pr-14">
-                                  <span className="text-heritage-charcoal group-hover/item:text-heritage-maroon dark:text-neutral-200 block truncate text-xs font-semibold transition-colors">
+                                  <span className="text-heritage-charcoal group-hover/item:text-heritage-maroon block truncate text-xs font-semibold transition-colors dark:text-neutral-200">
                                     {sub.name}
                                   </span>
-                                  <p className="text-heritage-muted truncate text-[11px] leading-normal mt-0.5">
+                                  <p className="text-heritage-muted mt-0.5 truncate text-[11px] leading-normal">
                                     {sub.tagline}
                                   </p>
                                 </div>
@@ -370,7 +371,9 @@ export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.J
                         onClick={handleClose}
                         className="text-heritage-maroon hover:text-heritage-maroon-hover inline-flex items-center gap-1 text-[11px] font-semibold transition-colors"
                       >
-                        <span>View All {cat.name} ({totalCount})</span>
+                        <span>
+                          View All {cat.name} ({totalCount})
+                        </span>
                         <ArrowRight className="h-3 w-3" />
                       </Link>
                     </div>
@@ -380,17 +383,18 @@ export function CategoryMegaMenu({ categories }: CategoryMegaMenuProps): React.J
             </div>
 
             {/* Bottom Guarantee Banner */}
-            <div className="border-heritage-border/70 bg-heritage-cream-dark/40 dark:bg-neutral-900/40 mt-5 flex items-center justify-between rounded-xl border px-4 py-2.5 text-xs">
+            <div className="border-heritage-border/70 bg-heritage-cream-dark/40 mt-5 flex items-center justify-between rounded-xl border px-4 py-2.5 text-xs dark:bg-neutral-900/40">
               <div className="text-heritage-muted flex items-center gap-2 text-[11px]">
-                <ShieldCheck className="text-emerald-700 h-4 w-4 shrink-0" />
+                <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-700" />
                 <span>
-                  100% Vegetarian Purity • Zero Artificial Preservatives • Handcrafted in Varanasi
+                  100% Vegetarian Purity • Zero Artificial Preservatives • Handcrafted in
+                  Varanasi
                 </span>
               </div>
               <Link
                 href="/collections/grandmas-specials"
                 onClick={handleClose}
-                className="text-heritage-maroon hover:underline text-[11px] font-semibold"
+                className="text-heritage-maroon text-[11px] font-semibold hover:underline"
               >
                 Grandma&apos;s Specials ➔
               </Link>

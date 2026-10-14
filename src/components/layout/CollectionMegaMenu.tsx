@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronDown, ArrowRight, Sparkles, Gift } from 'lucide-react';
+import { ChevronDown, ArrowRight, Gift } from 'lucide-react';
 import type { Collection } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
@@ -166,8 +166,8 @@ export function CollectionMegaMenu({
         aria-haspopup="true"
         aria-label="Browse curated collections and gift hampers"
         className={cn(
-          'text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex items-center gap-1.5 rounded-md px-1 py-2 font-medium transition-colors focus-visible:outline-2',
-          isOpen && 'text-heritage-maroon font-semibold',
+          'text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex items-center gap-1.5 rounded-md px-1 py-2 font-semibold transition-colors focus-visible:outline-2',
+          isOpen && 'text-heritage-maroon',
         )}
       >
         <span>Collections</span>
@@ -185,14 +185,13 @@ export function CollectionMegaMenu({
         <div
           role="region"
           aria-label="Collections Mega Menu"
-          className="animate-in fade-in-0 zoom-in-95 absolute top-full left-1/2 -translate-x-1/2 z-50 w-[940px] max-w-[calc(100vw-2.5rem)] pt-2 duration-150"
+          className="animate-in fade-in-0 zoom-in-95 absolute top-full left-1/2 z-50 w-[940px] max-w-[calc(100vw-2.5rem)] -translate-x-1/2 pt-2 duration-150"
         >
-          <div className="border-heritage-border bg-heritage-cream dark:bg-[#1c1815] dark:border-neutral-800 rounded-2xl border p-6 shadow-2xl backdrop-blur-md">
+          <div className="border-heritage-border bg-heritage-cream rounded-2xl border p-6 shadow-2xl backdrop-blur-md dark:border-neutral-800 dark:bg-[#1c1815]">
             {/* Top Micro-Header */}
             <div className="border-heritage-border/70 mb-5 flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="text-heritage-saffron h-4 w-4" />
-                <span className="text-heritage-charcoal dark:text-neutral-200 font-serif text-sm font-bold tracking-wide">
+                <span className="text-heritage-charcoal font-serif text-sm font-bold tracking-wide dark:text-neutral-200">
                   Curated Heritage Collections & Hampers
                 </span>
                 <span className="bg-heritage-saffron-light/60 text-heritage-saffron-dark rounded-full px-2 py-0.5 text-[10px] font-semibold">
@@ -217,7 +216,7 @@ export function CollectionMegaMenu({
                   className={cn(
                     'flex flex-col justify-between space-y-4',
                     idx > 0 &&
-                      'relative before:absolute before:-left-3 before:top-1 before:bottom-1 before:w-px before:bg-heritage-border/70 dark:before:bg-neutral-800',
+                      'before:bg-heritage-border/70 relative before:absolute before:top-1 before:bottom-1 before:-left-3 before:w-px dark:before:bg-neutral-800',
                   )}
                 >
                   <Link
@@ -237,7 +236,7 @@ export function CollectionMegaMenu({
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 transition-opacity group-hover/card:opacity-60" />
 
                       {/* Badge in top right corner */}
-                      <span className="bg-heritage-maroon/90 text-white shadow-2xs absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold backdrop-blur-xs">
+                      <span className="bg-heritage-maroon/90 absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shadow-2xs backdrop-blur-xs">
                         {coll.badge}
                       </span>
 
@@ -250,12 +249,12 @@ export function CollectionMegaMenu({
                     {/* Titles & Tagline */}
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-1.5">
-                        <h3 className="text-heritage-charcoal group-hover/card:text-heritage-maroon dark:text-neutral-100 font-serif text-base font-bold transition-colors">
+                        <h3 className="text-heritage-charcoal group-hover/card:text-heritage-maroon font-serif text-base font-bold transition-colors dark:text-neutral-100">
                           {coll.title}
                         </h3>
                         <ArrowRight className="text-heritage-muted group-hover/card:text-heritage-maroon h-3.5 w-3.5 transition-transform group-hover/card:translate-x-1" />
                       </div>
-                      <p className="text-heritage-muted dark:text-neutral-400 line-clamp-2 text-xs leading-relaxed">
+                      <p className="text-heritage-muted line-clamp-2 text-xs leading-relaxed dark:text-neutral-400">
                         {coll.tagline}
                       </p>
                     </div>
@@ -265,7 +264,7 @@ export function CollectionMegaMenu({
                       {coll.highlights.map((highlight) => (
                         <span
                           key={highlight}
-                          className="bg-heritage-cream-dark/90 text-heritage-charcoal dark:bg-neutral-800 dark:text-neutral-300 border-heritage-border/50 rounded-md border px-1.5 py-0.5 text-[10px] font-medium"
+                          className="bg-heritage-cream-dark/90 text-heritage-charcoal border-heritage-border/50 rounded-md border px-1.5 py-0.5 text-[10px] font-medium dark:bg-neutral-800 dark:text-neutral-300"
                         >
                           {highlight}
                         </span>
@@ -289,11 +288,11 @@ export function CollectionMegaMenu({
             </div>
 
             {/* Bottom Guarantee / Gifting Inquiry Bar */}
-            <div className="border-heritage-border/70 bg-heritage-cream-dark/40 dark:bg-neutral-900/60 mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border p-3">
+            <div className="border-heritage-border/70 bg-heritage-cream-dark/40 mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border p-3 dark:bg-neutral-900/60">
               <div className="flex items-center gap-2">
                 <Gift className="text-heritage-saffron h-4 w-4 shrink-0" />
-                <span className="text-heritage-charcoal dark:text-neutral-300 text-xs">
-                  <strong className="font-semibold text-heritage-maroon">
+                <span className="text-heritage-charcoal text-xs dark:text-neutral-300">
+                  <strong className="text-heritage-maroon font-semibold">
                     Custom Gifting:
                   </strong>{' '}
                   Artisanal brass barnies, hand-carved gift boxes & personalized cards.
