@@ -13,9 +13,39 @@ export interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
+  side?: 'left' | 'right';
 }
 
-export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
+function subscribeMediaQuery(callback: () => void) {
+  const mediaQuery = window.matchMedia('(min-width: 1024px)');
+  mediaQuery.addEventListener('change', callback);
+  return () => mediaQuery.removeEventListener('change', callback);
+}
+
+function getDesktopSnapshot() {
+  return window.matchMedia('(min-width: 1024px)').matches;
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
+function useIsDesktop(): boolean {
+  return React.useSyncExternalStore(
+    subscribeMediaQuery,
+    getDesktopSnapshot,
+    getServerSnapshot,
+  );
+}
+
+export function MobileMenu({
+  isOpen,
+  onClose,
+  categories,
+  side: sideProp,
+}: MobileMenuProps) {
+  const isDesktop = useIsDesktop();
+  const side = sideProp ?? (isDesktop ? 'right' : 'left');
   const [expandedCategories, setExpandedCategories] = React.useState<
     Record<string, boolean>
   >({});
@@ -30,8 +60,13 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
-        side="left"
-        className="w-[85vw] max-w-sm overflow-y-auto rounded-r-2xl border-r sm:max-w-md sm:rounded-r-3xl"
+        side={side}
+        className={cn(
+          'w-[85vw] max-w-sm overflow-y-auto sm:max-w-md',
+          side === 'right'
+            ? 'rounded-l-2xl border-l sm:rounded-l-3xl'
+            : 'rounded-r-2xl border-r sm:rounded-r-3xl',
+        )}
       >
         <SheetHeader>
           <SheetTitle className="sr-only">{SITE_CONFIG.brand.name}</SheetTitle>
@@ -166,24 +201,6 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                 className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
               >
                 About Us
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/about"
-                onClick={onClose}
-                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
-              >
-                Our Story & Heritage
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/contact"
-                onClick={onClose}
-                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
-              >
-                Contact & Support
               </Link>
             </li>
             <li>
