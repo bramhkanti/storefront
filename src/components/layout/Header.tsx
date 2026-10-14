@@ -3,7 +3,6 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { Menu, Search, ShoppingBag, Heart } from 'lucide-react';
 import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
@@ -26,9 +25,6 @@ export interface HeaderProps {
 }
 
 export function Header({ categories, collections, cartCount = 0 }: HeaderProps) {
-  const pathname = usePathname() || '';
-  const isProfilePage = pathname.includes('/profile') || pathname.includes('/account');
-
   const { openCart } = useCartUi();
   const { openSearch } = useSearchUi();
   const { isMobileMenuOpen, openMobileMenu, closeMobileMenu } = useNavigationUi();
@@ -38,12 +34,7 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
   const liveCartCount = optimisticCart?.itemCount ?? cartCount;
 
   return (
-    <header
-      className={cn(
-        'border-heritage-border bg-heritage-cream/95 sticky top-0 z-40 w-full border-b backdrop-blur-md transition-shadow',
-        isProfilePage && 'hidden lg:block',
-      )}
-    >
+    <header className="border-heritage-border bg-heritage-cream/95 sticky top-0 z-40 w-full border-b backdrop-blur-md transition-shadow">
       <SkipLink />
 
       {/* Main Header Container */}
