@@ -50,12 +50,11 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
       <Container>
         {/* DESKTOP HEADER (lg:flex) */}
         <div className="relative hidden h-20 items-center justify-between gap-4 lg:flex">
-          {/* Left: Brand Logo & Navigation Links */}
-          <div className="flex items-center gap-7 lg:gap-8 xl:gap-10">
-            {/* Brand Logo */}
+          {/* Left: Brand Logo */}
+          <div className="flex shrink-0 items-center">
             <Link
               href="/"
-              className="focus-visible:outline-heritage-maroon flex shrink-0 items-center rounded-xs focus-visible:outline-2"
+              className="focus-visible:outline-heritage-maroon flex items-center rounded-xs focus-visible:outline-2"
               aria-label={`${SITE_CONFIG.brand.name} - Home`}
             >
               <Image
@@ -67,11 +66,14 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 className="h-14 w-auto object-contain transition-transform hover:scale-105 md:h-16"
               />
             </Link>
+          </div>
 
+          {/* Right: Navigation Links, Search Box, Divider & Action Icons */}
+          <div className="flex items-center gap-6 xl:gap-8">
             {/* Desktop Navigation */}
             <nav
               aria-label="Main Navigation"
-              className="flex items-center gap-6 text-sm font-semibold lg:gap-7"
+              className="flex items-center gap-5 text-sm font-semibold lg:gap-6 xl:gap-7"
             >
               {/* Home */}
               <Link
@@ -100,91 +102,91 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 Our Story
               </Link>
             </nav>
-          </div>
 
-          {/* Right Action Items: Pill Search Bar, Vertical Divider, Wishlist, Cart, Profile Avatar, Drawer Menu */}
-          <div className="flex items-center gap-2 lg:gap-3 xl:gap-3.5">
-            {/* Pill Search Button */}
-            <button
-              type="button"
-              onClick={openSearch}
-              aria-label="Search for your favourite achar..."
-              className="flex w-52 items-center gap-2.5 rounded-full border border-neutral-200/60 bg-neutral-100/90 px-4 py-2 text-left transition-all hover:bg-neutral-200/70 xl:w-72 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:hover:bg-neutral-700/70"
-            >
-              <Search
-                className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400"
+            {/* Right Action Items: Pill Search Bar, Vertical Divider, Wishlist, Cart, Profile Avatar, Drawer Menu */}
+            <div className="flex items-center gap-2 lg:gap-3 xl:gap-3.5">
+              {/* Pill Search Button */}
+              <button
+                type="button"
+                onClick={openSearch}
+                aria-label="Search for your favourite achar..."
+                className="flex w-52 items-center gap-2.5 rounded-full border border-neutral-200/60 bg-neutral-100/90 px-4 py-2 text-left transition-all hover:bg-neutral-200/70 xl:w-72 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:hover:bg-neutral-700/70"
+              >
+                <Search
+                  className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400"
+                  aria-hidden="true"
+                />
+                <span className="truncate text-xs font-normal text-neutral-400 dark:text-neutral-400">
+                  Search for your favourite achar...
+                </span>
+              </button>
+
+              {/* Vertical Divider */}
+              <div
+                className="mx-1 h-6 w-px bg-neutral-200 dark:bg-neutral-700"
                 aria-hidden="true"
               />
-              <span className="truncate text-xs font-normal text-neutral-400 dark:text-neutral-400">
-                Search for your favourite achar...
-              </span>
-            </button>
 
-            {/* Vertical Divider */}
-            <div
-              className="mx-1 h-6 w-px bg-neutral-200 dark:bg-neutral-700"
-              aria-hidden="true"
-            />
-
-            {/* Wishlist */}
-            <Link
-              href="/wishlist"
-              aria-label={
-                wishlistCount > 0 ? `Wishlist with ${wishlistCount} items` : 'Wishlist'
-              }
-              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
-            >
-              <Heart
-                fill={wishlistCount > 0 ? '#dc2626' : 'none'}
-                color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
-                className={cn(
-                  'h-5 w-5 transition-transform duration-200',
-                  wishlistCount > 0 && 'scale-105 text-red-600',
+              {/* Wishlist */}
+              <Link
+                href="/wishlist"
+                aria-label={
+                  wishlistCount > 0 ? `Wishlist with ${wishlistCount} items` : 'Wishlist'
+                }
+                className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
+              >
+                <Heart
+                  fill={wishlistCount > 0 ? '#dc2626' : 'none'}
+                  color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
+                  className={cn(
+                    'h-5 w-5 transition-transform duration-200',
+                    wishlistCount > 0 && 'scale-105 text-red-600',
+                  )}
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Wishlist</span>
+                {wishlistCount > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
+                    aria-hidden="true"
+                  >
+                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                  </span>
                 )}
-                aria-hidden="true"
-              />
-              <span className="sr-only">Wishlist</span>
-              {wishlistCount > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
-                  aria-hidden="true"
-                >
-                  {wishlistCount > 99 ? '99+' : wishlistCount}
-                </span>
-              )}
-            </Link>
+              </Link>
 
-            {/* Cart with count badge */}
-            <button
-              type="button"
-              onClick={openCart}
-              aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
-              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
-            >
-              <ShoppingCart className="h-5 w-5" aria-hidden="true" />
-              <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
-              {liveCartCount > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
-                  aria-hidden="true"
-                >
-                  {liveCartCount > 99 ? '99+' : liveCartCount}
-                </span>
-              )}
-            </button>
+              {/* Cart with count badge */}
+              <button
+                type="button"
+                onClick={openCart}
+                aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
+                className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
+              >
+                <ShoppingCart className="h-5 w-5" aria-hidden="true" />
+                <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
+                {liveCartCount > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
+                    aria-hidden="true"
+                  >
+                    {liveCartCount > 99 ? '99+' : liveCartCount}
+                  </span>
+                )}
+              </button>
 
-            {/* Profile menu */}
-            <ProfileMenu />
+              {/* Profile menu */}
+              <ProfileMenu />
 
-            {/* Hamburger menu drawer toggle */}
-            <button
-              type="button"
-              onClick={openMobileMenu}
-              aria-label="Open navigation menu"
-              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
-            >
-              <Menu className="h-5 w-5" aria-hidden="true" />
-            </button>
+              {/* Hamburger menu drawer toggle */}
+              <button
+                type="button"
+                onClick={openMobileMenu}
+                aria-label="Open navigation menu"
+                className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
+              >
+                <Menu className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
           </div>
         </div>
 
