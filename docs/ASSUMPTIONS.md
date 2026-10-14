@@ -66,3 +66,44 @@ This document tracks assumptions made across architectural and implementation ph
 - **Open/Closed Principle**: The catalog is architected such that adding future product categories (e.g. _ghee_, _honey_, _spices_, _edible oils_) requires zero frontend code modifications.
 - **Dynamic Routing & Navigation**: Category tree hierarchies and routes dynamically resolve from backend metadata via `CategoryReader`.
 - **Attribute Registry Fallback**: Food-specific attributes render via an open registry; any unrecognized category gracefully renders standard key-value nutritional and origin specifications without crashing or requiring component additions.
+
+## 9. Typography Architecture & Multi-Language Font System
+
+- **Font Family Selection**:
+  - Primary Latin: **Plus Jakarta Sans** (variable font, weights 200–800).
+  - Primary Indic: **Noto Sans Devanagari** (variable font, weights 100–900).
+- **Self-Hosting & Privacy**:
+  - 100% self-hosted through `next/font/google` at build time.
+  - Zero runtime requests to `fonts.googleapis.com` or `fonts.gstatic.com`.
+  - Content Security Policy (CSP) in `proxy.ts` strictly enforces `font-src 'self' data:`.
+- **Per-Character Font Stack Fallback**:
+  - Single composed CSS stack: `--font-sans: var(--font-plus-jakarta-sans), var(--font-noto-sans-devanagari), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`.
+  - Enables mixed English and Hindi copy (e.g. English brand "Bramhkanti" in Hindi sentences, or Hindi product names in English descriptions) to render without per-page font switching or custom wrapper tags.
+- **Indian Rupee (₹) Symbol Handling**:
+  - The ₹ symbol (Unicode U+20B9, Currency Symbols block U+20A0–U+20CF) is included in Google Fonts under `latin-ext`.
+  - `Plus_Jakarta_Sans` explicitly includes `subsets: ['latin', 'latin-ext']`, enabling it to render `₹` natively.
+  - This prevents English pages (`/en`, `/achar`) from unnecessarily downloading the Devanagari font file just to draw the currency symbol.
+- **Route Preload Strategy**:
+  - English routes (`/en`, `/`, `/achar`): Preload Latin (`Plus Jakarta Sans`) only. Noto Sans Devanagari is configured with `preload: false`, loading on demand via CSS `unicode-range` splitting only if Devanagari characters are present.
+  - Hindi routes (`/hi`, `/hi/achar`): Preload both Plus Jakarta Sans and Noto Sans Devanagari for instant zero-CLS first paint.
+  - Future secondary scripts (Telugu, Tamil, etc.) default to `preloadPolicy: 'lazy'`, keeping baseline bundle size minimal.
+- **Automatic Fallback Metric Adjustment**:
+  - Verified Next.js precalculated fallback metrics for both fonts:
+    - Plus Jakarta Sans: `fallbackFont: 'Arial', sizeAdjust: '104.98%', ascent: '98.88%', descent: '21.15%'`
+    - Noto Sans Devanagari: `fallbackFont: 'Arial', sizeAdjust: '106.33%', ascent: '84.27%', descent: '38.37%'`
+  - Eliminates layout shift during font swap on throttled connections.
+- **Layout Stability & Box Hardening**:
+  - Unitless line heights scoped via CSS `:lang()`:
+    - English (`:lang(en)`): `1.5` body, `1.25` heading.
+    - Indic (`:lang(hi)`): `1.65` body, `1.35` heading (preventing conjunct clipping).
+  - Optical base size adjustment: `104%` for Indic text to match Latin optical x-height.
+  - Fixed & min-height containers: Product cards (`min-h-[340px]`), buttons (`min-h-*`), card skeletons matched to final box heights.
+  - Tabular numerals (`tabular-nums`, `font-feature-settings: 'tnum' 1`) enforced on all price and money amounts.
+- **Indic Typography Rules**:
+  - Destructive styles neutralized via `:lang(hi) :is(.uppercase, .capitalize, [class*='tracking-'], .italic)`:
+    - `letter-spacing: 0 !important` (protects Shirorekha continuous headline).
+    - `text-transform: none !important` (uppercase does not exist in Indic scripts).
+    - `font-style: normal !important` and `font-synthesis: none` (prevents slanted faux italics and artificial boldness distortion).
+- **Extensible Script Registry**:
+  - Single declarative registry in `src/lib/fonts/registry.ts` defining script metadata, served locales, font variables, and typography tokens.
+  - Adding future scripts (Telugu, Tamil, Bengali, etc.) is purely additive with ZERO changes to existing components or layouts.

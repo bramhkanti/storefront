@@ -155,3 +155,44 @@ export function StoreProvider({ children }: { children: ReactNode }) {
    - `toast`: Notification messages with automated TTL dismissal.
    - `search-ui`: Search modal visibility and live query string.
    - `filters-ui`: Mobile filter drawer visibility.
+
+---
+
+## 6. Typography Architecture & Multi-Language Font System
+
+### Core Principles:
+
+1. **Server-Authoritative Font Selection**:
+   Fonts are resolved on the server in `src/app/[locale]/layout.tsx` based on the URL locale parameter (`/en`, `/hi`, etc.). Fonts are never detected or swapped client-side via JavaScript.
+2. **Built-in Self-Hosting**:
+   All fonts are self-hosted using `next/font/google` at build time. No client-side runtime connections to Google Fonts or third-party CDNs exist. CSP strictly enforces `font-src 'self' data:`.
+3. **Per-Character Font Stack Fallback**:
+   A single composed font stack:
+   `--font-sans: var(--font-plus-jakarta-sans), var(--font-noto-sans-devanagari), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;`
+   Because Plus Jakarta Sans does not contain Devanagari glyphs, the browser seamlessly falls back to Noto Sans Devanagari on a per-character basis. Mixed text (e.g. English product handles within Hindi copy, or Hindi brand phrases within English descriptions) renders natively without manual `<span>` wrapping.
+4. **Rupee Symbol (₹) Native Latin Handling**:
+   The ₹ glyph (U+20B9) is in the Currency Symbols block (U+20A0–U+20CF), which Google Fonts places in `latin-ext` for Latin fonts. By specifying `subsets: ['latin', 'latin-ext']` on `Plus_Jakarta_Sans`, the Latin font draws ₹ natively. This guarantees that English pages never download the Devanagari font file just for pricing.
+5. **Route-Specific Preload Strategy**:
+   - `/en/*` (English): Preloads Plus Jakarta Sans only. Noto Sans Devanagari has `preload: false` and loads on-demand via CSS unicode-range splitting only if Devanagari characters appear.
+   - `/hi/*` (Hindi): Preloads both Plus Jakarta Sans and Noto Sans Devanagari for instant, zero-CLS first paint.
+   - Secondary scripts (Telugu, Tamil, Bengali, etc.): Added with `preloadPolicy: 'lazy'` by default.
+6. **Zero-CLS Box Hardening & Fallback Adjustments**:
+   - Next.js precalculated fallback overrides (`size-adjust: 104.98%` for Plus Jakarta Sans, `106.33%` for Noto Sans Devanagari) align fallback system fonts (Arial) with web fonts during swap.
+   - Unitless line heights via `:lang(en)` (`1.5` body / `1.25` heading) and `:lang(hi)` (`1.65` body / `1.35` heading).
+   - Stable box constraints: Product cards have `min-h-[340px]`, buttons have `min-h-*`, and card skeletons match final box heights.
+   - Tabular numerals (`tabular-nums`, `font-feature-settings: 'tnum' 1`) prevent number width jitter on price updates.
+7. **Indic Typography Normalization**:
+   Indic scripts (Devanagari, Telugu, Tamil, etc.) have no concept of uppercase letters, and letter-spacing (tracking) breaks the continuous headline (Shirorekha). Global CSS rules neutralize tracking, uppercase, and faux italics across all Indic copy:
+   ```css
+   :is(:lang(hi), :lang(hi-IN), :lang(mr), :lang(te), ...)
+     :is(.uppercase, [class*='tracking-'], .italic) {
+     letter-spacing: 0 !important;
+     text-transform: none !important;
+     font-style: normal !important;
+   }
+   ```
+8. **Off-Storefront Typography Strategy (Emails, Invoices/PDFs, Third-Party)**:
+   - **Transactional Emails**: Email clients do not execute CSS variables or `next/font`. Emails use inline system font stacks: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Devanagari', Arial, sans-serif`.
+   - **PDF Invoices**: Renderers (e.g. `@react-pdf/renderer`) require explicit TrueType/OpenType font registrations.
+   - **Print Styles**: `@media print` in `globals.css` forces high-contrast, ink-saving system typography.
+   - **Third-Party Widgets**: Payment gateways (Razorpay, PhonePe) execute inside sandboxed iframes with independent styling, strictly isolated from storefront typography.
