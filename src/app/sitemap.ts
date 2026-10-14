@@ -65,6 +65,8 @@ export default async function sitemap({
       ...expandLocalizedEntries('/policies/refund', 'monthly', 0.5),
       ...expandLocalizedEntries('/policies/privacy', 'monthly', 0.5),
       ...expandLocalizedEntries('/policies/terms', 'monthly', 0.5),
+      ...expandLocalizedEntries('/policies/about', 'monthly', 0.5),
+      ...expandLocalizedEntries('/policies/contact', 'monthly', 0.5),
     ];
   }
 

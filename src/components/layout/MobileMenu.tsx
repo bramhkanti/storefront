@@ -3,12 +3,9 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronDown, User, LogIn, LogOut, Package, Heart, ArrowRight } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/Sheet';
-import { Button } from '@/components/ui/Button';
-import { LanguageSwitcher } from './LanguageSwitcher';
 import { SITE_CONFIG } from '@/content/site';
-import { useAuth, useToast, useWishlist } from '@/lib/store';
 import type { Category } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
@@ -22,9 +19,6 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
   const [expandedCategories, setExpandedCategories] = React.useState<
     Record<string, boolean>
   >({});
-  const { user, isAuthenticated, openAuthModal, logout } = useAuth();
-  const { addToast } = useToast();
-  const { wishlistCount } = useWishlist();
 
   const toggleCategory = (id: string) => {
     setExpandedCategories((prev) => ({
@@ -59,67 +53,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
           </div>
         </SheetHeader>
 
-        {/* Mobile Account / Auth Profile Section */}
-        <div className="border-heritage-border bg-heritage-cream-dark/50 mt-4 rounded-lg border p-3">
-          {isAuthenticated && user ? (
-            <div className="flex items-center justify-between">
-              <Link
-                href="/profile"
-                onClick={onClose}
-                className="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-85 transition-opacity"
-              >
-                <span className="bg-heritage-maroon flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white shrink-0">
-                  {user.initials}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-heritage-charcoal truncate text-sm font-semibold">
-                    {user.name}
-                  </p>
-                  <p className="text-heritage-muted truncate text-[11px]">{user.phone}</p>
-                </div>
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  logout();
-                  addToast({ type: 'info', message: 'You have been signed out.' });
-                }}
-                className="text-heritage-maroon hover:bg-heritage-maroon-light rounded-md p-1.5 transition-colors"
-                aria-label="Sign out"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <User className="text-heritage-muted h-5 w-5" />
-                <span className="text-heritage-charcoal text-xs font-medium">
-                  Welcome, Guest
-                </span>
-              </div>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => {
-                  onClose();
-                  openAuthModal();
-                }}
-                className="text-xs font-semibold"
-              >
-                <LogIn className="h-3.5 w-3.5" />
-                <span>Sign In</span>
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Language Switcher Section */}
-        <div className="border-heritage-border/70 bg-heritage-cream-dark/40 mt-3 rounded-lg border p-3">
-          <LanguageSwitcher variant="drawer" onSelect={onClose} />
-        </div>
-
-        <nav aria-label="Mobile Navigation" className="mt-5 flex flex-col space-y-4">
+        <nav aria-label="Mobile Navigation" className="mt-6 flex flex-col space-y-5">
           <div className="text-heritage-muted text-xs font-semibold tracking-wider uppercase">
             Shop by Category
           </div>
@@ -218,42 +152,67 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                 <ArrowRight className="h-3 w-3" />
               </Link>
             </li>
+          </ul>
+
+          {/* Company & Policies */}
+          <div className="text-heritage-muted pt-2 text-xs font-semibold tracking-wider uppercase">
+            Company & Policies
+          </div>
+          <ul className="space-y-2.5">
             <li>
               <Link
-                href="/wishlist"
+                href="/policies/about"
                 onClick={onClose}
-                className="text-heritage-charcoal hover:text-heritage-maroon flex items-center justify-between text-sm font-medium"
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
               >
-                <div className="flex items-center gap-2">
-                  <Heart
-                    fill={wishlistCount > 0 ? '#dc2626' : 'none'}
-                    color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
-                    className={cn(
-                      'h-4 w-4 transition-colors',
-                      wishlistCount > 0 ? 'text-red-600' : 'text-heritage-muted',
-                    )}
-                  />
-                  <span>My Wishlist</span>
-                </div>
-                {wishlistCount > 0 && (
-                  <span className="bg-red-600 rounded-full px-2 py-0.5 text-[10px] font-bold text-white">
-                    {wishlistCount}
-                  </span>
-                )}
+                About Us
               </Link>
             </li>
-            {isAuthenticated && (
-              <li>
-                <Link
-                  href="/profile"
-                  onClick={onClose}
-                  className="text-heritage-charcoal hover:text-heritage-maroon flex items-center gap-2 text-sm font-medium"
-                >
-                  <Package className="text-heritage-muted h-4 w-4" />
-                  <span>My Orders ({user?.orderCount ?? 0})</span>
-                </Link>
-              </li>
-            )}
+            <li>
+              <Link
+                href="/policies/contact"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
+              >
+                Our Story & Journal
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/policies/shipping"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
+              >
+                Pan-India Shipping Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/policies/refund"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
+              >
+                Return & Refund Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/policies/privacy"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
+              >
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/policies/terms"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </li>
           </ul>
 
           <div className="border-heritage-border mt-auto border-t pt-6">
