@@ -432,29 +432,25 @@ export function ProfileView(): React.JSX.Element {
         </section>
 
         {/* SECTION 4: Session Control (Sign Out or Guest Actions) */}
-        <div className="pt-2">
+        <div>
           {isAuthenticated ? (
-            <div className="rounded-3xl border border-neutral-200/80 bg-white p-2 dark:border-neutral-800 dark:bg-[#1c1917]">
-              <button
-                type="button"
-                onClick={handleSignOut}
-                className="flex w-full items-center justify-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 active:bg-red-100/70 dark:text-red-400 dark:hover:bg-red-950/30"
-              >
-                <LogOut className="h-4 w-4 shrink-0" />
-                <span>Sign Out</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="flex w-full items-center justify-center gap-2.5 rounded-3xl border border-neutral-200/80 bg-white px-4 py-3.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 active:bg-red-100/70 dark:border-neutral-800 dark:bg-[#1c1917] dark:text-red-400 dark:hover:bg-red-950/30"
+            >
+              <LogOut className="h-4 w-4 shrink-0" />
+              <span>Sign Out</span>
+            </button>
           ) : (
-            <div className="rounded-3xl border border-neutral-200/80 bg-white p-3 dark:border-neutral-800 dark:bg-[#1c1917]">
-              <Button
-                variant="primary"
-                onClick={openAuthModal}
-                className="w-full rounded-2xl py-3 text-sm font-semibold"
-              >
-                <LogIn className="mr-2 h-4 w-4" />
-                <span>Sign In / Register</span>
-              </Button>
-            </div>
+            <Button
+              variant="primary"
+              onClick={openAuthModal}
+              className="w-full rounded-3xl py-3.5 text-sm font-semibold"
+            >
+              <LogIn className="mr-2 h-4 w-4" />
+              <span>Sign In / Register</span>
+            </Button>
           )}
         </div>
       </div>
