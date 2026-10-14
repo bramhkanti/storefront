@@ -62,6 +62,7 @@ export default async function sitemap({
       ...expandLocalizedEntries('/', 'daily', 1.0),
       ...expandLocalizedEntries('/collections', 'weekly', 0.8),
       ...expandLocalizedEntries('/about', 'monthly', 0.8),
+      ...expandLocalizedEntries('/blog', 'monthly', 0.8),
       ...expandLocalizedEntries('/contact', 'monthly', 0.7),
       ...expandLocalizedEntries('/policies/shipping', 'monthly', 0.5),
       ...expandLocalizedEntries('/policies/refund', 'monthly', 0.5),

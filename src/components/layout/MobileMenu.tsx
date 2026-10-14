@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   Compass,
-  Heart,
+  BookOpen,
   MessageCircle,
   Truck,
   RotateCcw,
@@ -56,18 +56,11 @@ const STATIC_DRAWER_LINKS = [
     accentClass: 'text-heritage-maroon bg-heritage-maroon/10',
   },
   {
-    href: '/about',
-    title: 'Our Story & Kitchen',
-    subtitle: 'Ancestral grandmother recipes & sun-curing',
-    icon: Heart,
+    href: '/blog',
+    title: 'Journal & Stories',
+    subtitle: 'Ancestral recipes, food wisdom & slow craft',
+    icon: BookOpen,
     accentClass: 'text-heritage-saffron-dark bg-heritage-saffron/15',
-  },
-  {
-    href: '/contact',
-    title: 'Customer Care & Helpdesk',
-    subtitle: 'WhatsApp, phone support & custom gifting',
-    icon: MessageCircle,
-    accentClass: 'text-emerald-700 bg-emerald-500/10',
   },
   {
     href: '/policies/shipping',
