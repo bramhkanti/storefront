@@ -37,9 +37,8 @@ export const SheetContent = React.forwardRef<
     top: 'inset-x-0 top-0 border-b',
     bottom:
       'sheet-animate-bottom inset-x-0 bottom-0 border-t rounded-t-3xl max-h-[92vh] overflow-y-auto',
-    left: 'sheet-animate-left inset-y-0 left-0 h-full w-3/4 max-w-sm border-r rounded-r-2xl sm:rounded-r-3xl',
-    right:
-      'sheet-animate-right inset-y-0 right-0 h-full w-full sm:max-w-md border-l rounded-l-2xl sm:rounded-l-3xl',
+    left: 'sheet-animate-left inset-y-0 left-0 h-full w-3/4 max-w-sm border-r',
+    right: 'sheet-animate-right inset-y-0 right-0 h-full w-full sm:max-w-md border-l',
   };
 
   return (
