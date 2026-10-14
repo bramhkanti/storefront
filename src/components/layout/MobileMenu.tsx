@@ -182,14 +182,6 @@ export function MobileMenu({ isOpen, onClose, side: sideProp }: MobileMenuProps)
             <MessageCircle className="h-4 w-4 text-emerald-700" />
             <span>Customer Care & Contact</span>
           </Link>
-          <div className="text-heritage-muted flex items-center justify-center gap-2 pt-0.5 text-[11px]">
-            <span className="flex items-center gap-1 font-medium text-emerald-800">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-600" />
-              <span>100% Pure Veg</span>
-            </span>
-            <span>•</span>
-            <span>FSSAI Lic. {SITE_CONFIG.brand.fssaiLicenseNumber}</span>
-          </div>
         </div>
       </SheetContent>
     </Sheet>
