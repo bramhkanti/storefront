@@ -89,7 +89,7 @@ export const HERITAGE_STORY_DATA: StorySectionData = {
     'Rooted in the culinary heritage of Varanasi, our recipes are inspired by generations of home-cooked wisdom. We sun-ripen hand-picked fruits in ceramic martabans, hand-pound raw spices, and slow-cook in pure cold-pressed oils — bringing authentic, preservative-free nostalgia directly to your dining table.',
   ],
   ctaText: 'Know Our Story',
-  ctaHref: '/policies/contact',
+  ctaHref: '/about',
   imageUrl: '/images/home/story-spices.jpg',
   imageAlt:
     'Handcrafted rustic wooden bowl filled with yellow mustard seeds, raw green mangoes, and sun-dried chillies',

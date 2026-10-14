@@ -299,7 +299,7 @@ export function CollectionMegaMenu({
                 </span>
               </div>
               <Link
-                href="/policies/contact"
+                href="/contact"
                 onClick={handleClose}
                 className="text-heritage-maroon hover:text-heritage-maroon-hover inline-flex items-center gap-1 text-xs font-semibold underline underline-offset-2 transition-colors"
               >

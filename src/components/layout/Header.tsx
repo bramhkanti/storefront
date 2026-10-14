@@ -119,7 +119,7 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
 
               {/* Brand Story */}
               <Link
-                href="/policies/contact"
+                href="/about"
                 className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-semibold transition-colors focus-visible:outline-2"
               >
                 Our Story

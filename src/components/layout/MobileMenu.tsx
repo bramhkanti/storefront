@@ -161,7 +161,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
           <ul className="space-y-2.5">
             <li>
               <Link
-                href="/policies/about"
+                href="/about"
                 onClick={onClose}
                 className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
               >
@@ -170,11 +170,20 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
             </li>
             <li>
               <Link
-                href="/policies/contact"
+                href="/about"
                 onClick={onClose}
                 className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
               >
-                Our Story & Journal
+                Our Story & Heritage
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/contact"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium transition-colors"
+              >
+                Contact & Support
               </Link>
             </li>
             <li>
@@ -217,7 +226,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
 
           <div className="border-heritage-border mt-auto border-t pt-6">
             <Link
-              href="/policies/contact"
+              href="/contact"
               onClick={onClose}
               className="bg-heritage-cream-dark text-heritage-charcoal hover:bg-heritage-border border-heritage-border inline-flex w-full items-center justify-center gap-2 rounded-md border px-4 py-2.5 text-sm font-medium transition-colors"
             >

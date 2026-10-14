@@ -17,14 +17,7 @@ interface PolicyPageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-const VALID_SLUGS: PolicySlug[] = [
-  'shipping',
-  'refund',
-  'privacy',
-  'terms',
-  'about',
-  'contact',
-];
+const VALID_SLUGS: PolicySlug[] = ['shipping', 'refund', 'privacy', 'terms'];
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   return VALID_SLUGS.map((slug) => ({ slug }));
@@ -71,12 +64,6 @@ export default async function PolicyPage({
           {VALID_SLUGS.map((s) => {
             const p = POLICIES[s];
             const isActive = s === policy.slug;
-            const tabLabel =
-              s === 'about'
-                ? 'About Us'
-                : s === 'contact'
-                  ? 'Contact Us'
-                  : `${p.title.split(' ')[0]} Policy`;
             return (
               <Link
                 key={s}
@@ -87,7 +74,7 @@ export default async function PolicyPage({
                     : 'bg-heritage-cream-dark/60 text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon'
                 }`}
               >
-                {tabLabel}
+                {p.title.split(' ')[0]} Policy
               </Link>
             );
           })}

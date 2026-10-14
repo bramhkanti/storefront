@@ -1,7 +1,6 @@
 import { SITE_CONFIG } from './site';
 
-export type PolicySlug =
-  'shipping' | 'refund' | 'privacy' | 'terms' | 'about' | 'contact';
+export type PolicySlug = 'shipping' | 'refund' | 'privacy' | 'terms';
 
 export interface PolicySection {
   heading: string;
@@ -204,76 +203,6 @@ export const POLICIES: Record<PolicySlug, PolicyContent> = {
         heading: '5. Governing Law & Judicial Jurisdiction',
         paragraphs: [
           'These Terms shall be interpreted and governed by the laws of India. Any legal dispute, proceeding, or arbitration arising from transactions on this storefront shall fall under the exclusive jurisdiction of the competent courts in Varanasi, Uttar Pradesh.',
-        ],
-      },
-    ],
-  },
-
-  about: {
-    slug: 'about',
-    title: 'About Bramhkanti Heritage Foods',
-    subtitle:
-      'Reviving India’s timeless culinary traditions with sacred Varanasi roots, handcrafted sun-cured pickles, and pure desi ghee delicacies.',
-    lastUpdated: 'October 2026',
-    sections: [
-      {
-        heading: '1. Ancestral Roots & Sacred Heritage',
-        paragraphs: [
-          'Rooted in the ancient spiritual and cultural heart of Varanasi, Bramhkanti was born from a desire to preserve authentic Indian culinary heritage. Every recipe in our kitchen is drawn from time-honored grandmother traditions passed down across generations.',
-          'We believe food is not merely sustenance, but a sacred offering. That is why every batch is prepared with devotion, mindfulness, and utmost purity.',
-        ],
-      },
-      {
-        heading: '2. Pure Ingredients & Zero Chemicals',
-        paragraphs: [
-          'Unlike mass-manufactured commercial products, Bramhkanti uses no chemical preservatives, artificial colors, or synthetic stabilizers.',
-        ],
-        bulletPoints: [
-          'Sun-Cured Pickles: Naturally fermented under the gentle warmth of the Indian sun.',
-          'Pure Desi Ghee: Traditional bilona method ghee churned from farm-fresh milk.',
-          'Authentic Cold-Pressed Oils: Expeller and kachi ghani mustard oil for authentic aroma and health.',
-          '100% Pure Vegetarian: Prepared in a certified clean, pure vegetarian culinary workshop.',
-        ],
-      },
-      {
-        heading: '3. Sustainable Packaging & Community Sourcing',
-        paragraphs: [
-          'We source our raw mangoes, chillies, spices, and makhanas directly from regional farmer cooperatives across Uttar Pradesh and Bihar, ensuring fair livelihoods for farming families while delivering uncompromised quality to your home.',
-        ],
-      },
-    ],
-  },
-
-  contact: {
-    slug: 'contact',
-    title: 'Customer Care & Contact Information',
-    subtitle:
-      'We are here to assist you with order tracking, culinary inquiries, festive gifting, and corporate orders.',
-    lastUpdated: 'October 2026',
-    sections: [
-      {
-        heading: '1. Direct Customer Support',
-        paragraphs: [
-          'Our customer assistance desk operates Monday through Saturday, 9:00 AM to 7:00 PM IST.',
-        ],
-        bulletPoints: [
-          `Email Support: ${SITE_CONFIG.contact.supportEmail}`,
-          `Helpline / WhatsApp: ${SITE_CONFIG.contact.whatsappNumber}`,
-          'Direct WhatsApp Chat: Immediate response for active parcel tracking and inquiries.',
-        ],
-      },
-      {
-        heading: '2. Culinary Workshop & Registered Office',
-        paragraphs: [
-          `${SITE_CONFIG.brand.legalName}`,
-          `${SITE_CONFIG.contact.address.line1}, ${SITE_CONFIG.contact.address.city}, ${SITE_CONFIG.contact.address.state} - ${SITE_CONFIG.contact.address.postalCode}, ${SITE_CONFIG.contact.address.country}.`,
-          `FSSAI Registration License: ${SITE_CONFIG.brand.fssaiLicenseNumber}`,
-        ],
-      },
-      {
-        heading: '3. Grievance Redressal',
-        paragraphs: [
-          `For any escalations, regulatory notices, or consignment concerns, you may write directly to our designated Grievance Officer at ${SITE_CONFIG.contact.supportEmail} with your Order ID. All inquiries are resolved within 24 to 48 business hours.`,
         ],
       },
     ],
