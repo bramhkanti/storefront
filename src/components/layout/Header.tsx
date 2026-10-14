@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, Search, ShoppingCart, Heart } from 'lucide-react';
+import { Search, ShoppingCart, Heart } from 'lucide-react';
 import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
@@ -18,6 +18,29 @@ import { useCartUi, useSearchUi, useNavigationUi, useWishlist } from '@/lib/stor
 import { useCart } from '@/lib/cart';
 import type { Category, Collection } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
+
+/**
+ * Modern 3-bar asymmetrical hamburger icon matching the brand design mockup.
+ * Top & middle bars are full-width, bottom bar is a right-aligned short bar.
+ */
+function HamburgerMenuIcon({ className }: { className?: string }): React.JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <line x1="3.5" y1="5.5" x2="20.5" y2="5.5" />
+      <line x1="3.5" y1="12" x2="20.5" y2="12" />
+      <line x1="11" y1="18.5" x2="20.5" y2="18.5" />
+    </svg>
+  );
+}
 
 export interface HeaderProps {
   categories: Category[];
@@ -103,8 +126,8 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
               </Link>
             </nav>
 
-            {/* Right Action Items: Pill Search Bar, Vertical Divider, Wishlist, Cart, Profile Avatar, Drawer Menu */}
-            <div className="flex items-center gap-2 lg:gap-3 xl:gap-3.5">
+            {/* Right Action Items: Pill Search Bar, Vertical Divider, and 4 Action Icons */}
+            <div className="flex items-center gap-3 lg:gap-4 xl:gap-5">
               {/* Pill Search Button */}
               <button
                 type="button"
@@ -127,65 +150,70 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 aria-hidden="true"
               />
 
-              {/* Wishlist */}
-              <Link
-                href="/wishlist"
-                aria-label={
-                  wishlistCount > 0 ? `Wishlist with ${wishlistCount} items` : 'Wishlist'
-                }
-                className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
-              >
-                <Heart
-                  fill={wishlistCount > 0 ? '#dc2626' : 'none'}
-                  color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
-                  className={cn(
-                    'h-5 w-5 transition-transform duration-200',
-                    wishlistCount > 0 && 'scale-105 text-red-600',
+              {/* 4 Action Icons Cluster: Wishlist, Cart, Profile Avatar, Hamburger Menu */}
+              <div className="flex items-center gap-4 sm:gap-5 lg:gap-6 xl:gap-7">
+                {/* 1. Wishlist */}
+                <Link
+                  href="/wishlist"
+                  aria-label={
+                    wishlistCount > 0
+                      ? `Wishlist with ${wishlistCount} items`
+                      : 'Wishlist'
+                  }
+                  className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
+                >
+                  <Heart
+                    fill={wishlistCount > 0 ? '#dc2626' : 'none'}
+                    color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
+                    className={cn(
+                      'h-5 w-5 transition-transform duration-200',
+                      wishlistCount > 0 && 'scale-105 text-red-600',
+                    )}
+                    aria-hidden="true"
+                  />
+                  <span className="sr-only">Wishlist</span>
+                  {wishlistCount > 0 && (
+                    <span
+                      className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
+                      aria-hidden="true"
+                    >
+                      {wishlistCount > 99 ? '99+' : wishlistCount}
+                    </span>
                   )}
-                  aria-hidden="true"
-                />
-                <span className="sr-only">Wishlist</span>
-                {wishlistCount > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
-                    aria-hidden="true"
-                  >
-                    {wishlistCount > 99 ? '99+' : wishlistCount}
-                  </span>
-                )}
-              </Link>
+                </Link>
 
-              {/* Cart with count badge */}
-              <button
-                type="button"
-                onClick={openCart}
-                aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
-                className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
-              >
-                <ShoppingCart className="h-5 w-5" aria-hidden="true" />
-                <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
-                {liveCartCount > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
-                    aria-hidden="true"
-                  >
-                    {liveCartCount > 99 ? '99+' : liveCartCount}
-                  </span>
-                )}
-              </button>
+                {/* 2. Cart with count badge */}
+                <button
+                  type="button"
+                  onClick={openCart}
+                  aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
+                  className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
+                >
+                  <ShoppingCart className="h-5 w-5" aria-hidden="true" />
+                  <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
+                  {liveCartCount > 0 && (
+                    <span
+                      className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
+                      aria-hidden="true"
+                    >
+                      {liveCartCount > 99 ? '99+' : liveCartCount}
+                    </span>
+                  )}
+                </button>
 
-              {/* Profile menu */}
-              <ProfileMenu />
+                {/* 3. Profile menu */}
+                <ProfileMenu />
 
-              {/* Hamburger menu drawer toggle */}
-              <button
-                type="button"
-                onClick={openMobileMenu}
-                aria-label="Open navigation menu"
-                className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
-              >
-                <Menu className="h-5 w-5" aria-hidden="true" />
-              </button>
+                {/* 4. Hamburger menu drawer toggle */}
+                <button
+                  type="button"
+                  onClick={openMobileMenu}
+                  aria-label="Open navigation menu"
+                  className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
+                >
+                  <HamburgerMenuIcon className="h-5 w-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -200,7 +228,7 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             onClick={openMobileMenu}
             aria-label="Open navigation menu"
           >
-            <Menu className="h-6 w-6" aria-hidden="true" />
+            <HamburgerMenuIcon className="h-6 w-6" />
           </Button>
 
           {/* Center: Brand Logo centered */}
