@@ -108,6 +108,11 @@ export function useAuth() {
       closeAuthModal: state.closeAuthModal,
       login: state.login,
       logout: state.logout,
+      updateProfile: state.updateProfile,
+      addAddress: state.addAddress,
+      updateAddress: state.updateAddress,
+      deleteAddress: state.deleteAddress,
+      setDefaultAddress: state.setDefaultAddress,
     })),
   );
 }

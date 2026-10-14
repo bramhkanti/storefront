@@ -11,6 +11,7 @@ import { CartDrawer } from '@/features/cart';
 import { getCategoryTree } from '@/features/catalog/queries';
 import { StoreProvider } from '@/lib/store';
 import { CartProvider } from '@/lib/cart';
+import { ThemeProvider } from '@/lib/theme';
 import {
   SUPPORTED_LOCALES,
   isSupportedLocale,
@@ -66,28 +67,38 @@ export default async function LocaleLayout({
       dir={localeMeta.direction}
       className="scroll-smooth"
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
-      <body className="bg-heritage-cream text-heritage-charcoal selection:bg-heritage-saffron-light selection:text-heritage-maroon flex min-h-screen flex-col">
-        <I18nProvider
-          locale={locale}
-          dictionaries={{ common: commonDict, cart: cartDict }}
-        >
-          <StoreProvider>
-            <CartProvider>
-              <Header categories={categories} />
-              <main id="main-content" className="flex-1 pb-16 lg:pb-0">
-                {children}
-              </main>
-              <Footer categories={categories} />
-              <MobileBottomNav />
-              <CartDrawer />
-              <SearchModal />
-              <ToastContainer />
-              <GoogleAnalytics />
-              <WebVitals />
-            </CartProvider>
-          </StoreProvider>
-        </I18nProvider>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('bramhkanti_theme')||'system';var d=s==='dark'||(s==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');document.documentElement.setAttribute('data-theme','dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.classList.remove('dark');document.documentElement.setAttribute('data-theme','light');document.documentElement.style.colorScheme='light';}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="bg-heritage-cream text-heritage-charcoal selection:bg-heritage-saffron-light selection:text-heritage-maroon flex min-h-screen flex-col dark:bg-[#161412] dark:text-[#f5f0e8]">
+        <ThemeProvider>
+          <I18nProvider
+            locale={locale}
+            dictionaries={{ common: commonDict, cart: cartDict }}
+          >
+            <StoreProvider>
+              <CartProvider>
+                <Header categories={categories} />
+                <main id="main-content" className="flex-1 pb-16 lg:pb-0">
+                  {children}
+                </main>
+                <Footer categories={categories} />
+                <MobileBottomNav />
+                <CartDrawer />
+                <SearchModal />
+                <ToastContainer />
+                <GoogleAnalytics />
+                <WebVitals />
+              </CartProvider>
+            </StoreProvider>
+          </I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

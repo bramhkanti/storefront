@@ -62,17 +62,21 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
         <div className="border-heritage-border bg-heritage-cream-dark/50 mt-4 rounded-lg border p-3">
           {isAuthenticated && user ? (
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="bg-heritage-maroon flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white">
+              <Link
+                href="/profile"
+                onClick={onClose}
+                className="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-85 transition-opacity"
+              >
+                <span className="bg-heritage-maroon flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white shrink-0">
                   {user.initials}
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-heritage-charcoal truncate text-sm font-semibold">
                     {user.name}
                   </p>
                   <p className="text-heritage-muted truncate text-[11px]">{user.phone}</p>
                 </div>
-              </div>
+              </Link>
               <button
                 type="button"
                 onClick={() => {
@@ -206,7 +210,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
             {isAuthenticated && (
               <li>
                 <Link
-                  href="/account/orders"
+                  href="/profile"
                   onClick={onClose}
                   className="text-heritage-charcoal hover:text-heritage-maroon flex items-center gap-2 text-sm font-medium"
                 >

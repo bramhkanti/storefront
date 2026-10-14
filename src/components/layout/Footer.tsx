@@ -1,48 +1,31 @@
+'use client';
+
 import * as React from 'react';
 import Link from 'next/link';
-import { Mail, MessageCircle, ShieldCheck, Sparkles, Sun, Utensils } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Mail, MessageCircle } from 'lucide-react';
 import { Container } from './Container';
 import { Badge } from '@/components/ui/Badge';
 import { SITE_CONFIG } from '@/content/site';
 import type { Category } from '@/lib/api/contracts/domain';
+import { cn } from '@/lib/utils/cn';
 
 export interface FooterProps {
   categories?: Category[];
 }
 
 export function Footer({ categories = [] }: FooterProps) {
+  const pathname = usePathname() || '';
+  const isProfilePage = pathname.includes('/profile') || pathname.includes('/account');
   const currentYear = SITE_CONFIG.brand.copyrightYear;
 
-  const guaranteeIcons = [Sun, Sparkles, Utensils, ShieldCheck];
-
   return (
-    <footer className="border-heritage-border bg-heritage-cream-dark/50 text-heritage-charcoal mt-16 border-t sm:mt-24">
-      {/* Brand Value Guarantees Strip */}
-      <div className="border-heritage-border bg-heritage-cream border-b py-10 sm:py-12">
-        <Container>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {SITE_CONFIG.guarantees.map((item, index) => {
-              const Icon = guaranteeIcons[index] ?? ShieldCheck;
-              return (
-                <div key={item.title} className="flex items-start gap-3.5">
-                  <div className="bg-heritage-saffron-light text-heritage-saffron-dark flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h3 className="text-heritage-charcoal font-serif text-sm font-semibold">
-                      {item.title}
-                    </h3>
-                    <p className="text-heritage-muted mt-1 text-xs leading-relaxed">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Container>
-      </div>
-
+    <footer
+      className={cn(
+        'border-heritage-border bg-heritage-cream-dark/50 text-heritage-charcoal mt-16 border-t sm:mt-24',
+        isProfilePage && 'hidden lg:block',
+      )}
+    >
       {/* Main Footer Links & Info */}
       <div className="py-12 sm:py-16">
         <Container>

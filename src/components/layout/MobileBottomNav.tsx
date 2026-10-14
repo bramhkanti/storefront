@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils/cn';
 
 export function MobileBottomNav(): React.JSX.Element {
   const pathname = usePathname();
-  const { openAuthModal, isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isCategorySheetOpen, setIsCategorySheetOpen] = React.useState(false);
 
   // Check active states
@@ -23,6 +23,7 @@ export function MobileBottomNav(): React.JSX.Element {
     isCategorySheetOpen;
   const isGifts =
     pathname.includes('/collections/diwali-gifting') || pathname.includes('/collections');
+  const isProfile = pathname.includes('/profile') || pathname.includes('/account');
 
   return (
     <>
@@ -77,13 +78,17 @@ export function MobileBottomNav(): React.JSX.Element {
             <span className="mt-0.5 text-[10px]">Gifts</span>
           </Link>
 
-          {/* 4. Account */}
-          <button
-            type="button"
-            onClick={openAuthModal}
-            className="text-heritage-muted hover:text-heritage-charcoal flex flex-1 flex-col items-center justify-center py-1 transition-colors"
+          {/* 4. Profile */}
+          <Link
+            href="/profile"
+            className={cn(
+              'flex flex-1 flex-col items-center justify-center py-1 transition-colors',
+              isProfile
+                ? 'text-heritage-maroon font-semibold'
+                : 'text-heritage-muted hover:text-heritage-charcoal',
+            )}
             aria-label={
-              isAuthenticated && user ? `Account: ${user.name}` : 'Sign In or Register'
+              isAuthenticated && user ? `Profile: ${user.name}` : 'Profile & Account'
             }
           >
             {isAuthenticated && user ? (
@@ -93,8 +98,8 @@ export function MobileBottomNav(): React.JSX.Element {
             ) : (
               <User className="h-5 w-5" aria-hidden="true" />
             )}
-            <span className="mt-0.5 text-[10px]">Account</span>
-          </button>
+            <span className="mt-0.5 text-[10px]">Profile</span>
+          </Link>
         </div>
       </nav>
 

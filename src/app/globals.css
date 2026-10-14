@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Brand Primary Tokens */
   --color-primary: #dc2b1b;
@@ -34,6 +36,15 @@
   color-scheme: light;
 }
 
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #161412;
+  color: #f5f0e8;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -42,6 +53,7 @@ body {
   color: var(--color-heritage-charcoal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 /* Custom focus ring for accessible keyboard navigation */

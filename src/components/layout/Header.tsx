@@ -3,18 +3,19 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { ChevronDown, Menu, Search, ShoppingBag } from 'lucide-react';
 import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
 import { MobileMenu } from './MobileMenu';
-import { LanguageSwitcher } from './LanguageSwitcher';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { Button } from '@/components/ui/Button';
 import { SITE_CONFIG } from '@/content/site';
 import { useCartUi, useSearchUi, useNavigationUi } from '@/lib/store';
 import { useCart } from '@/lib/cart';
 import type { Category } from '@/lib/api/contracts/domain';
+import { cn } from '@/lib/utils/cn';
 
 export interface HeaderProps {
   categories: Category[];
@@ -22,6 +23,9 @@ export interface HeaderProps {
 }
 
 export function Header({ categories, cartCount = 0 }: HeaderProps) {
+  const pathname = usePathname() || '';
+  const isProfilePage = pathname.includes('/profile') || pathname.includes('/account');
+
   const { openCart } = useCartUi();
   const { openSearch } = useSearchUi();
   const { isMobileMenuOpen, openMobileMenu, closeMobileMenu } = useNavigationUi();
@@ -30,44 +34,13 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
   const liveCartCount = optimisticCart?.itemCount ?? cartCount;
 
   return (
-    <header className="border-heritage-border bg-heritage-cream/95 sticky top-0 z-40 w-full border-b backdrop-blur-md transition-shadow">
+    <header
+      className={cn(
+        'border-heritage-border bg-heritage-cream/95 sticky top-0 z-40 w-full border-b backdrop-blur-md transition-shadow',
+        isProfilePage && 'hidden lg:block',
+      )}
+    >
       <SkipLink />
-
-      {/* Top Announcement Bar */}
-      <div className="bg-heritage-maroon text-heritage-saffron-light px-4 py-1.5 text-xs font-medium">
-        <Container>
-          <div className="flex items-center justify-between">
-            {/* Desktop announcement copy */}
-            <div className="hidden items-center gap-2 md:flex">
-              <span>Free Express Shipping across India on orders above ₹499</span>
-              <span aria-hidden="true">•</span>
-              <span>100% Traditional Vegetarian Purity</span>
-            </div>
-
-            {/* Mobile compact announcement copy */}
-            <div className="w-full text-center md:hidden">
-              <span>Free shipping across India above ₹499</span>
-            </div>
-
-            {/* Desktop utility links: Track Order, Contact, and Language Switcher */}
-            <div className="hidden items-center gap-4 text-xs text-white/90 md:flex">
-              <Link href="/account/orders" className="transition-colors hover:text-white">
-                Track Order
-              </Link>
-              <Link
-                href="/policies/contact"
-                className="transition-colors hover:text-white"
-              >
-                Contact
-              </Link>
-              <span className="text-white/30" aria-hidden="true">
-                |
-              </span>
-              <LanguageSwitcher variant="banner" />
-            </div>
-          </div>
-        </Container>
-      </div>
 
       {/* Main Header Container */}
       <Container>

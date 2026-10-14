@@ -92,7 +92,6 @@ export function AuthModal(): React.JSX.Element {
       const profile: UserProfile = {
         id: `usr_${Date.now()}`,
         name,
-        email: `${name.toLowerCase().replace(/\s+/g, '')}@bramhkanti.in`,
         phone: `+91 ${phoneNumber}`,
         initials: initials || 'BK',
         addressSummary: 'Varanasi, Uttar Pradesh',
