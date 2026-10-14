@@ -4,25 +4,28 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, Search, ShoppingBag, Heart } from 'lucide-react';
+import { Menu, Search, ShoppingBag, Heart } from 'lucide-react';
 import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
 import { MobileMenu } from './MobileMenu';
+import { CategoryMegaMenu } from './CategoryMegaMenu';
+import { CollectionMegaMenu } from './CollectionMegaMenu';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { Button } from '@/components/ui/Button';
 import { SITE_CONFIG } from '@/content/site';
 import { useCartUi, useSearchUi, useNavigationUi, useWishlist } from '@/lib/store';
 import { useCart } from '@/lib/cart';
-import type { Category } from '@/lib/api/contracts/domain';
+import type { Category, Collection } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
 export interface HeaderProps {
   categories: Category[];
+  collections?: Collection[] | undefined;
   cartCount?: number;
 }
 
-export function Header({ categories, cartCount = 0 }: HeaderProps) {
+export function Header({ categories, collections, cartCount = 0 }: HeaderProps) {
   const pathname = usePathname() || '';
   const isProfilePage = pathname.includes('/profile') || pathname.includes('/account');
 
@@ -46,7 +49,7 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
       {/* Main Header Container */}
       <Container>
         {/* DESKTOP HEADER (lg:flex) */}
-        <div className="hidden h-20 items-center justify-between gap-4 lg:flex">
+        <div className="relative hidden h-20 items-center justify-between gap-4 lg:flex">
           {/* Brand Logo (Left) */}
           <div className="flex shrink-0 items-center">
             <Link
@@ -65,68 +68,18 @@ export function Header({ categories, cartCount = 0 }: HeaderProps) {
             </Link>
           </div>
 
-          {/* Desktop Navigation (Center) - Category dropdown preserved with no changes */}
+          {/* Desktop Navigation (Center) - Categories & Collections Mega Menus */}
           <nav
             aria-label="Main Navigation"
             className="flex items-center gap-7 text-sm font-medium"
           >
-            {categories.map((cat) => {
-              const hasChildren = (cat.children && cat.children.length > 0) ?? false;
+            {/* Single Group Category with 3-Column Popover */}
+            <CategoryMegaMenu categories={categories} />
 
-              return (
-                <div key={cat.id} className="group relative">
-                  <Link
-                    href={`/${cat.handle}`}
-                    className="text-heritage-charcoal hover:text-heritage-maroon group-hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex items-center gap-1 rounded-xs py-2 transition-colors focus-visible:outline-2"
-                  >
-                    <span>{cat.name}</span>
-                    {hasChildren && (
-                      <ChevronDown
-                        className="text-heritage-muted h-3.5 w-3.5 transition-transform group-hover:rotate-180"
-                        aria-hidden="true"
-                      />
-                    )}
-                  </Link>
+            {/* Curated Collections with 3-Column Popover */}
+            <CollectionMegaMenu collections={collections} />
 
-                  {/* Mega dropdown menu for subcategories */}
-                  {hasChildren && (
-                    <div className="invisible absolute top-full left-0 z-50 w-64 pt-2 opacity-0 transition-all duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-                      <div className="border-heritage-border bg-heritage-cream rounded-lg border p-4 shadow-xl">
-                        <div className="text-heritage-muted border-heritage-border/60 mb-2 border-b pb-1.5 text-xs font-semibold tracking-wider uppercase">
-                          {cat.name} Varieties
-                        </div>
-                        <ul className="space-y-1.5">
-                          {cat.children?.map((sub) => (
-                            <li key={sub.id}>
-                              <Link
-                                href={`/${cat.handle}/${sub.handle}`}
-                                className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon block rounded-sm px-2 py-1.5 text-sm transition-colors"
-                              >
-                                {sub.name}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            {/* Special Collections & Brand Story */}
-            <Link
-              href="/collections/diwali-gifting"
-              className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-medium transition-colors focus-visible:outline-2"
-            >
-              Gifting & Festive
-            </Link>
-            <Link
-              href="/collections/best-sellers"
-              className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-medium transition-colors focus-visible:outline-2"
-            >
-              Bestsellers
-            </Link>
+            {/* Brand Story */}
             <Link
               href="/policies/contact"
               className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-medium transition-colors focus-visible:outline-2"

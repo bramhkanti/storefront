@@ -6,6 +6,7 @@
  */
 export const RESERVED_SLUGS = new Set([
   'api',
+  'categories',
   'products',
   'collections',
   'cart',

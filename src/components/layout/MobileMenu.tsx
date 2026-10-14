@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronDown, User, LogIn, LogOut, Package, Heart } from 'lucide-react';
+import { ChevronDown, User, LogIn, LogOut, Package, Heart, ArrowRight } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -183,20 +183,11 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
           <ul className="space-y-2">
             <li>
               <Link
-                href="/collections/diwali-gifting"
-                onClick={onClose}
-                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium"
-              >
-                Diwali & Festive Gifting
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/collections/best-sellers"
                 onClick={onClose}
                 className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium"
               >
-                Best Sellers
+                Best Seller Combo
               </Link>
             </li>
             <li>
@@ -205,7 +196,26 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                 onClick={onClose}
                 className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium"
               >
-                Grandma&apos;s Heritage Specials
+                Grand Maa
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/collections/diwali-gifting"
+                onClick={onClose}
+                className="text-heritage-charcoal hover:text-heritage-maroon text-sm font-medium"
+              >
+                Diwali and Fest
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/collections"
+                onClick={onClose}
+                className="text-heritage-maroon hover:text-heritage-maroon-hover inline-flex items-center gap-1 pt-1 text-xs font-semibold transition-colors"
+              >
+                <span>View All Collections</span>
+                <ArrowRight className="h-3 w-3" />
               </Link>
             </li>
             <li>

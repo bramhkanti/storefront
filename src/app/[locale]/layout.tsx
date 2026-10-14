@@ -9,6 +9,7 @@ import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { ToastContainer } from '@/components/ui/Toast';
 import { CartDrawer } from '@/features/cart';
 import { getCategoryTree } from '@/features/catalog/queries';
+import { listCollections } from '@/features/collection/queries';
 import { StoreProvider } from '@/lib/store';
 import { CartProvider } from '@/lib/cart';
 import { ThemeProvider } from '@/lib/theme';
@@ -23,6 +24,8 @@ import {
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { WebVitals } from '@/components/analytics/WebVitals';
 import { publicEnv } from '@/lib/env.public';
+import { getFontForLocale, anekLatin } from '@/lib/fonts';
+import { cn } from '@/lib/utils/cn';
 
 export const instant = false;
 
@@ -55,17 +58,21 @@ export default async function LocaleLayout({
 
   const localeMeta = LOCALE_METADATA[locale];
 
-  const [categories, commonDict, cartDict] = await Promise.all([
+  const [categories, collections, commonDict, cartDict] = await Promise.all([
     getCategoryTree(),
+    listCollections(),
     getNamespaceDictionary(locale, 'common'),
     getNamespaceDictionary(locale, 'cart'),
   ]);
+
+  const fontConfig = getFontForLocale(locale);
 
   return (
     <html
       lang={localeMeta.bcp47}
       dir={localeMeta.direction}
-      className="scroll-smooth"
+      className={cn('scroll-smooth', fontConfig.variable, anekLatin.variable)}
+      style={{ ['--font-locale' as string]: `var(${fontConfig.variableName})` }}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
@@ -84,7 +91,7 @@ export default async function LocaleLayout({
           >
             <StoreProvider>
               <CartProvider>
-                <Header categories={categories} />
+                <Header categories={categories} collections={collections} />
                 <main id="main-content" className="flex-1 pb-16 lg:pb-0">
                   {children}
                 </main>

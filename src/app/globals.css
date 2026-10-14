@@ -28,11 +28,21 @@
 
   --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-sans:
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-    Cantarell, sans-serif;
+    var(--font-locale),
+    var(--font-anek-latin),
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif;
 }
 
 :root {
+  --font-locale: var(--font-anek-latin, system-ui);
   color-scheme: light;
 }
 

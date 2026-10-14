@@ -41,61 +41,171 @@ export const MOCK_CATEGORIES: Category[] = [
     },
     children: [
       {
-        id: 'cat_achar_mango',
-        handle: 'mango-pickles',
-        name: 'Mango Pickles (Aam Ka Achar)',
+        id: 'cat_achar_aam',
+        handle: 'aam-ka-achar',
+        name: 'Mango Pickle',
         parentId: 'cat_achar',
         path: [
           { id: 'cat_achar', handle: 'achar', name: 'Pickle' },
-          { id: 'cat_achar_mango', handle: 'mango-pickles', name: 'Mango Pickles' },
+          { id: 'cat_achar_aam', handle: 'aam-ka-achar', name: 'Mango Pickle' },
         ],
         description:
-          'Authentic kachi kairi mango pickles cured with cold-pressed mustard oil and aromatic spices.',
+          'Authentic Ramkela and Malihabadi raw mango pickles cured with cold-pressed virgin mustard oil and whole ground spices.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80',
+          altText: 'Traditional sun-dried mango pickle in ceramic barnie jar',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
-          title: 'Authentic Mango Pickles (Aam Ka Achar) | Bramhkanti',
+          title: 'Authentic Mango Pickle (Aam Ka Achar) | Bramhkanti',
           description:
             'Traditional North Indian and Bihari style aam ka achar cured in cold-pressed mustard oil.',
         },
       },
       {
-        id: 'cat_achar_chilli',
-        handle: 'chilli-pickles',
-        name: 'Chilli Pickles (Mirch Ka Achar)',
+        id: 'cat_achar_nimbu',
+        handle: 'nimbu',
+        name: 'Lemon Pickle',
         parentId: 'cat_achar',
         path: [
           { id: 'cat_achar', handle: 'achar', name: 'Pickle' },
-          { id: 'cat_achar_chilli', handle: 'chilli-pickles', name: 'Chilli Pickles' },
+          { id: 'cat_achar_nimbu', handle: 'nimbu', name: 'Lemon Pickle' },
         ],
         description:
-          'Hand-stuffed Banarasi red chillies and pungent green chillies marinated in spiced mustard seed mix.',
+          'Century-old oil-free digestive lemon pickle aged in sunlight with black salt, roasted cumin, and organic jaggery.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=600&auto=format&fit=crop&q=80',
+          altText: 'Ayurvedic sun-cured sweet and tangy nimbu lemon pickle',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
-          title: 'Banarasi Stuffed Red Chilli & Green Chilli Achar | Bramhkanti',
+          title: 'Lemon Pickle (Khatta Meetha Nimbu) | Sweet & Tangy | Bramhkanti',
           description:
-            'Signature Banarasi lal mirch ka bharwa achar and spicy green chilli pickles.',
+            'Digestive oil-free lemon pickle aged under sunlight with natural spices and black salt.',
         },
       },
       {
-        id: 'cat_achar_specials',
-        handle: 'heritage-specials',
-        name: 'Heritage Specials',
+        id: 'cat_achar_bhara',
+        handle: 'bhara-marcha',
+        name: 'Stuffed Red Chilli',
         parentId: 'cat_achar',
         path: [
           { id: 'cat_achar', handle: 'achar', name: 'Pickle' },
-          {
-            id: 'cat_achar_specials',
-            handle: 'heritage-specials',
-            name: 'Heritage Specials',
-          },
+          { id: 'cat_achar_bhara', handle: 'bhara-marcha', name: 'Stuffed Red Chilli' },
         ],
         description:
-          'Rare traditional recipes: Khatta-Meetha Nimbu, Lehsun Achar, and Amla Murabba.',
+          'Famous Banarasi stuffed red chillies hand-packed with spicy amchur, saunf, methi, and mustard paste in pure kachi ghani oil.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=600&auto=format&fit=crop&q=80',
+          altText: 'Banarasi stuffed red chilli bhara marcha achar',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
-          title: 'Heritage Special Pickles & Murabba | Bramhkanti',
+          title: 'Banarasi Stuffed Red Chilli (Bhara Marcha) | Bramhkanti',
           description:
-            'Specialty seasonal lemon, garlic, and amla pickles made with traditional Ayurvedic herbs.',
+            'Signature Banarasi lal mirch ka bharwa achar made with plump winter red chillies.',
+        },
+      },
+      {
+        id: 'cat_achar_suran',
+        handle: 'suran',
+        name: 'Elephant Yam Pickle',
+        parentId: 'cat_achar',
+        path: [
+          { id: 'cat_achar', handle: 'achar', name: 'Pickle' },
+          { id: 'cat_achar_suran', handle: 'suran', name: 'Elephant Yam Pickle' },
+        ],
+        description:
+          'Heirloom Banarasi and Bihari Oal (Elephant Yam) pickle slow-roasted with pungent mustard, ginger, green chillies, and lemon juice.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1628294895950-9805252327bc?w=600&auto=format&fit=crop&q=80',
+          altText: 'Traditional Banarasi Oal Suran Jimikand Achar',
+          width: 600,
+          height: 600,
+        },
+        faqs: [],
+        seo: {
+          title: 'Elephant Yam Pickle (Suran / Jimikand) | Bramhkanti',
+          description:
+            'Traditional spicy elephant foot yam achar prepared with mustard oil, ginger, and garlic.',
+        },
+      },
+      {
+        id: 'cat_achar_gobhi',
+        handle: 'gobhi',
+        name: 'Cauliflower Pickle',
+        parentId: 'cat_achar',
+        path: [
+          { id: 'cat_achar', handle: 'achar', name: 'Pickle' },
+          { id: 'cat_achar_gobhi', handle: 'gobhi', name: 'Cauliflower Pickle' },
+        ],
+        description:
+          'Crunchy winter spiced cauliflower pickle sun-dried and infused with jaggery, whole mustard seeds, and kachi ghani oil.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=600&auto=format&fit=crop&q=80',
+          altText: 'Crisp spiced winter gobhi cauliflower pickle',
+          width: 600,
+          height: 600,
+        },
+        faqs: [],
+        seo: {
+          title: 'Winter Spiced Cauliflower Pickle (Gobhi Achar) | Bramhkanti',
+          description:
+            'Authentic crunchy winter cauliflower pickle cured in cold-pressed mustard oil.',
+        },
+      },
+      {
+        id: 'cat_achar_kathal',
+        handle: 'kathal',
+        name: 'Jackfruit Pickle',
+        parentId: 'cat_achar',
+        path: [
+          { id: 'cat_achar', handle: 'achar', name: 'Pickle' },
+          { id: 'cat_achar_kathal', handle: 'kathal', name: 'Jackfruit Pickle' },
+        ],
+        description:
+          'Tender raw green jackfruit marinated in aromatic roasted spices, turmeric, and virgin mustard oil. Sun-cured to meaty perfection.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80',
+          altText: 'Tender raw kathal jackfruit pickle in mustard oil',
+          width: 600,
+          height: 600,
+        },
+        faqs: [],
+        seo: {
+          title: 'Traditional Jackfruit Pickle (Kathal Ka Achar) | Bramhkanti',
+          description:
+            'Mouth-watering raw jackfruit pickle seasoned with whole spices and cold-pressed mustard oil.',
+        },
+      },
+      {
+        id: 'cat_achar_mix',
+        handle: 'mix-achar',
+        name: 'Mixed Vegetable Pickle',
+        parentId: 'cat_achar',
+        path: [
+          { id: 'cat_achar', handle: 'achar', name: 'Pickle' },
+          { id: 'cat_achar_mix', handle: 'mix-achar', name: 'Mixed Vegetable Pickle' },
+        ],
+        description:
+          'Vintage Pachranga mix containing crunchy lotus stem (kamal kakdi), raw mango, lime, carrot, and green chillies in spiced mustard oil.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
+          altText: 'Vintage Pachranga 5-vegetable mix pickle with lotus stem',
+          width: 600,
+          height: 600,
+        },
+        faqs: [],
+        seo: {
+          title: 'Vintage Mixed Vegetable Pickle (Pachranga Mix) | Bramhkanti',
+          description:
+            'Harmonious blend of lotus stem, mango, lime, and winter veggies in authentic mustard oil.',
         },
       },
     ],
@@ -150,6 +260,12 @@ export const MOCK_CATEGORIES: Category[] = [
         ],
         description:
           'Crisp savory flavored makhanas: Himalayan Pink Salt, Peri Peri, and Mint Pudina.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&auto=format&fit=crop&q=80',
+          altText: 'Crispy slow-roasted savory makhana foxnuts',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
           title: 'Savory Roasted Makhana Snacks | Bramhkanti',
@@ -168,6 +284,12 @@ export const MOCK_CATEGORIES: Category[] = [
         ],
         description:
           'Naturally sweetened crunchy makhanas coated with organic jaggery gur and sesame seeds.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
+          altText: 'Caramelized sweet jaggery coated makhana',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
           title: 'Jaggery Gur Coated Makhana | Bramhkanti',
@@ -178,14 +300,20 @@ export const MOCK_CATEGORIES: Category[] = [
       {
         id: 'cat_makhana_raw',
         handle: 'raw-organic',
-        name: 'Raw Organic Jumbo Makhana',
+        name: 'Raw Organic Jumbo',
         parentId: 'cat_makhana',
         path: [
           { id: 'cat_makhana', handle: 'makhana', name: 'Makhana' },
-          { id: 'cat_makhana_raw', handle: 'raw-organic', name: 'Raw Organic' },
+          { id: 'cat_makhana_raw', handle: 'raw-organic', name: 'Raw Organic Jumbo' },
         ],
         description:
           'Unprocessed Jumbo 6+ Grade Phool Makhana for home cooking and Ayurvedic kheer.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80',
+          altText: 'Raw organic jumbo grade phool makhana',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
           title: 'Raw Jumbo Grade Phool Makhana | Bramhkanti',
@@ -235,47 +363,99 @@ export const MOCK_CATEGORIES: Category[] = [
     },
     children: [
       {
-        id: 'cat_sweets_ladoo',
-        handle: 'ladoo-collection',
-        name: 'Ladoo Collection',
+        id: 'cat_sweets_besan',
+        handle: 'besan-laddu',
+        name: 'Besan Ladoo',
         parentId: 'cat_sweets',
         path: [
           { id: 'cat_sweets', handle: 'sweets', name: 'Sweets' },
-          {
-            id: 'cat_sweets_ladoo',
-            handle: 'ladoo-collection',
-            name: 'Ladoo Collection',
-          },
+          { id: 'cat_sweets_besan', handle: 'besan-laddu', name: 'Besan Ladoo' },
         ],
         description:
-          'Authentic slow-roasted Besan Ladoo, Gond Ladoo, Motichoor Ladoo, and Dry Fruit Pinni.',
+          'Coarsely milled organic Bengal gram flour slow-roasted for 3 hours in pure A2 Bilona cow ghee, blended with aromatic cardamom and unrefined desi khand.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=600&auto=format&fit=crop&q=80',
+          altText: 'Danedar Desi Ghee Besan Laddu with dry fruits',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
-          title: 'Pure Desi Ghee Ladoo Online | Bramhkanti',
+          title: 'Danedar Desi Ghee Besan Ladoo Online | Bramhkanti',
           description:
-            'Handcrafted Besan, Gond, and Motichoor Ladoos made with pure A2 cow ghee.',
+            'Order authentic slow-roasted Besan Laddu made with pure A2 cow ghee and unrefined desi khand.',
         },
       },
       {
-        id: 'cat_sweets_regional',
-        handle: 'regional-sweets',
-        name: 'Regional Mithai',
+        id: 'cat_sweets_thekua',
+        handle: 'thekua',
+        name: 'Traditional Thekua',
         parentId: 'cat_sweets',
         path: [
           { id: 'cat_sweets', handle: 'sweets', name: 'Sweets' },
-          {
-            id: 'cat_sweets_regional',
-            handle: 'regional-sweets',
-            name: 'Regional Sweets',
-          },
+          { id: 'cat_sweets_thekua', handle: 'thekua', name: 'Traditional Thekua' },
         ],
         description:
-          'Geographic heritage sweets: Mathura Peda, Kaju Katli, and Mysore Pak.',
+          'Sacred festive delicacy from Bihar: stone-ground whole wheat, organic jaggery, green cardamom, fennel seeds, and desiccated coconut fried in pure A2 desi ghee.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&auto=format&fit=crop&q=80',
+          altText: 'Traditional khasta Bihari thekua in pure desi ghee',
+          width: 600,
+          height: 600,
+        },
         faqs: [],
         seo: {
-          title: 'Regional Indian Mithai Heritage | Bramhkanti',
+          title: 'Authentic Bihari Khasta Thekua Online | Pure Desi Ghee | Bramhkanti',
           description:
-            'Famous regional sweets crafted with authentic milk khoya and unrefined sugar.',
+            'Crisp, aromatic traditional Thekua made with stone-ground wheat, gur, and pure cow ghee.',
+        },
+      },
+      {
+        id: 'cat_sweets_geeli',
+        handle: 'geeli-barfi',
+        name: 'Fresh Mawa Barfi',
+        parentId: 'cat_sweets',
+        path: [
+          { id: 'cat_sweets', handle: 'sweets', name: 'Sweets' },
+          { id: 'cat_sweets_geeli', handle: 'geeli-barfi', name: 'Fresh Mawa Barfi' },
+        ],
+        description:
+          'Soft, moist traditional mawa malai barfi slow-cooked with fresh organic milk, raw khandsari, pistachios, and saffron strands.',
+        image: {
+          url: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=600&auto=format&fit=crop&q=80',
+          altText: 'Rich moist traditional mawa malai geeli barfi',
+          width: 600,
+          height: 600,
+        },
+        faqs: [],
+        seo: {
+          title: 'Traditional Fresh Mawa Barfi | Moist Malai Fudge | Bramhkanti',
+          description:
+            'Melt-in-the-mouth soft geeli barfi made with pure fresh mawa, desi ghee, and pistachios.',
+        },
+      },
+      {
+        id: 'cat_sweets_motichur',
+        handle: 'moti-chur-laddu',
+        name: 'Motichoor Ladoo',
+        parentId: 'cat_sweets',
+        path: [
+          { id: 'cat_sweets', handle: 'sweets', name: 'Sweets' },
+          { id: 'cat_sweets_motichur', handle: 'moti-chur-laddu', name: 'Motichoor Ladoo' },
+        ],
+        description:
+          'Ultra-fine gram flour pearls (boondi) fried in pure desi cow ghee, simmered in saffron-infused syrup, and garnished with roasted melon seeds (magaz).',
+        image: {
+          url: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80',
+          altText: 'Shahi Kesar Motichoor Ladoo in pure desi cow ghee',
+          width: 600,
+          height: 600,
+        },
+        faqs: [],
+        seo: {
+          title: 'Kesar Motichoor Ladoo in Pure Desi Ghee | Bramhkanti',
+          description:
+            'Festive saffron motichoor ladoo made with pure cow ghee and roasted melon seeds.',
         },
       },
     ],
@@ -284,9 +464,47 @@ export const MOCK_CATEGORIES: Category[] = [
 
 export const MOCK_COLLECTIONS: Collection[] = [
   {
+    id: 'col_best_sellers',
+    handle: 'best-sellers',
+    title: 'Best Seller Combo',
+    description:
+      'Our most loved culinary creations: Banarasi Stuffed Red Chilli, Slow-Roasted Besan Ladoo, and Himalayan Pink Salt Makhana.',
+    introContent:
+      'The cornerstones of the Bramhkanti kitchen. These products have graced over 50,000 family dining tables across India, loved for their uncompromising quality and timeless nostalgic taste.',
+    image: {
+      url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&auto=format&fit=crop&q=80',
+      altText: 'Bramhkanti best seller combo pickles, sweets and snacks assortment',
+    },
+    productCount: 10,
+    seo: {
+      title: 'Best Seller Combos & Delicacies | Bramhkanti',
+      description:
+        'Explore our highest-rated traditional achar, pure desi ghee sweets, and crispy makhana snacks in signature value combos.',
+    },
+  },
+  {
+    id: 'col_grandma',
+    handle: 'grandmas-specials',
+    title: 'Grand Maa',
+    description:
+      'Heritage recipes preserved without alteration: Sun-dried Heeng Mango Achar, Gond Ladoo with Kashmiri Walnuts, and Gur Makhana.',
+    introContent:
+      'Vintage recipes transcribed from grandmother’s handwritten recipe diaries from 1952. Prepared with the patience and reverence of old Indian kitchens.',
+    image: {
+      url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=1200&auto=format&fit=crop&q=80',
+      altText: 'Traditional vintage kitchen spices and heirloom grandma recipes',
+    },
+    productCount: 6,
+    seo: {
+      title: 'Grand Maa Heritage Recipes | Authentic Indian Delicacies | Bramhkanti',
+      description:
+        'Timeless nostalgic recipes prepared exactly as our grandmothers made them over 70 years ago.',
+    },
+  },
+  {
     id: 'col_diwali',
     handle: 'diwali-gifting',
-    title: 'Diwali & Festive Gifting Hampers',
+    title: 'Diwali and Fest',
     description:
       'Curated festive hampers featuring royal brass barnies of aged achar, pure ghee handcrafted sweets, and roasted makhana jars.',
     introContent:
@@ -297,47 +515,9 @@ export const MOCK_COLLECTIONS: Collection[] = [
     },
     productCount: 8,
     seo: {
-      title: 'Festive Food Gift Hampers | Diwali Sweets & Snacks | Bramhkanti',
+      title: 'Diwali and Festive Gift Hampers | Sweets & Delicacies | Bramhkanti',
       description:
         'Send royal Indian festive gift boxes with pure ghee sweets, heritage achar, and roasted makhana.',
-    },
-  },
-  {
-    id: 'col_best_sellers',
-    handle: 'best-sellers',
-    title: 'Bramhkanti Best Sellers',
-    description:
-      'Our most loved culinary creations: Banarasi Stuffed Red Chilli, Slow-Roasted Besan Ladoo, and Himalayan Pink Salt Makhana.',
-    introContent:
-      'The cornerstones of the Bramhkanti kitchen. These products have graced over 50,000 family dining tables across India, loved for their uncompromising quality and timeless nostalgic taste.',
-    image: {
-      url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&auto=format&fit=crop&q=80',
-      altText: 'Bramhkanti best seller pickles and sweets assortment',
-    },
-    productCount: 10,
-    seo: {
-      title: 'Best Selling Indian Pickles, Sweets & Snacks | Bramhkanti',
-      description:
-        'Explore our highest-rated traditional achar, pure desi ghee sweets, and crispy makhana snacks.',
-    },
-  },
-  {
-    id: 'col_grandma',
-    handle: 'grandmas-specials',
-    title: 'Dadi-Nani Vintage Recipes',
-    description:
-      'Heritage recipes preserved without alteration: Sun-dried Heeng Mango Achar, Gond Ladoo with Kashmiri Walnuts, and Gur Makhana.',
-    introContent:
-      'Vintage recipes transcribed from grandmother’s handwritten recipe diaries from 1952. Prepared with the patience and reverence of old Indian kitchens.',
-    image: {
-      url: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=1200&auto=format&fit=crop&q=80',
-      altText: 'Traditional vintage kitchen spices and ingredients',
-    },
-    productCount: 6,
-    seo: {
-      title: 'Grandma’s Heritage Recipes | Authentic Indian Food | Bramhkanti',
-      description:
-        'Timeless nostalgic recipes prepared exactly as our grandmothers made them over 70 years ago.',
     },
   },
 ];
@@ -346,6 +526,14 @@ export const MOCK_REDIRECTS: Redirect[] = [
   { fromPath: '/pickles', toPath: '/achar', statusCode: 301 },
   { fromPath: '/mithai', toPath: '/sweets', statusCode: 301 },
   { fromPath: '/foxnuts', toPath: '/makhana', statusCode: 301 },
+  { fromPath: '/achar/mango-pickles', toPath: '/achar/aam-ka-achar', statusCode: 301 },
+  { fromPath: '/achar/chilli-pickles', toPath: '/achar/bhara-marcha', statusCode: 301 },
+  { fromPath: '/achar/heritage-specials', toPath: '/achar/nimbu', statusCode: 301 },
+  { fromPath: '/sweets/ladoo-collection', toPath: '/sweets/besan-laddu', statusCode: 301 },
+  { fromPath: '/sweets/regional-sweets', toPath: '/sweets/thekua', statusCode: 301 },
+  { fromPath: '/collections/best-seller-combo', toPath: '/collections/best-sellers', statusCode: 301 },
+  { fromPath: '/collections/grand-maa', toPath: '/collections/grandmas-specials', statusCode: 301 },
+  { fromPath: '/collections/diwali-and-fest', toPath: '/collections/diwali-gifting', statusCode: 301 },
   {
     fromPath: '/products/old-mango-pickle',
     toPath: '/products/heritage-aam-ka-achar',
@@ -383,7 +571,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_mango'],
+    categoryIds: ['cat_achar', 'cat_achar_aam'],
     collectionIds: ['col_best_sellers', 'col_grandma'],
     tags: ['mango', 'mustard-oil', 'sun-dried', 'spicy'],
     variants: [
@@ -467,7 +655,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_chilli'],
+    categoryIds: ['cat_achar', 'cat_achar_bhara'],
     collectionIds: ['col_best_sellers', 'col_diwali'],
     tags: ['chilli', 'banarasi', 'bharwa', 'spicy'],
     variants: [
@@ -538,7 +726,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_specials'],
+    categoryIds: ['cat_achar', 'cat_achar_nimbu'],
     collectionIds: ['col_grandma'],
     tags: ['lemon', 'oil-free', 'digestive', 'sweet-sour'],
     variants: [
@@ -595,7 +783,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_chilli'],
+    categoryIds: ['cat_achar', 'cat_achar_bhara'],
     collectionIds: [],
     tags: ['green-chilli', 'spicy', 'mustard'],
     variants: [
@@ -651,7 +839,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_specials'],
+    categoryIds: ['cat_achar', 'cat_achar_mix'],
     collectionIds: [],
     tags: ['garlic', 'immunity', 'mustard-oil'],
     variants: [
@@ -703,12 +891,12 @@ export const MOCK_PRODUCTS: Product[] = [
     images: [
       {
         id: 'img_a06_1',
-        url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80',
+        url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&auto=format&fit=crop&q=80',
         altText: 'Mixed Pachranga pickle jar',
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_specials'],
+    categoryIds: ['cat_achar', 'cat_achar_mix'],
     collectionIds: ['col_best_sellers'],
     tags: ['mixed', 'lotus-stem', 'traditional'],
     variants: [
@@ -763,7 +951,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_specials'],
+    categoryIds: ['cat_achar', 'cat_achar_nimbu'],
     collectionIds: ['col_grandma'],
     tags: ['amla', 'murabba', 'honey', 'ayurvedic'],
     variants: [
@@ -817,7 +1005,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_achar',
-    categoryIds: ['cat_achar', 'cat_achar_mango'],
+    categoryIds: ['cat_achar', 'cat_achar_aam'],
     collectionIds: ['col_grandma'],
     tags: ['heeng', 'oil-free', 'mango'],
     variants: [
@@ -857,6 +1045,177 @@ export const MOCK_PRODUCTS: Product[] = [
     createdAt: '2026-03-01T10:00:00Z',
     updatedAt: '2026-10-01T12:00:00Z',
   },
+  {
+    id: 'prod_achar_09',
+    handle: 'banarasi-oal-suran-ka-achar',
+    title: 'Traditional Banarasi Oal Suran Ka Achar (Jimikand Pickle)',
+    description:
+      'Authentic heirloom Banarasi elephant foot yam (suran / oal) grated and slow-roasted with virgin mustard oil, green chillies, ginger, and amchur.',
+    images: [
+      {
+        id: 'img_a09_1',
+        url: 'https://images.unsplash.com/photo-1628294895950-9805252327bc?w=800&auto=format&fit=crop&q=80',
+        altText: 'Traditional Banarasi Suran Achar jar',
+      },
+    ],
+    primaryCategoryId: 'cat_achar',
+    categoryIds: ['cat_achar', 'cat_achar_suran'],
+    collectionIds: ['col_grandma'],
+    tags: ['suran', 'jimikand', 'oal', 'banarasi'],
+    variants: [
+      {
+        id: 'var_a09_400',
+        title: '400g Glass Jar',
+        packSize: '400g',
+        sku: 'BK-ACH-SRN-400',
+        price: { amount: 38900, currencyCode: 'INR' },
+        inStock: true,
+        stockQuantity: 85,
+        weightGrams: 480,
+      },
+    ],
+    foodAttributes: {
+      ...BASE_FOOD_ATTRS,
+      ingredients: [
+        'Elephant Foot Yam / Suran (60%)',
+        'Cold-Pressed Virgin Mustard Oil',
+        'Ginger',
+        'Green Chillies',
+        'Dry Mango Powder (Amchur)',
+        'Yellow Mustard Seeds',
+        'Sendha Namak',
+      ],
+      allergens: ['Mustard'],
+      shelfLife: '12 Months',
+      netWeight: '400g',
+    },
+    attributes: {
+      spiceLevel: 'Medium',
+      oilType: 'Mustard Oil',
+    },
+    seo: {
+      title: 'Traditional Suran Ka Achar | Banarasi Jimikand Pickle | Bramhkanti',
+      description:
+        'Authentic spicy Banarasi elephant foot yam pickle handcrafted in virgin mustard oil.',
+    },
+    status: 'published',
+    createdAt: '2026-03-05T10:00:00Z',
+    updatedAt: '2026-10-01T12:00:00Z',
+  },
+  {
+    id: 'prod_achar_10',
+    handle: 'winter-spiced-gobhi-achar',
+    title: 'Winter Spiced Gobhi Ka Achar (Cauliflower Pickle)',
+    description:
+      'Crisp seasonal winter cauliflower florets sun-dried on cotton sheets, marinated in wood-pressed mustard oil with rai, ginger, and jaggery.',
+    images: [
+      {
+        id: 'img_a10_1',
+        url: 'https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=800&auto=format&fit=crop&q=80',
+        altText: 'Winter Spiced Gobhi Cauliflower Pickle jar',
+      },
+    ],
+    primaryCategoryId: 'cat_achar',
+    categoryIds: ['cat_achar', 'cat_achar_gobhi'],
+    collectionIds: ['col_best_sellers'],
+    tags: ['gobhi', 'cauliflower', 'winter-special'],
+    variants: [
+      {
+        id: 'var_a10_450',
+        title: '450g Glass Jar',
+        packSize: '450g',
+        sku: 'BK-ACH-GBH-450',
+        price: { amount: 36900, currencyCode: 'INR' },
+        inStock: true,
+        stockQuantity: 110,
+        weightGrams: 520,
+      },
+    ],
+    foodAttributes: {
+      ...BASE_FOOD_ATTRS,
+      ingredients: [
+        'Fresh Winter Cauliflower (65%)',
+        'Kachi Ghani Mustard Oil',
+        'Organic Jaggery',
+        'Ginger',
+        'Rai (Mustard Seeds)',
+        'Red Chilli',
+        'Rock Salt',
+      ],
+      allergens: ['Mustard'],
+      shelfLife: '9 Months',
+      netWeight: '450g',
+    },
+    attributes: {
+      spiceLevel: 'Medium',
+      oilType: 'Mustard Oil',
+    },
+    seo: {
+      title: 'Winter Spiced Gobhi Ka Achar | Cauliflower Pickle | Bramhkanti',
+      description:
+        'Traditional crunchy winter gobhi achar marinated with jaggery and cold-pressed mustard oil.',
+    },
+    status: 'published',
+    createdAt: '2026-03-10T10:00:00Z',
+    updatedAt: '2026-10-01T12:00:00Z',
+  },
+  {
+    id: 'prod_achar_11',
+    handle: 'traditional-kathal-ka-achar',
+    title: 'Traditional Kathal Ka Achar (Raw Jackfruit Pickle)',
+    description:
+      'Tender baby green jackfruit cut into succulent chunks, sun-cured with roasted methi, saunf, kalonji, and generous virgin mustard oil.',
+    images: [
+      {
+        id: 'img_a11_1',
+        url: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&auto=format&fit=crop&q=80',
+        altText: 'Traditional Kathal Raw Jackfruit Pickle jar',
+      },
+    ],
+    primaryCategoryId: 'cat_achar',
+    categoryIds: ['cat_achar', 'cat_achar_kathal'],
+    collectionIds: ['col_grandma', 'col_best_sellers'],
+    tags: ['kathal', 'jackfruit', 'traditional'],
+    variants: [
+      {
+        id: 'var_a11_500',
+        title: '500g Glass Jar',
+        packSize: '500g',
+        sku: 'BK-ACH-KTH-500',
+        price: { amount: 42900, currencyCode: 'INR' },
+        inStock: true,
+        stockQuantity: 95,
+        weightGrams: 580,
+      },
+    ],
+    foodAttributes: {
+      ...BASE_FOOD_ATTRS,
+      ingredients: [
+        'Baby Raw Jackfruit (Kathal 62%)',
+        'Virgin Cold-Pressed Mustard Oil',
+        'Amchur Powder',
+        'Roasted Methi & Saunf',
+        'Kalonji',
+        'Turmeric',
+        'Sea Salt',
+      ],
+      allergens: ['Mustard'],
+      shelfLife: '12 Months',
+      netWeight: '500g',
+    },
+    attributes: {
+      spiceLevel: 'Medium',
+      oilType: 'Mustard Oil',
+    },
+    seo: {
+      title: 'Traditional Kathal Ka Achar | Raw Jackfruit Pickle | Bramhkanti',
+      description:
+        'Aromatic tender kathal jackfruit pickle steeped in pure mustard oil and authentic spices.',
+    },
+    status: 'published',
+    createdAt: '2026-03-12T10:00:00Z',
+    updatedAt: '2026-10-01T12:00:00Z',
+  },
 
   // --- SWEETS PRODUCTS (8) ---
   {
@@ -873,7 +1232,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_ladoo'],
+    categoryIds: ['cat_sweets', 'cat_sweets_besan'],
     collectionIds: ['col_best_sellers', 'col_diwali'],
     tags: ['besan-ladoo', 'desi-ghee', 'festive', 'traditional'],
     variants: [
@@ -942,7 +1301,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_regional'],
+    categoryIds: ['cat_sweets', 'cat_sweets_geeli'],
     collectionIds: ['col_best_sellers'],
     tags: ['peda', 'khoya', 'mathura'],
     variants: [
@@ -998,7 +1357,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_regional'],
+    categoryIds: ['cat_sweets', 'cat_sweets_geeli'],
     collectionIds: ['col_diwali', 'col_best_sellers'],
     tags: ['kaju-katli', 'cashew', 'festive'],
     variants: [
@@ -1056,7 +1415,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_ladoo'],
+    categoryIds: ['cat_sweets', 'cat_sweets_besan'],
     collectionIds: ['col_grandma'],
     tags: ['gond', 'ayurvedic', 'winter-special', 'nutrition'],
     variants: [
@@ -1110,12 +1469,12 @@ export const MOCK_PRODUCTS: Product[] = [
     images: [
       {
         id: 'img_s05_1',
-        url: 'https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=800&auto=format&fit=crop&q=80',
+        url: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=800&auto=format&fit=crop&q=80',
         altText: 'Kesar Motichoor Ladoo box',
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_ladoo'],
+    categoryIds: ['cat_sweets', 'cat_sweets_motichur'],
     collectionIds: ['col_diwali'],
     tags: ['motichoor', 'kesar', 'desi-ghee'],
     variants: [
@@ -1173,7 +1532,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_ladoo'],
+    categoryIds: ['cat_sweets', 'cat_sweets_besan'],
     collectionIds: ['col_grandma'],
     tags: ['pinni', 'punjabi', 'dry-fruits'],
     variants: [
@@ -1230,7 +1589,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_regional'],
+    categoryIds: ['cat_sweets', 'cat_sweets_geeli'],
     collectionIds: [],
     tags: ['mysore-pak', 'south-indian', 'ghee'],
     variants: [
@@ -1280,7 +1639,7 @@ export const MOCK_PRODUCTS: Product[] = [
       },
     ],
     primaryCategoryId: 'cat_sweets',
-    categoryIds: ['cat_sweets', 'cat_sweets_ladoo'],
+    categoryIds: ['cat_sweets', 'cat_sweets_besan'],
     collectionIds: ['col_diwali'],
     tags: ['sugar-free', 'anjeer', 'dates', 'dry-fruits'],
     variants: [
@@ -1320,6 +1679,136 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     status: 'published',
     createdAt: '2026-03-15T10:00:00Z',
+    updatedAt: '2026-10-01T12:00:00Z',
+  },
+  {
+    id: 'prod_sweet_09',
+    handle: 'authentic-bihari-khasta-thekua',
+    title: 'Authentic Bihari Khasta Thekua (Desi Ghee & Gur)',
+    description:
+      'Traditional crisp and flaky sacred Thekua handcrafted using coarsely stone-ground whole wheat, organic Desi Gur (jaggery), green cardamom, fennel seeds, and pure A2 cow ghee.',
+    images: [
+      {
+        id: 'img_s09_1',
+        url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800&auto=format&fit=crop&q=80',
+        altText: 'Authentic Bihari Khasta Thekua in pure desi ghee',
+      },
+    ],
+    primaryCategoryId: 'cat_sweets',
+    categoryIds: ['cat_sweets', 'cat_sweets_thekua'],
+    collectionIds: ['col_grandma', 'col_best_sellers'],
+    tags: ['thekua', 'bihari', 'jaggery', 'desi-ghee', 'chhath-puja'],
+    variants: [
+      {
+        id: 'var_s09_400',
+        title: '400g Gift Box (12 pcs)',
+        packSize: '400g',
+        sku: 'BK-SWT-THK-400',
+        price: { amount: 42000, currencyCode: 'INR' },
+        compareAtPrice: { amount: 48000, currencyCode: 'INR' },
+        inStock: true,
+        stockQuantity: 100,
+        weightGrams: 460,
+      },
+      {
+        id: 'var_s09_800',
+        title: '800g Family Pack (24 pcs)',
+        packSize: '800g',
+        sku: 'BK-SWT-THK-800',
+        price: { amount: 79900, currencyCode: 'INR' },
+        inStock: true,
+        stockQuantity: 60,
+        weightGrams: 890,
+      },
+    ],
+    foodAttributes: {
+      ...BASE_FOOD_ATTRS,
+      ingredients: [
+        'Whole Wheat Flour (Atta 45%)',
+        'Organic Jaggery (Gur 28%)',
+        'Pure Desi Cow Ghee (22%)',
+        'Fennel Seeds (Saunf)',
+        'Cardamom',
+        'Dry Grated Coconut',
+      ],
+      allergens: ['Wheat / Gluten', 'Milk / Ghee'],
+      shelfLife: '30 Days',
+      netWeight: '400g',
+    },
+    attributes: {
+      milkContent: 'Cow Milk',
+      gheeType: 'A2 Gir Cow Ghee',
+      shelfLifeDays: 30,
+      refrigerationRequired: false,
+    },
+    seo: {
+      title: 'Authentic Bihari Khasta Thekua Online | Pure Desi Ghee | Bramhkanti',
+      description:
+        'Buy traditional authentic Khasta Thekua made with stone-ground whole wheat, organic jaggery, and pure A2 cow ghee.',
+    },
+    status: 'published',
+    featured: true,
+    createdAt: '2026-03-18T10:00:00Z',
+    updatedAt: '2026-10-01T12:00:00Z',
+  },
+  {
+    id: 'prod_sweet_10',
+    handle: 'traditional-malai-geeli-barfi',
+    title: 'Traditional Malai Geeli Barfi in Pure Desi Ghee',
+    description:
+      'Luxurious, melt-in-mouth traditional moist mawa malai barfi slow-simmered in small iron kadhais with fresh cow milk cream, sulfur-free raw sugar, and chopped Iranian pistachios.',
+    images: [
+      {
+        id: 'img_s10_1',
+        url: 'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=800&auto=format&fit=crop&q=80',
+        altText: 'Traditional Malai Geeli Barfi with pistachios',
+      },
+    ],
+    primaryCategoryId: 'cat_sweets',
+    categoryIds: ['cat_sweets', 'cat_sweets_geeli'],
+    collectionIds: ['col_diwali', 'col_best_sellers'],
+    tags: ['geeli-barfi', 'malai', 'mawa', 'pure-ghee', 'mithai'],
+    variants: [
+      {
+        id: 'var_s10_400',
+        title: '400g Artisanal Box',
+        packSize: '400g',
+        sku: 'BK-SWT-GLB-400',
+        price: { amount: 52000, currencyCode: 'INR' },
+        compareAtPrice: { amount: 59000, currencyCode: 'INR' },
+        inStock: true,
+        stockQuantity: 75,
+        weightGrams: 450,
+      },
+    ],
+    foodAttributes: {
+      ...BASE_FOOD_ATTRS,
+      ingredients: [
+        'Fresh Full Cream Cow Milk Khoya / Mawa (70%)',
+        'Pure Desi Cow Ghee (15%)',
+        'Desi Khand Sugar (12%)',
+        'Pistachio Nuts (3%)',
+        'Kashmiri Saffron (Kesar)',
+        'Cardamom',
+      ],
+      allergens: ['Milk / Dairy', 'Tree Nuts (Pistachio)'],
+      shelfLife: '14 Days',
+      netWeight: '400g',
+    },
+    attributes: {
+      milkContent: 'Cow Milk',
+      gheeType: 'A2 Gir Cow Ghee',
+      shelfLifeDays: 14,
+      refrigerationRequired: true,
+    },
+    seo: {
+      title: 'Traditional Malai Geeli Barfi Online | Pure Milk Mithai | Bramhkanti',
+      description:
+        'Order fresh melt-in-mouth soft Geeli Barfi crafted with pure cow milk mawa and pistachios.',
+    },
+    status: 'published',
+    featured: true,
+    createdAt: '2026-03-20T10:00:00Z',
     updatedAt: '2026-10-01T12:00:00Z',
   },
 

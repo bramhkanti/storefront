@@ -31,6 +31,8 @@ export const LOCALE_METADATA: Record<
     nativeName: string;
     bcp47: string;
     direction: 'ltr';
+    script?: string;
+    fontFamily?: string;
   }
 > = {
   en: {
@@ -38,12 +40,16 @@ export const LOCALE_METADATA: Record<
     nativeName: 'English',
     bcp47: 'en-IN',
     direction: 'ltr',
+    script: 'Latin',
+    fontFamily: 'Anek Latin',
   },
   hi: {
     name: 'Hindi',
     nativeName: 'हिन्दी',
     bcp47: 'hi-IN',
     direction: 'ltr',
+    script: 'Devanagari',
+    fontFamily: 'Anek Devanagari',
   },
 };
 
