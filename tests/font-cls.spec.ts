@@ -26,7 +26,10 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
 
     page.on('response', (response) => {
       const url = response.url();
-      if (url.includes('.woff2') || response.headers()['content-type']?.includes('font')) {
+      if (
+        url.includes('.woff2') ||
+        response.headers()['content-type']?.includes('font')
+      ) {
         downloadedFonts.push(url);
       }
     });
@@ -37,7 +40,10 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
       (window as unknown as { __cls: number }).__cls = 0;
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          const layoutShiftEntry = entry as unknown as { hadRecentInput?: boolean; value: number };
+          const layoutShiftEntry = entry as unknown as {
+            hadRecentInput?: boolean;
+            value: number;
+          };
           if (!layoutShiftEntry.hadRecentInput) {
             cls += layoutShiftEntry.value;
             (window as unknown as { __cls: number }).__cls = cls;
@@ -50,7 +56,9 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
 
     // 1. Verify CLS is strictly within budget
-    const finalCls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls || 0);
+    const finalCls = await page.evaluate(
+      () => (window as unknown as { __cls: number }).__cls || 0,
+    );
     expect(finalCls).toBeLessThan(CLS_BUDGET);
 
     // 2. Verify Preload Tags in <head>
@@ -59,7 +67,9 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
     );
 
     // English route must NOT have Devanagari in preload links
-    const hasDevanagariPreload = preloads.some((href) => href.toLowerCase().includes('devanagari'));
+    const hasDevanagariPreload = preloads.some((href) =>
+      href.toLowerCase().includes('devanagari'),
+    );
     expect(hasDevanagariPreload).toBe(false);
 
     // 3. Verify ₹ (Rupee) symbol is rendered in price display
@@ -79,7 +89,10 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
       (window as unknown as { __cls: number }).__cls = 0;
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          const layoutShiftEntry = entry as unknown as { hadRecentInput?: boolean; value: number };
+          const layoutShiftEntry = entry as unknown as {
+            hadRecentInput?: boolean;
+            value: number;
+          };
           if (!layoutShiftEntry.hadRecentInput) {
             cls += layoutShiftEntry.value;
             (window as unknown as { __cls: number }).__cls = cls;
@@ -92,7 +105,9 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
     await page.goto('/hi', { waitUntil: 'networkidle' });
 
     // 1. Verify CLS is strictly within budget
-    const finalCls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls || 0);
+    const finalCls = await page.evaluate(
+      () => (window as unknown as { __cls: number }).__cls || 0,
+    );
     expect(finalCls).toBeLessThan(CLS_BUDGET);
 
     // 2. Verify <html lang="hi-IN">
@@ -101,7 +116,9 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
 
     // 3. Verify computed line-height on Hindi body is unitless 1.65
     const bodyLineHeight = await page.evaluate(() => {
-      return getComputedStyle(document.body).getPropertyValue('--line-height-body').trim();
+      return getComputedStyle(document.body)
+        .getPropertyValue('--line-height-body')
+        .trim();
     });
     expect(bodyLineHeight).toBe('1.65');
 
@@ -113,7 +130,9 @@ test.describe('Typography System & Layout Stability (CLS)', () => {
     expect(letterSpacing).toBe('0px');
   });
 
-  test('Mixed English & Hindi copy renders without layout distortion', async ({ page }) => {
+  test('Mixed English & Hindi copy renders without layout distortion', async ({
+    page,
+  }) => {
     await page.goto('/hi/achar', { waitUntil: 'networkidle' });
 
     // Check product titles in Hindi page
