@@ -55,8 +55,8 @@ export const SheetContent = React.forwardRef<
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="text-heritage-muted focus:ring-heritage-maroon absolute top-4 right-4 rounded-xs p-1 opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:outline-hidden">
-          <X className="h-5 w-5" />
+        <SheetPrimitive.Close className="text-heritage-muted hover:text-heritage-charcoal hover:bg-heritage-cream-dark focus:ring-heritage-maroon absolute top-3.5 right-4 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors focus:ring-2 focus:outline-hidden">
+          <X className="h-4.5 w-4.5" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
