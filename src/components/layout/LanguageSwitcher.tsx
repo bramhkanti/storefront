@@ -108,7 +108,7 @@ export function LanguageSwitcher({
           <Globe className="text-heritage-maroon h-4 w-4 shrink-0" aria-hidden="true" />
           <span
             id="mobile-lang-heading"
-            className="text-heritage-charcoal text-xs font-semibold tracking-wider uppercase"
+            className="text-heritage-charcoal text-xs font-semibold"
           >
             {t('language.chooseLanguage')}
           </span>

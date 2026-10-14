@@ -28,15 +28,20 @@ export default function Loading(): ReactNode {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="border-heritage-border bg-heritage-cream-dark/50 h-72 space-y-4 rounded-xl border p-5"
+              className="border-heritage-border bg-heritage-cream-dark/50 flex min-h-[340px] flex-col justify-between rounded-xl border p-5"
             >
-              <div className="flex justify-between">
-                <div className="bg-heritage-cream-dark h-4 w-16 rounded-md" />
-                <div className="bg-heritage-cream-dark h-4 w-20 rounded-md" />
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <div className="bg-heritage-cream-dark h-4 w-16 rounded-md" />
+                  <div className="bg-heritage-cream-dark h-4 w-20 rounded-md" />
+                </div>
+                <div className="bg-heritage-cream-dark h-12 w-3/4 rounded-md" />
+                <div className="bg-heritage-cream-dark h-10 w-full rounded-md" />
               </div>
-              <div className="bg-heritage-cream-dark h-6 w-3/4 rounded-md" />
-              <div className="bg-heritage-cream-dark h-12 w-full rounded-md" />
-              <div className="bg-heritage-cream-dark mt-auto h-8 w-full rounded-md" />
+              <div className="border-heritage-border/60 mt-6 flex items-center justify-between border-t pt-4">
+                <div className="bg-heritage-cream-dark h-6 w-20 rounded-md" />
+                <div className="bg-heritage-cream-dark h-8 w-24 rounded-md" />
+              </div>
             </div>
           ))}
         </div>

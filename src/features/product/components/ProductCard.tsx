@@ -22,7 +22,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   return (
     <article
       className={cn(
-        'group border-heritage-border bg-heritage-cream hover:border-heritage-maroon/30 flex flex-col justify-between rounded-xl border p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md',
+        'group border-heritage-border bg-heritage-cream hover:border-heritage-maroon/30 flex min-h-[340px] flex-col justify-between rounded-xl border p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md',
         !inStock && 'opacity-85',
         className,
       )}
@@ -42,18 +42,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <WishlistButton product={product} size="sm" />
         </div>
 
-        {/* Title */}
+        {/* Title with reserved stable line height */}
         <Link
           href={`/products/${product.handle}`}
           className="block group-hover:underline"
         >
-          <h3 className="text-heritage-charcoal group-hover:text-heritage-maroon line-clamp-2 font-serif text-lg font-bold transition-colors">
+          <h3 className="text-heritage-charcoal group-hover:text-heritage-maroon line-clamp-2 min-h-[3.25rem] font-serif text-lg font-bold transition-colors">
             {product.title}
           </h3>
         </Link>
 
-        {/* Short description */}
-        <p className="text-heritage-muted mt-1.5 line-clamp-2 text-xs leading-relaxed">
+        {/* Short description with reserved stable line height */}
+        <p className="text-heritage-muted mt-1.5 line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed">
           {product.description}
         </p>
 
@@ -76,7 +76,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <div className="border-heritage-border/60 mt-6 flex items-center justify-between border-t pt-4">
         <div>
           {price && (
-            <div className="text-heritage-maroon font-serif text-lg font-extrabold">
+            <div className="text-heritage-maroon font-serif text-lg font-extrabold tabular-nums">
               {formatPrice(price.amount, price.currencyCode)}
             </div>
           )}
