@@ -29,7 +29,14 @@ export const plusJakartaSans = Plus_Jakarta_Sans({
   variable: '--font-plus-jakarta-sans',
   display: 'swap',
   preload: true,
-  fallback: SYSTEM_FALLBACK_FONTS,
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'sans-serif',
+  ],
   adjustFontFallback: true,
 });
 
@@ -42,7 +49,14 @@ export const notoSansDevanagariPreloaded = Noto_Sans_Devanagari({
   variable: '--font-noto-sans-devanagari',
   display: 'swap',
   preload: true,
-  fallback: SYSTEM_FALLBACK_FONTS,
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'sans-serif',
+  ],
   adjustFontFallback: true,
 });
 
@@ -56,7 +70,14 @@ export const notoSansDevanagariOnDemand = Noto_Sans_Devanagari({
   variable: '--font-noto-sans-devanagari',
   display: 'swap',
   preload: false,
-  fallback: SYSTEM_FALLBACK_FONTS,
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'sans-serif',
+  ],
   adjustFontFallback: true,
 });
 

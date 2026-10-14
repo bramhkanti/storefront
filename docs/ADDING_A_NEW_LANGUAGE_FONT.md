@@ -47,7 +47,7 @@ import {
 } from 'next/font/google';
 ```
 
-Define the preloaded (for core locale) and on-demand font instances:
+Define the preloaded (for core locale) and on-demand font instances (Note: Next.js Turbopack requires font loader options to be explicitly written literals, so `fallback` must be an inline array literal):
 
 ```ts
 /**
@@ -58,7 +58,14 @@ export const notoSansTeluguPreloaded = Noto_Sans_Telugu({
   variable: '--font-noto-sans-telugu',
   display: 'swap',
   preload: true,
-  fallback: SYSTEM_FALLBACK_FONTS,
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'sans-serif',
+  ],
   adjustFontFallback: true,
 });
 
@@ -67,7 +74,14 @@ export const notoSansTeluguOnDemand = Noto_Sans_Telugu({
   variable: '--font-noto-sans-telugu',
   display: 'swap',
   preload: false,
-  fallback: SYSTEM_FALLBACK_FONTS,
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Roboto',
+    'sans-serif',
+  ],
   adjustFontFallback: true,
 });
 ```
