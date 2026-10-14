@@ -13,7 +13,6 @@ import {
   RefreshCw,
   ChevronRight,
   ChevronDown,
-  Sparkles,
   LogOut,
   LogIn,
   Check,
@@ -119,14 +118,10 @@ export function ProfileView(): React.JSX.Element {
       <div className="mx-auto max-w-md space-y-6 lg:hidden">
         {/* Mobile Top Header: My Account Title & Overview Description */}
         <div className="pt-1">
-          <div className="border-heritage-maroon/15 bg-heritage-maroon/5 text-heritage-maroon mb-2 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-400">
-            <Sparkles className="h-3 w-3" aria-hidden="true" />
-            <span>Customer Portal</span>
-          </div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-neutral-900 sm:text-3xl dark:text-neutral-50">
+          <h1 className="text-[22px] font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
             My Account
           </h1>
-          <p className="mt-1 text-xs leading-relaxed text-neutral-500 sm:text-sm dark:text-neutral-400">
+          <p className="mt-1 text-[14px] leading-relaxed font-normal text-neutral-500 dark:text-neutral-400">
             Browse your account details, track deliveries, manage saved addresses, and
             customize store preferences.
           </p>
