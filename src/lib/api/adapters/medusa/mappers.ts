@@ -162,6 +162,7 @@ export function mapMedusaCategoryToDomain(
     image: str(meta.image_url)
       ? { url: meta.image_url as string, altText: dto.name }
       : undefined,
+    badge: str(meta.badge),
     seo: seoFrom(meta),
     children: (dto.category_children as MedusaCategoryDto[] | null | undefined)?.map(
       (child) => mapMedusaCategoryToDomain(child, path),
@@ -176,14 +177,20 @@ export function mapMedusaCollectionToDomain(
   const meta = dto.metadata ?? {};
   // `banner_url` is the admin-facing name; `image_url` kept for older data.
   const imageUrl = str(meta.banner_url) ?? str(meta.image_url);
+  const mobileUrl = str(meta.banner_mobile_url);
+  const alt = str(meta.banner_alt) ?? dto.title;
   return {
     id: dto.id,
     handle: dto.handle,
     title: dto.title,
     description: str(meta.description) ?? '',
     introContent: str(meta.intro_content),
-    image: imageUrl
-      ? { url: imageUrl, altText: str(meta.banner_alt) ?? dto.title }
+    image: imageUrl ? { url: imageUrl, altText: alt } : undefined,
+    mobileImage: mobileUrl ? { url: mobileUrl, altText: alt } : undefined,
+    subtitle: str(meta.subtitle),
+    badge: str(meta.badge),
+    highlights: Array.isArray(meta.highlights)
+      ? meta.highlights.filter((h): h is string => typeof h === 'string')
       : undefined,
     productCount,
     seo: seoFrom(meta),

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Badge } from '@/components/ui/Badge';
@@ -46,26 +47,35 @@ export default async function CollectionsIndexPage(): Promise<ReactNode> {
             <Link
               key={coll.id}
               href={`/collections/${coll.handle}`}
-              className="group border-heritage-border bg-heritage-cream hover:border-heritage-maroon/30 flex flex-col justify-between rounded-xl border p-6 shadow-xs transition-all hover:-translate-y-1 hover:shadow-lg"
+              className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-shadow hover:shadow-lg dark:border-neutral-800 dark:bg-[#1c1917]"
             >
-              <div>
-                <div className="text-heritage-saffron-dark mb-2 flex items-center gap-2 text-xs font-semibold tracking-wider uppercase">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>Curated Box</span>
-                </div>
-
-                <h2 className="text-heritage-charcoal group-hover:text-heritage-maroon font-serif text-2xl font-bold transition-colors">
-                  {coll.title}
-                </h2>
-
-                <p className="text-heritage-muted mt-2 line-clamp-3 text-sm leading-relaxed">
-                  {coll.description}
-                </p>
+              <div className="relative aspect-16/9 bg-neutral-100 dark:bg-neutral-800">
+                {coll.image && (
+                  <Image
+                    src={coll.image.url}
+                    alt={coll.image.altText ?? coll.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                )}
+                {coll.badge && (
+                  <span className="bg-heritage-maroon absolute top-3 left-3 rounded-full px-2.5 py-1 text-[11px] font-semibold text-white">
+                    {coll.badge}
+                  </span>
+                )}
               </div>
-
-              <div className="text-heritage-maroon border-heritage-border/60 mt-6 flex items-center gap-1.5 border-t pt-4 text-sm font-semibold">
-                <span>Explore Hamper</span>
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <div className="p-5">
+                <h2 className="text-lg font-semibold tracking-tight">{coll.title}</h2>
+                {coll.description && (
+                  <p className="text-heritage-muted mt-1 line-clamp-2 text-sm">
+                    {coll.description}
+                  </p>
+                )}
+                <span className="text-heritage-maroon mt-4 inline-flex items-center gap-1.5 text-sm font-medium">
+                  Shop collection
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
               </div>
             </Link>
           ))}

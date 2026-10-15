@@ -54,6 +54,8 @@ export interface Category {
   introContent?: string | undefined;
   faqs: FaqItem[];
   image?: CategoryImage | undefined;
+  /** Short label such as 'Bestseller' (metadata `badge`). */
+  badge?: string | undefined;
   seo: SeoMetadata;
   children?: Category[] | undefined;
 }
@@ -72,7 +74,13 @@ export interface Collection {
   title: string;
   description: string;
   introContent?: string | undefined;
+  /** Banner (admin: collection metadata `banner_url`). */
   image?: CollectionImage | undefined;
+  /** Optional narrow banner for phones (metadata `banner_mobile_url`). */
+  mobileImage?: CollectionImage | undefined;
+  subtitle?: string | undefined;
+  badge?: string | undefined;
+  highlights?: string[] | undefined;
   productCount?: number | undefined;
   seo: SeoMetadata;
 }

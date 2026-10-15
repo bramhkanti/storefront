@@ -79,23 +79,53 @@ export default async function CollectionPage({
           ]}
         />
 
-        {/* Collection Hero */}
-        <div className="max-w-3xl space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="saffron">Handpicked Hamper</Badge>
-            <span className="text-heritage-saffron-dark text-xs font-semibold tracking-wider uppercase">
-              Special Presentation
-            </span>
+        {/* Collection hero: banner from collection metadata (banner_url / banner_mobile_url) */}
+        {collection.image ? (
+          <section className="relative overflow-hidden rounded-3xl bg-neutral-900">
+            <picture>
+              {collection.mobileImage && (
+                <source media="(max-width: 639px)" srcSet={collection.mobileImage.url} />
+              )}
+              <img
+                src={collection.image.url}
+                alt={collection.image.altText ?? collection.title}
+                className="h-64 w-full object-cover sm:h-80 lg:h-96"
+              />
+            </picture>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-10">
+              {(collection.badge || collection.subtitle) && (
+                <p className="text-xs font-semibold tracking-widest text-white/80 uppercase">
+                  {[collection.badge, collection.subtitle].filter(Boolean).join(' · ')}
+                </p>
+              )}
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
+                {collection.title}
+              </h1>
+              {collection.description && (
+                <p className="mt-2 max-w-xl text-sm text-white/85 sm:text-base">
+                  {collection.description}
+                </p>
+              )}
+            </div>
+          </section>
+        ) : (
+          <div className="max-w-3xl space-y-3">
+            {collection.badge && <Badge variant="saffron">{collection.badge}</Badge>}
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-5xl">
+              {collection.title}
+            </h1>
+            {collection.description && (
+              <p className="text-heritage-muted text-base leading-relaxed">
+                {collection.description}
+              </p>
+            )}
           </div>
+        )}
 
-          <h1 className="text-heritage-maroon font-serif text-3xl font-extrabold tracking-tight sm:text-5xl">
-            {collection.title}
-          </h1>
-
-          <p className="text-heritage-muted text-base leading-relaxed">
-            {collection.description}
-          </p>
-        </div>
+        <p className="text-heritage-muted text-sm">
+          {productsResult.total} {productsResult.total === 1 ? 'product' : 'products'}
+        </p>
 
         {/* Product Grid */}
         <section aria-label={`${collection.title} Products`}>

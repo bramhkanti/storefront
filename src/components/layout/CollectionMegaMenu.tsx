@@ -11,59 +11,8 @@ export interface CollectionMegaMenuProps {
   collections?: Collection[] | undefined;
 }
 
-interface CollectionItemData {
-  id: string;
-  handle: string;
-  title: string;
-  subtitle: string;
-  badge: string;
-  tagline: string;
-  imageUrl: string;
-  altText: string;
-  highlights: string[];
-}
-
-const DEFAULT_COLLECTIONS_META: CollectionItemData[] = [
-  {
-    id: 'col_best_sellers',
-    handle: 'best-sellers',
-    title: 'Best Seller Combo',
-    subtitle: 'Signature Value Combos',
-    badge: 'Most Loved',
-    tagline:
-      'Curated pairings of Banarasi Stuffed Red Chilli, Danedar Besan Ladoo & Himalayan Pink Salt Makhana.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
-    altText: 'Bramhkanti Best Seller Combo Delicacies Assortment',
-    highlights: ['Banarasi Mirch', 'Besan Ladoo', 'Pink Salt Makhana'],
-  },
-  {
-    id: 'col_grandma',
-    handle: 'grandmas-specials',
-    title: 'Grand Maa',
-    subtitle: 'Vintage 1952 Recipes',
-    badge: 'Heirloom',
-    tagline:
-      'Generational treasures preserved from 1952: Sun-dried Heeng Mango Achar, Gond Walnut Ladoo & Gur Makhana.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&auto=format&fit=crop&q=80',
-    altText: 'Grand Maa Vintage Heirloom Recipes and Barnie Pickles',
-    highlights: ['Heeng Mango Achar', 'Gond Ladoo', 'Jaggery Makhana'],
-  },
-  {
-    id: 'col_diwali',
-    handle: 'diwali-gifting',
-    title: 'Diwali and Fest',
-    subtitle: 'Royal Keepsake Hampers',
-    badge: 'Festive Box',
-    tagline:
-      'Handcrafted festive hampers featuring royal brass barnies with pure A2 cow ghee sweets & roasted dry fruits.',
-    imageUrl:
-      'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=600&auto=format&fit=crop&q=80',
-    altText: 'Diwali and Festive Gifting Hampers with Royal Brass Keepsakes',
-    highlights: ['Brass Keepsake Barnie', 'Pure Ghee Sweets', 'Gift Packaging'],
-  },
-];
+/** The menu shows at most this many collections; the rest are on /collections. */
+const MAX_COLLECTIONS = 3;
 
 export function CollectionMegaMenu({
   collections,
@@ -127,29 +76,9 @@ export function CollectionMegaMenu({
     };
   }, [isOpen]);
 
-  // Map dynamic collections to our curated 3 items in exact requested order
-  const displayCollections: CollectionItemData[] = React.useMemo(() => {
-    if (!collections || collections.length === 0) {
-      return DEFAULT_COLLECTIONS_META;
-    }
-
-    // Match by handle or fallback to metadata
-    const orderHandles = ['best-sellers', 'grandmas-specials', 'diwali-gifting'];
-    return orderHandles.map((handle) => {
-      const live = collections.find((c) => c.handle === handle);
-      const meta = DEFAULT_COLLECTIONS_META.find((m) => m.handle === handle)!;
-
-      if (!live) return meta;
-
-      return {
-        ...meta,
-        title: live.title || meta.title,
-        tagline: live.description || meta.tagline,
-        imageUrl: live.image?.url || meta.imageUrl,
-        altText: live.image?.altText || meta.altText,
-      };
-    });
-  }, [collections]);
+  // Collections come from the backend (admin > Products > Collections).
+  // Banner, subtitle, badge and highlights are optional collection metadata.
+  const displayCollections = (collections ?? []).slice(0, MAX_COLLECTIONS);
 
   return (
     <div
@@ -208,8 +137,19 @@ export function CollectionMegaMenu({
               </Link>
             </div>
 
-            {/* 3 Columns Grid: Best Seller Combo, Grand Maa, Diwali and Fest */}
-            <div className="grid grid-cols-3 gap-6">
+            {displayCollections.length === 0 && (
+              <p className="text-heritage-muted py-6 text-center text-sm">
+                New collections are coming soon.
+              </p>
+            )}
+            <div
+              className={cn(
+                'grid gap-6',
+                displayCollections.length >= 3 && 'grid-cols-3',
+                displayCollections.length === 2 && 'grid-cols-2',
+                displayCollections.length === 1 && 'mx-auto max-w-sm grid-cols-1',
+              )}
+            >
               {displayCollections.map((coll, idx) => (
                 <div
                   key={coll.handle}
@@ -226,24 +166,30 @@ export function CollectionMegaMenu({
                   >
                     {/* Featured Image with Zoom & Badge */}
                     <div className="border-heritage-border/80 bg-heritage-cream-dark relative aspect-16/10 w-full overflow-hidden rounded-xl border shadow-2xs">
-                      <Image
-                        src={coll.imageUrl}
-                        alt={coll.altText}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 300px"
-                        className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                      />
+                      {coll.image && (
+                        <Image
+                          src={coll.image.url}
+                          alt={coll.image.altText ?? coll.title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 300px"
+                          className="object-cover transition-transform duration-500 group-hover/card:scale-105"
+                        />
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-40 transition-opacity group-hover/card:opacity-60" />
 
                       {/* Badge in top right corner */}
-                      <span className="bg-heritage-maroon/90 absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shadow-2xs backdrop-blur-xs">
-                        {coll.badge}
-                      </span>
+                      {coll.badge && (
+                        <span className="bg-heritage-maroon/90 absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white shadow-2xs backdrop-blur-xs">
+                          {coll.badge}
+                        </span>
+                      )}
 
                       {/* Subtitle tag at bottom left */}
-                      <span className="absolute bottom-2 left-2 text-[11px] font-medium text-white/90 drop-shadow-sm">
-                        {coll.subtitle}
-                      </span>
+                      {coll.subtitle && (
+                        <span className="absolute bottom-2 left-2 text-[11px] font-medium text-white/90 drop-shadow-sm">
+                          {coll.subtitle}
+                        </span>
+                      )}
                     </div>
 
                     {/* Titles & Tagline */}
@@ -254,14 +200,16 @@ export function CollectionMegaMenu({
                         </h3>
                         <ArrowRight className="text-heritage-muted group-hover/card:text-heritage-maroon h-3.5 w-3.5 transition-transform group-hover/card:translate-x-1" />
                       </div>
-                      <p className="text-heritage-muted line-clamp-2 text-xs leading-relaxed dark:text-neutral-400">
-                        {coll.tagline}
-                      </p>
+                      {coll.description && (
+                        <p className="text-heritage-muted line-clamp-2 text-xs leading-relaxed dark:text-neutral-400">
+                          {coll.description}
+                        </p>
+                      )}
                     </div>
 
                     {/* Highlight Pills */}
                     <div className="flex flex-wrap gap-1 pt-0.5">
-                      {coll.highlights.map((highlight) => (
+                      {(coll.highlights ?? []).map((highlight) => (
                         <span
                           key={highlight}
                           className="bg-heritage-cream-dark/90 text-heritage-charcoal border-heritage-border/50 rounded-md border px-1.5 py-0.5 text-[10px] font-medium dark:bg-neutral-800 dark:text-neutral-300"
