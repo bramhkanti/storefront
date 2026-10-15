@@ -133,19 +133,9 @@ export default async function SearchPage({
               Enter a search query above or explore our curated categories below.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <Link href="/achar">
+              <Link href="/categories">
                 <Button variant="outline" size="sm" className="text-xs">
-                  Browse Achar
-                </Button>
-              </Link>
-              <Link href="/sweets">
-                <Button variant="outline" size="sm" className="text-xs">
-                  Browse Sweets
-                </Button>
-              </Link>
-              <Link href="/makhana">
-                <Button variant="outline" size="sm" className="text-xs">
-                  Browse Makhana
+                  Browse all categories
                 </Button>
               </Link>
             </div>

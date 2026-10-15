@@ -7,7 +7,16 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { SITE_CONFIG } from '@/content/site';
 
-export function HomeHero(): React.JSX.Element {
+export interface HomeHeroProps {
+  /** Main call to action, e.g. the pickles category. */
+  primaryHref?: string;
+  primaryLabel?: string;
+}
+
+export function HomeHero({
+  primaryHref = '/categories',
+  primaryLabel = 'Explore Handcrafted Achar',
+}: HomeHeroProps): React.JSX.Element {
   return (
     <section className="from-heritage-cream via-heritage-cream to-heritage-cream-dark/40 relative overflow-hidden bg-gradient-to-b pt-10 pb-16 sm:pt-16 sm:pb-24">
       <Container>
@@ -34,22 +43,22 @@ export function HomeHero(): React.JSX.Element {
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link href="/achar">
+              <Link href={primaryHref}>
                 <Button
                   size="lg"
                   className="bg-heritage-maroon hover:bg-heritage-maroon-dark rounded-full px-7 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg"
                 >
-                  <span>Explore Handcrafted Achar</span>
+                  <span>{primaryLabel}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/sweets">
+              <Link href="/categories">
                 <Button
                   variant="secondary"
                   size="lg"
                   className="border-heritage-border hover:bg-heritage-cream-dark text-heritage-charcoal rounded-full border bg-white px-7 py-3 text-sm font-medium transition-colors"
                 >
-                  <span>Pure Desi Ghee Mithai</span>
+                  <span>Shop all</span>
                 </Button>
               </Link>
             </div>

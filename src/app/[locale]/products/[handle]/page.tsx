@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/layout/Container';
@@ -25,7 +26,10 @@ interface ProductPageProps {
 
 export async function generateStaticParams(): Promise<Array<{ handle: string }>> {
   const products = await getTopProductHandles(50);
-  return products.map(({ handle }) => ({ handle }));
+  return atLeastOne(
+    products.map(({ handle }) => ({ handle })),
+    { handle: PLACEHOLDER_SLUG },
+  );
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
@@ -58,12 +62,14 @@ export default async function ProductPage({
     notFound();
   }
 
+  // Medusa products carry the category handle; mock fixtures use the id as handle.
+  const categoryHandle = product.primaryCategoryHandle ?? product.primaryCategoryId;
   const [category, relatedProducts] = await Promise.all([
-    getCategoryByHandle(product.primaryCategoryId),
-    getProductsByCategory(product.primaryCategoryId, 4),
+    categoryHandle ? getCategoryByHandle(categoryHandle) : Promise.resolve(null),
+    categoryHandle ? getProductsByCategory(categoryHandle, 5) : Promise.resolve([]),
   ]);
 
-  const filteredRelated = relatedProducts.filter((p) => p.id !== product.id).slice(0, 3);
+  const filteredRelated = relatedProducts.filter((p) => p.id !== product.id).slice(0, 4);
 
   const productJsonLd = buildProductJsonLd(product);
 

@@ -12,6 +12,7 @@ export const SIGNATURE_RANGE_ITEMS: SignatureRangeItem[] = [
     name: 'Achar',
     tagline: 'Tangy. Spicy. Irresistible.',
     href: '/achar',
+    categoryHandles: ['achar', 'pickles', 'pickle'],
     linkText: 'Shop Pickles',
     imageUrl: '/images/home/category-pickle.jpg',
     imageAlt:
@@ -23,6 +24,7 @@ export const SIGNATURE_RANGE_ITEMS: SignatureRangeItem[] = [
     name: 'Makhana',
     tagline: 'Healthy. Crunchy. Natural.',
     href: '/makhana',
+    categoryHandles: ['makhana'],
     linkText: 'Shop Makhana',
     imageUrl: '/images/home/category-makhana.jpg',
     imageAlt:
@@ -34,6 +36,7 @@ export const SIGNATURE_RANGE_ITEMS: SignatureRangeItem[] = [
     name: 'Sweets',
     tagline: 'Traditional. Pure. Divine.',
     href: '/sweets',
+    categoryHandles: ['sweets', 'mithai'],
     linkText: 'Shop Sweets',
     imageUrl: '/images/home/category-sweets.jpg',
     imageAlt:
@@ -45,6 +48,7 @@ export const SIGNATURE_RANGE_ITEMS: SignatureRangeItem[] = [
     name: 'Gifting & Festive',
     tagline: 'Perfect for every celebration.',
     href: '/collections/diwali-gifting',
+    collectionHandle: 'diwali-gifting',
     linkText: 'Shop Gift Packs',
     imageUrl: '/images/home/category-gifting.jpg',
     imageAlt:
@@ -132,7 +136,7 @@ export const PROMO_BANNER_DATA: PromoBannerData = {
   description:
     'Order handcrafted Indian pickles, slow-roasted makhana, and pure desi ghee sweets made in small batches with ancestral care. Enjoy free pan-India express shipping on orders above ₹499.',
   ctaText: 'Shop Now',
-  ctaHref: '/achar',
+  ctaHref: '/categories',
   trustBadges: ['Pure Ingredients', 'Traditional Recipes', 'Made with Love'],
   imageUrl: '/images/home/hero-barnie.jpg',
   imageAlt:

@@ -1,16 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ShieldCheck, ShoppingBag, Truck } from 'lucide-react';
-import type { Product, ProductVariant } from '@/lib/api/contracts/domain';
-import { Badge } from '@/components/ui/Badge';
+import { useRouter } from 'next/navigation';
+import { Check, Minus, Plus, ShieldCheck, ShoppingBag, Truck, Zap } from 'lucide-react';
+import type { Product } from '@/lib/api/contracts/domain';
 import { Button } from '@/components/ui/Button';
-import { formatPrice } from '@/lib/utils/money';
 import { SITE_CONFIG } from '@/content/site';
 import { useCart } from '@/lib/cart';
 import { useCartUi, useToast } from '@/lib/store';
-import { WishlistButton } from './WishlistButton';
+import { calculateDiscountPercent, formatPrice } from '@/lib/utils/money';
 import { cn } from '@/lib/utils/cn';
+import { WishlistButton } from './WishlistButton';
 
 export interface ProductDetailsProps {
   product: Product;
@@ -18,198 +18,256 @@ export interface ProductDetailsProps {
   className?: string | undefined;
 }
 
+const LOW_STOCK = 5;
+
 export function ProductDetails({
   product,
   categoryName,
   className,
 }: ProductDetailsProps) {
-  const [selectedVariantId, setSelectedVariantId] = React.useState<string>(
-    product.variants[0]?.id ?? '',
+  const router = useRouter();
+  const firstAvailable = product.variants.find((v) => v.inStock) ?? product.variants[0];
+  const [selectedVariantId, setSelectedVariantId] = React.useState(
+    firstAvailable?.id ?? '',
   );
   const [quantity, setQuantity] = React.useState(1);
   const [isAdded, setIsAdded] = React.useState(false);
+  const [buying, setBuying] = React.useState(false);
 
-  const { addItem, isPending } = useCart();
+  const { addItem, isPending, lastError } = useCart();
   const { openCart } = useCartUi();
   const { addToast } = useToast();
 
-  const selectedVariant: ProductVariant =
-    product.variants.find((v) => v.id === selectedVariantId) ?? product.variants[0]!;
+  const selected =
+    product.variants.find((v) => v.id === selectedVariantId) ?? firstAvailable;
+  const inStock = selected?.inStock ?? false;
+  const maxQty = selected?.stockQuantity ?? 20;
+  const discount =
+    selected?.compareAtPrice &&
+    calculateDiscountPercent(selected.compareAtPrice.amount, selected.price.amount);
 
-  const inStock = selectedVariant?.inStock ?? false;
-  const price = selectedVariant?.price;
-
-  const handleAddToCart = async () => {
-    if (!inStock || isPending) return;
-    const success = await addItem(selectedVariantId, quantity);
-    if (success) {
-      setIsAdded(true);
-      addToast({
-        type: 'success',
-        message: `Added ${product.title} (${selectedVariant.title}) to your bag`,
-      });
-      openCart();
-      setTimeout(() => setIsAdded(false), 2000);
-    } else {
+  const add = async (): Promise<boolean> => {
+    if (!selected || !inStock) return false;
+    const ok = await addItem(selected.id, quantity);
+    if (!ok) {
       addToast({
         type: 'error',
-        message: 'Could not add item to bag. Please try again.',
+        message: lastError ?? 'Could not add to bag. Please try again.',
       });
+    }
+    return ok;
+  };
+
+  const handleAddToCart = async () => {
+    if (await add()) {
+      setIsAdded(true);
+      openCart();
+      setTimeout(() => setIsAdded(false), 2000);
     }
   };
 
+  const handleBuyNow = async () => {
+    setBuying(true);
+    if (await add()) {
+      router.push('/checkout');
+    } else {
+      setBuying(false);
+    }
+  };
+
+  if (!selected) {
+    return (
+      <p className="text-heritage-muted">This product isn&apos;t available right now.</p>
+    );
+  }
+  const unpriced = product.variants.every((v) => v.price.amount === 0);
+
   return (
     <div className={cn('space-y-6', className)}>
-      {/* Category & Veg indicator & Wishlist */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Badge variant="vegetarian">100% Pure Veg</Badge>
-          <span className="text-heritage-saffron-dark text-xs font-semibold tracking-wider uppercase">
-            {categoryName ?? 'Heritage Collection'}
-          </span>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          {categoryName && (
+            <p className="text-heritage-maroon text-xs font-semibold tracking-wider uppercase">
+              {categoryName}
+            </p>
+          )}
+          <h1 className="mt-1.5 text-2xl leading-tight font-semibold tracking-tight text-neutral-900 sm:text-3xl dark:text-neutral-50">
+            {product.title}
+          </h1>
+          {product.subtitle && (
+            <p className="text-heritage-muted mt-1 text-base">{product.subtitle}</p>
+          )}
         </div>
-        <WishlistButton product={product} size="md" />
+        <WishlistButton product={product} size="md" className="shrink-0" />
       </div>
 
-      {/* Product Title */}
-      <h1 className="text-heritage-maroon font-serif text-2xl leading-tight font-extrabold tracking-tight sm:text-4xl">
-        {product.title}
-      </h1>
-
-      {/* Price Block */}
-      {price && (
-        <div className="flex items-baseline gap-3">
-          <span className="text-heritage-maroon font-serif text-3xl font-black">
-            {formatPrice(price.amount, price.currencyCode)}
-          </span>
-          <span className="text-heritage-muted text-xs">
-            (Inclusive of all statutory taxes)
-          </span>
+      {unpriced ? (
+        <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          Coming soon. This product will be available to order shortly.
+        </p>
+      ) : (
+        <div>
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="text-3xl font-semibold tracking-tight tabular-nums">
+              {formatPrice(selected.price.amount, selected.price.currencyCode)}
+            </span>
+            {selected.compareAtPrice && (
+              <span className="text-heritage-muted text-lg tabular-nums line-through">
+                {formatPrice(
+                  selected.compareAtPrice.amount,
+                  selected.compareAtPrice.currencyCode,
+                )}
+              </span>
+            )}
+            {discount ? (
+              <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                {discount}% off
+              </span>
+            ) : null}
+          </div>
+          <p className="text-heritage-muted mt-1 text-xs">Inclusive of all taxes</p>
         </div>
       )}
 
-      {/* Description */}
-      <p className="text-heritage-muted text-sm leading-relaxed sm:text-base">
-        {product.description}
-      </p>
-
-      {/* Pack Size / Variant Selector */}
-      {product.variants.length > 0 && (
-        <div className="space-y-2.5 pt-2">
-          <label className="text-heritage-charcoal block text-xs font-semibold tracking-wider uppercase">
-            Select Pack Size:
-          </label>
+      {!unpriced && product.variants.length > 1 && (
+        <fieldset>
+          <legend className="mb-2.5 text-sm font-medium">
+            Size:{' '}
+            <span className="text-heritage-muted font-normal">{selected.title}</span>
+          </legend>
           <div className="flex flex-wrap gap-2.5">
             {product.variants.map((v) => {
-              const isSelected = v.id === selectedVariantId;
+              const active = v.id === selected.id;
               return (
                 <button
                   key={v.id}
                   type="button"
-                  onClick={() => setSelectedVariantId(v.id)}
+                  onClick={() => {
+                    setSelectedVariantId(v.id);
+                    setQuantity(1);
+                  }}
+                  aria-pressed={active}
                   className={cn(
-                    'rounded-lg border px-3.5 py-2 text-left text-xs font-medium transition-all',
-                    isSelected
-                      ? 'border-heritage-maroon bg-heritage-cream-dark text-heritage-maroon ring-heritage-maroon/20 font-semibold ring-2'
-                      : 'border-heritage-border bg-heritage-cream text-heritage-charcoal hover:border-heritage-muted',
-                    !v.inStock && 'opacity-60',
+                    'min-w-24 rounded-xl border px-4 py-2.5 text-left transition-all',
+                    active
+                      ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
+                      : 'border-neutral-200 hover:border-neutral-400 dark:border-neutral-700',
+                    !v.inStock && 'opacity-50',
                   )}
                 >
-                  <div>{v.title}</div>
-                  <div className="text-heritage-muted mt-0.5 text-[10px] font-normal">
-                    {formatPrice(v.price.amount, v.price.currencyCode)}
-                    {!v.inStock && ' (Sold Out)'}
-                  </div>
+                  <span className="block text-sm font-semibold">{v.title}</span>
+                  <span
+                    className={cn(
+                      'block text-xs tabular-nums',
+                      active ? 'opacity-80' : 'text-heritage-muted',
+                    )}
+                  >
+                    {v.inStock
+                      ? formatPrice(v.price.amount, v.price.currencyCode)
+                      : 'Sold out'}
+                  </span>
                 </button>
               );
             })}
           </div>
+        </fieldset>
+      )}
+
+      {!unpriced && (
+        <div className="text-sm">
+          {inStock ? (
+            selected.stockQuantity !== undefined &&
+            selected.stockQuantity <= LOW_STOCK ? (
+              <p className="font-medium text-amber-700">
+                Only {selected.stockQuantity} left
+              </p>
+            ) : (
+              <p className="flex items-center gap-2 font-medium text-emerald-700">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" /> In stock
+              </p>
+            )
+          ) : (
+            <p className="font-medium text-neutral-500">Sold out. Back soon.</p>
+          )}
         </div>
       )}
 
-      {/* Stock Status Notification */}
-      <div className="pt-1">
-        {inStock ? (
-          <div className="flex items-center gap-2 text-xs font-medium text-emerald-800">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-600" />
-            <span>In Stock • Dispatched in 24 hours from Varanasi</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs font-medium text-amber-800">
-            <span className="h-2 w-2 rounded-full bg-amber-600" />
-            <span>Currently Sold Out. Next sun-cured harvest batch arriving soon.</span>
-          </div>
-        )}
-      </div>
-
-      {/* Add To Cart & Quantity Controls */}
-      <div className="flex flex-col items-stretch gap-3 pt-2 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 sm:flex-row">
         {inStock && (
-          <div className="border-heritage-border bg-heritage-cream inline-flex h-11 w-32 items-center justify-between rounded-lg border px-3">
+          <div className="flex h-12 w-full items-center justify-between rounded-xl border border-neutral-200 px-2 sm:w-32 dark:border-neutral-700">
             <button
               type="button"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={quantity <= 1}
-              className="text-heritage-charcoal p-1 text-base font-bold disabled:opacity-30"
+              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-neutral-100 disabled:opacity-30 dark:hover:bg-neutral-800"
               aria-label="Decrease quantity"
             >
-              -
+              <Minus className="h-4 w-4" />
             </button>
-            <span className="text-heritage-charcoal text-sm font-semibold">
+            <span className="text-sm font-semibold tabular-nums" aria-live="polite">
               {quantity}
             </span>
             <button
               type="button"
-              onClick={() => setQuantity((q) => q + 1)}
-              className="text-heritage-charcoal p-1 text-base font-bold"
+              onClick={() => setQuantity((q) => Math.min(maxQty, q + 1))}
+              disabled={quantity >= maxQty}
+              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-neutral-100 disabled:opacity-30 dark:hover:bg-neutral-800"
               aria-label="Increase quantity"
             >
-              +
+              <Plus className="h-4 w-4" />
             </button>
           </div>
         )}
 
-        <Button
-          type="button"
-          size="lg"
-          disabled={!inStock || isPending}
-          onClick={handleAddToCart}
-          className="h-11 flex-1 rounded-lg font-semibold shadow-md"
-        >
-          {isAdded ? (
-            <>
-              <Check className="h-5 w-5 text-white" />
-              <span>Added to Bag</span>
-            </>
-          ) : inStock ? (
-            <>
+        {!unpriced && (
+          <Button
+            variant="outline"
+            size="lg"
+            disabled={!inStock || isPending}
+            onClick={handleAddToCart}
+            className="h-12 flex-1 rounded-xl"
+          >
+            {isAdded ? (
+              <Check className="h-5 w-5" />
+            ) : (
               <ShoppingBag className="h-5 w-5" />
-              <span>Add to Bag</span>
-            </>
-          ) : (
-            <span>Sold Out</span>
-          )}
-        </Button>
-
-        <WishlistButton
-          product={product}
-          variant="button"
-          size="md"
-          className="h-11 px-4 sm:w-auto shrink-0"
-        />
+            )}
+            {isAdded ? 'Added' : inStock ? 'Add to bag' : 'Sold out'}
+          </Button>
+        )}
+        {inStock && (
+          <Button
+            size="lg"
+            onClick={handleBuyNow}
+            isLoading={buying}
+            disabled={isPending}
+            className="h-12 flex-1 rounded-xl"
+          >
+            {!buying && <Zap className="h-4 w-4" />}
+            Buy now
+          </Button>
+        )}
       </div>
 
-      {/* Trust & Guarantee Markers */}
-      <div className="border-heritage-border bg-heritage-cream-dark/30 text-heritage-muted space-y-2.5 rounded-xl border p-4 pt-4 text-xs">
-        <div className="flex items-center gap-2">
-          <Truck className="text-heritage-saffron-dark h-4 w-4 shrink-0" />
-          <span>Pan-India express delivery • Free on orders above ₹499</span>
+      {product.description && (
+        <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
+          <h2 className="text-sm font-semibold">About this product</h2>
+          <p className="text-heritage-muted mt-2 text-sm leading-relaxed whitespace-pre-line">
+            {product.description}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="text-heritage-green h-4 w-4 shrink-0" />
-          <span>{SITE_CONFIG.brand.fssaiBadgeText}</span>
-        </div>
-      </div>
+      )}
+
+      <ul className="grid gap-3 rounded-2xl bg-neutral-50 p-4 text-sm sm:grid-cols-2 dark:bg-neutral-800/50">
+        <li className="flex items-center gap-2.5">
+          <Truck className="text-heritage-muted h-4 w-4 shrink-0" />
+          Delivery across India. Charges shown at checkout.
+        </li>
+        <li className="flex items-center gap-2.5">
+          <ShieldCheck className="text-heritage-muted h-4 w-4 shrink-0" />
+          {SITE_CONFIG.brand.fssaiBadgeText}
+        </li>
+      </ul>
     </div>
   );
 }

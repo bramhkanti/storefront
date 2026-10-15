@@ -27,9 +27,7 @@ export default function WishlistPage(): React.JSX.Element {
   const { addToast } = useToast();
   const [movingId, setMovingId] = React.useState<string | null>(null);
 
-  const handleMoveToBag = async (
-    product: (typeof wishlistItems)[0],
-  ) => {
+  const handleMoveToBag = async (product: (typeof wishlistItems)[0]) => {
     const primaryVariant = product.variants[0];
     if (!primaryVariant || !primaryVariant.inStock) {
       addToast({
@@ -75,10 +73,7 @@ export default function WishlistPage(): React.JSX.Element {
             aria-label="Breadcrumb"
             className="text-heritage-muted mb-6 flex items-center gap-1.5 text-xs"
           >
-            <Link
-              href="/"
-              className="hover:text-heritage-maroon transition-colors"
-            >
+            <Link href="/" className="hover:text-heritage-maroon transition-colors">
               Home
             </Link>
             <ChevronRight className="h-3 w-3" />
@@ -89,8 +84,12 @@ export default function WishlistPage(): React.JSX.Element {
           <div className="border-heritage-border/80 mb-8 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="flex items-center gap-2.5">
-                <div className="bg-red-50 text-red-600 dark:bg-red-950/40 flex h-10 w-10 items-center justify-center rounded-full">
-                  <Heart fill="#dc2626" color="#dc2626" className="h-5 w-5 fill-red-600 text-red-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-950/40">
+                  <Heart
+                    fill="#dc2626"
+                    color="#dc2626"
+                    className="h-5 w-5 fill-red-600 text-red-600"
+                  />
                 </div>
                 <div>
                   <h1 className="text-heritage-maroon font-serif text-2xl font-bold sm:text-3xl">
@@ -109,7 +108,7 @@ export default function WishlistPage(): React.JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={clearWishlist}
-                className="text-heritage-muted hover:text-red-700 self-start text-xs font-semibold sm:self-auto"
+                className="text-heritage-muted self-start text-xs font-semibold hover:text-red-700 sm:self-auto"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 <span>Clear Wishlist</span>
@@ -129,7 +128,8 @@ export default function WishlistPage(): React.JSX.Element {
                     Sign in to sync your wishlist
                   </h2>
                   <p className="text-heritage-muted text-xs">
-                    Verify your mobile number with OTP to access your saved delicacies across devices.
+                    Verify your mobile number with OTP to access your saved delicacies
+                    across devices.
                   </p>
                 </div>
               </div>
@@ -149,35 +149,20 @@ export default function WishlistPage(): React.JSX.Element {
           {wishlistItems.length === 0 ? (
             <div className="border-heritage-border bg-heritage-cream rounded-2xl border p-10 text-center shadow-xs sm:p-16">
               <div className="bg-heritage-cream-dark text-heritage-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                <Heart className="h-8 w-8 text-heritage-muted" />
+                <Heart className="text-heritage-muted h-8 w-8" />
               </div>
               <h2 className="text-heritage-charcoal mt-5 font-serif text-2xl font-bold">
                 Your Wishlist is Empty
               </h2>
               <p className="text-heritage-muted mx-auto mt-2.5 max-w-md text-sm leading-relaxed">
-                Explore our handcrafted Banarasi pickles sun-cured in mustard oil,
-                pure desi ghee sweets, and crunchy slow-roasted makhana.
+                Explore our handcrafted Banarasi pickles sun-cured in mustard oil, pure
+                desi ghee sweets, and crunchy slow-roasted makhana.
               </p>
 
               <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <Link href="/achar">
-                  <Button variant="outline" size="sm" className="font-semibold">
-                    Traditional Pickles
-                  </Button>
-                </Link>
-                <Link href="/makhana">
-                  <Button variant="outline" size="sm" className="font-semibold">
-                    Roasted Makhana
-                  </Button>
-                </Link>
-                <Link href="/sweets">
-                  <Button variant="outline" size="sm" className="font-semibold">
-                    Desi Ghee Sweets
-                  </Button>
-                </Link>
-                <Link href="/collections/best-sellers">
+                <Link href="/categories">
                   <Button variant="primary" size="sm" className="font-semibold">
-                    Explore Bestsellers
+                    Start shopping
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -215,7 +200,7 @@ export default function WishlistPage(): React.JSX.Element {
                           onClick={() => handleRemove(product)}
                           aria-label={`Remove ${product.title} from wishlist`}
                           title="Remove from wishlist"
-                          className="text-heritage-muted hover:text-red-600 rounded-full p-1.5 transition-colors"
+                          className="text-heritage-muted rounded-full p-1.5 transition-colors hover:text-red-600"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -225,7 +210,7 @@ export default function WishlistPage(): React.JSX.Element {
                       {product.images && product.images[0] && (
                         <Link
                           href={`/products/${product.handle}`}
-                          className="relative mb-3 block aspect-square w-full overflow-hidden rounded-lg bg-heritage-cream-dark/50"
+                          className="bg-heritage-cream-dark/50 relative mb-3 block aspect-square w-full overflow-hidden rounded-lg"
                         >
                           <Image
                             src={product.images[0].url}

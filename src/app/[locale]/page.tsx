@@ -8,7 +8,12 @@ import {
   Testimonials,
   PromoBanner,
   SIGNATURE_RANGE_ITEMS,
+  resolveSignatureRange,
 } from '@/features/home';
+import { getCategoryTree } from '@/features/catalog/queries';
+import { listCollections } from '@/features/collection/queries';
+import { ProductShowcase } from '@/features/product/components/ProductShowcase';
+import { getFeaturedProducts } from '@/features/product/queries';
 import {
   buildOrganizationJsonLd,
   buildWebSiteJsonLd,
@@ -44,12 +49,24 @@ export async function generateMetadata({
 }
 
 export default async function HomePage(): Promise<ReactNode> {
+  const [categories, collections, featured] = await Promise.all([
+    getCategoryTree(),
+    listCollections(),
+    getFeaturedProducts(8),
+  ]);
+  const signatureItems = resolveSignatureRange(
+    SIGNATURE_RANGE_ITEMS,
+    categories,
+    collections,
+  );
+  const primaryCategory = categories[0];
+
   const organizationJsonLd = buildOrganizationJsonLd();
   const webSiteJsonLd = buildWebSiteJsonLd();
 
   // ItemList structured data dynamically mapped from single source of truth
   const categoryItemListJsonLd = buildItemListJsonLd(
-    SIGNATURE_RANGE_ITEMS.map((item) => ({
+    signatureItems.map((item) => ({
       name: `${item.name} (${item.tagline})`,
       href: item.href,
     })),
@@ -75,10 +92,25 @@ export default async function HomePage(): Promise<ReactNode> {
       />
 
       {/* 1. Hero Banner with Focal Barnie Jar & Calligraphy Badge */}
-      <HomeHero />
+      <HomeHero
+        {...(primaryCategory
+          ? {
+              primaryHref: `/${primaryCategory.handle}`,
+              primaryLabel: `Shop ${primaryCategory.name}`,
+            }
+          : {})}
+      />
 
       {/* 2. Signature Range: 4 Category Cards (Achar, Makhana, Sweets, Gifting) */}
-      <SignatureRange />
+      <SignatureRange items={signatureItems} />
+
+      {/* Live products from the store */}
+      <ProductShowcase
+        eyebrow="Fresh from our kitchen"
+        title="Bestsellers"
+        products={featured}
+        viewAllHref={primaryCategory ? `/${primaryCategory.handle}` : '/categories'}
+      />
 
       {/* 3. Value Proposition Strip: 5 Guarantees and Trust Pillars */}
       <TrustBar />

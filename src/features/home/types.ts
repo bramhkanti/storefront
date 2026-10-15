@@ -3,6 +3,10 @@ export interface SignatureRangeItem {
   name: string;
   tagline: string;
   href: string;
+  /** Category handles this card can point to (first that exists wins). */
+  categoryHandles?: string[] | undefined;
+  /** Or a collection handle. Cards matching neither are hidden. */
+  collectionHandle?: string | undefined;
   linkText: string;
   imageUrl: string;
   imageAlt: string;

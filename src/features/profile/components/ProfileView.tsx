@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/Dialog';
+import { useCart } from '@/lib/cart';
 import { useAuth, useToast } from '@/lib/store';
 import { useTheme } from '@/lib/theme';
 import { SITE_CONFIG } from '@/content/site';
@@ -70,8 +71,11 @@ export function ProfileView(): React.JSX.Element {
   const [isLanguageModalOpen, setIsLanguageModalOpen] = React.useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = React.useState(false);
 
-  const handleSignOut = () => {
-    logout();
+  const { refreshCart } = useCart();
+
+  const handleSignOut = async () => {
+    await logout();
+    await refreshCart();
     addToast({
       type: 'info',
       message: 'You have been signed out successfully.',
@@ -112,7 +116,7 @@ export function ProfileView(): React.JSX.Element {
           1. MOBILE VIEW (< lg)
           Clean native mobile app profile matching the user requirements:
           - Left-aligned Apple-style back button and Profile title
-          - Reordered Account: Change mobile number, Saved Address, My Active orders, My Past orders
+          - Account: Profile details, Saved Address, My Active orders, My Past orders
           - Store Preferences: Language, Theme (Dark, Default, System)
          ========================================================================= */}
       <div className="mx-auto max-w-md space-y-6 lg:hidden">
@@ -199,7 +203,7 @@ export function ProfileView(): React.JSX.Element {
             Account
           </h2>
           <div className="divide-y divide-neutral-100/80 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white dark:divide-neutral-800/80 dark:border-neutral-800 dark:bg-[#1c1917]">
-            {/* 1. Change mobile number */}
+            {/* 1. Profile details */}
             <button
               type="button"
               onClick={() => {
@@ -217,7 +221,7 @@ export function ProfileView(): React.JSX.Element {
                   aria-hidden="true"
                 />
                 <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                  Change mobile number
+                  Profile details
                 </span>
               </div>
               <div className="flex min-w-0 items-center gap-2">
@@ -275,9 +279,6 @@ export function ProfileView(): React.JSX.Element {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
-                  1 In Transit
-                </span>
                 <ChevronRight className="h-4 w-4 shrink-0 text-neutral-400" />
               </div>
             </button>
@@ -298,9 +299,6 @@ export function ProfileView(): React.JSX.Element {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                  1 Delivered
-                </span>
                 <ChevronRight className="h-4 w-4 shrink-0 text-neutral-400" />
               </div>
             </button>
@@ -468,8 +466,7 @@ export function ProfileView(): React.JSX.Element {
               Account Overview
             </h1>
             <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-neutral-500 sm:text-base dark:text-neutral-400">
-              Manage your phone number verification, package tracking, saved delivery
-              addresses, and store theme.
+              Manage your profile, orders, saved addresses and preferences.
             </p>
           </div>
 
@@ -601,10 +598,10 @@ export function ProfileView(): React.JSX.Element {
                 <div className="grid grid-cols-2 gap-3 text-left">
                   <div className="rounded-2xl border border-neutral-100 bg-[#F8F9FA] p-3 dark:border-neutral-800 dark:bg-[#25211d]">
                     <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                      Active Orders
+                      Saved Addresses
                     </p>
                     <p className="text-heritage-maroon mt-0.5 text-lg font-bold dark:text-red-400">
-                      {user?.orderCount ?? 0}
+                      {user?.addresses.length ?? 0}
                     </p>
                   </div>
                   <div className="rounded-2xl border border-neutral-100 bg-[#F8F9FA] p-3 dark:border-neutral-800 dark:bg-[#25211d]">
@@ -664,7 +661,7 @@ export function ProfileView(): React.JSX.Element {
               </div>
 
               <div className="divide-y divide-neutral-100 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-[#1c1917]">
-                {/* 1. Change mobile number */}
+                {/* 1. Profile details */}
                 <button
                   type="button"
                   onClick={() => {
@@ -679,11 +676,10 @@ export function ProfileView(): React.JSX.Element {
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                        Change mobile number
+                        Profile details
                       </h3>
                       <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                        Update your verified Indian mobile number with 6-digit OTP
-                        confirmation.
+                        Your name, email for receipts and login mobile number.
                       </p>
                     </div>
                   </div>
@@ -713,8 +709,7 @@ export function ProfileView(): React.JSX.Element {
                         Saved Address
                       </h3>
                       <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                        Add new addresses, fetch current GPS location, or set default
-                        delivery destination.
+                        Add, edit or choose your default delivery address.
                       </p>
                     </div>
                   </div>
@@ -743,15 +738,11 @@ export function ProfileView(): React.JSX.Element {
                         My Active orders
                       </h3>
                       <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                        Track ongoing consignments, live shipment dispatch from Varanasi,
-                        and ETA.
+                        Orders that are being packed or are on the way.
                       </p>
                     </div>
                   </div>
                   <div className="ml-4 flex shrink-0 items-center gap-3">
-                    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
-                      1 In Transit
-                    </span>
                     <ChevronRight className="h-5 w-5 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:text-neutral-700 dark:group-hover:text-neutral-200" />
                   </div>
                 </button>
@@ -771,15 +762,11 @@ export function ProfileView(): React.JSX.Element {
                         My Past orders
                       </h3>
                       <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                        Review delivered delicacy orders, itemized receipts, and order
-                        archives.
+                        Delivered and cancelled orders.
                       </p>
                     </div>
                   </div>
                   <div className="ml-4 flex shrink-0 items-center gap-3">
-                    <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                      1 Delivered
-                    </span>
                     <ChevronRight className="h-5 w-5 text-neutral-400 transition-all group-hover:translate-x-0.5 group-hover:text-neutral-700 dark:group-hover:text-neutral-200" />
                   </div>
                 </button>

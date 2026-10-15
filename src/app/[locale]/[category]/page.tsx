@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -32,7 +33,10 @@ interface PageProps {
 
 export async function generateStaticParams(): Promise<Array<{ category: string }>> {
   const handles = await getAllCategoryHandles();
-  return handles.filter((h) => !isReservedSlug(h)).map((category) => ({ category }));
+  return atLeastOne(
+    handles.filter((h) => !isReservedSlug(h)).map((category) => ({ category })),
+    { category: PLACEHOLDER_SLUG },
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -114,19 +118,20 @@ export default async function CategoryPage({
         {/* Subcategories Exploration (Strictly 4 in a row on desktop) */}
         {category.children && category.children.length > 0 && (
           <section aria-labelledby="subcategories-heading" className="space-y-4 pt-2">
-            <div className="flex items-center justify-between border-b border-heritage-border/70 pb-3">
+            <div className="border-heritage-border/70 flex items-center justify-between border-b pb-3">
               <div>
                 <h2
                   id="subcategories-heading"
-                  className="text-heritage-charcoal dark:text-neutral-100 font-serif text-xl font-bold sm:text-2xl"
+                  className="text-heritage-charcoal font-serif text-xl font-bold sm:text-2xl dark:text-neutral-100"
                 >
                   Explore {category.name} Varieties
                 </h2>
-                <p className="text-heritage-muted dark:text-neutral-400 text-xs sm:text-sm">
-                  Handcrafted specialty variations prepared following ancient traditional recipes
+                <p className="text-heritage-muted text-xs sm:text-sm dark:text-neutral-400">
+                  Handcrafted specialty variations prepared following ancient traditional
+                  recipes
                 </p>
               </div>
-              <span className="text-heritage-muted bg-heritage-cream-dark/60 dark:bg-neutral-800 rounded-full px-3 py-1 text-xs font-semibold">
+              <span className="text-heritage-muted bg-heritage-cream-dark/60 rounded-full px-3 py-1 text-xs font-semibold dark:bg-neutral-800">
                 {category.children.length} Varieties
               </span>
             </div>
@@ -142,7 +147,7 @@ export default async function CategoryPage({
                   <Link
                     key={sub.id}
                     href={`/${category.handle}/${sub.handle}`}
-                    className="group border-heritage-border/70 hover:border-heritage-maroon/40 bg-heritage-cream dark:bg-neutral-900 flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                    className="group border-heritage-border/70 hover:border-heritage-maroon/40 bg-heritage-cream flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:bg-neutral-900"
                   >
                     {/* Image Banner */}
                     <div className="bg-heritage-cream-dark relative aspect-4/3 w-full overflow-hidden">
@@ -157,13 +162,13 @@ export default async function CategoryPage({
                     </div>
 
                     {/* Content */}
-                    <div className="flex flex-1 flex-col justify-between p-4 space-y-3">
+                    <div className="flex flex-1 flex-col justify-between space-y-3 p-4">
                       <div className="space-y-1">
-                        <h3 className="text-heritage-charcoal group-hover:text-heritage-maroon dark:text-neutral-100 font-serif text-base font-bold transition-colors">
+                        <h3 className="text-heritage-charcoal group-hover:text-heritage-maroon font-serif text-base font-bold transition-colors dark:text-neutral-100">
                           {sub.name}
                         </h3>
                         {sub.description && (
-                          <p className="text-heritage-muted dark:text-neutral-400 line-clamp-2 text-xs leading-relaxed">
+                          <p className="text-heritage-muted line-clamp-2 text-xs leading-relaxed dark:text-neutral-400">
                             {sub.description}
                           </p>
                         )}

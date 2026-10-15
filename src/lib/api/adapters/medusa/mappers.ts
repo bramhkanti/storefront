@@ -1,54 +1,77 @@
 import type {
+  Address,
   Cart,
   CartItem,
   Category,
   CategoryBreadcrumb,
   Collection,
+  Customer,
   FoodAttributes,
+  Money,
+  Order,
+  OrderFulfillmentStatus,
+  OrderLine,
+  OrderPaymentStatus,
   Product,
   ProductImage,
   ProductVariant,
+  ShippingOption,
 } from '../../contracts/domain';
 import type {
+  MedusaAddressDto,
   MedusaCartDto,
   MedusaCategoryDto,
   MedusaCollectionDto,
+  MedusaCustomerDto,
+  MedusaLineItemDto,
+  MedusaOrderDto,
   MedusaProductDto,
+  MedusaShippingOptionDto,
 } from './dto';
 
-const DEFAULT_FSSAI = '12345678901234';
+/** Medusa returns major units (₹299.5); the domain uses integer paise. */
+export function toMinor(amountMajor: number | null | undefined): number {
+  return Math.round((amountMajor ?? 0) * 100);
+}
 
-/**
- * Maps a Medusa StoreProduct DTO to the pure domain Product entity.
- */
+/** Domain paise → Medusa major units. */
+export function toMajor(amountMinor: number): number {
+  return amountMinor / 100;
+}
+
+function money(amountMajor: number | null | undefined, currencyCode: string): Money {
+  return { amount: toMinor(amountMajor), currencyCode };
+}
+
+function str(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim() !== '' ? value : undefined;
+}
+
+function seoFrom(meta: Record<string, unknown>) {
+  const seo = (meta.seo as Record<string, unknown> | undefined) ?? {};
+  return {
+    title: str(seo.title),
+    description: str(seo.description),
+    canonicalOverride: str(seo.canonical_override),
+    noindex: typeof seo.noindex === 'boolean' ? seo.noindex : undefined,
+    ogImage: str(seo.og_image),
+  };
+}
+
 export function mapMedusaProductToDomain(dto: MedusaProductDto): Product {
   const meta = dto.metadata ?? {};
 
-  // Extract food attributes from product metadata or assign sensible defaults
-  const foodAttrsRaw =
-    (meta.food_attributes as Record<string, unknown> | undefined) ?? {};
+  // Food facts live in product metadata.food_attributes (set in the admin).
+  const food = (meta.food_attributes as Record<string, unknown> | undefined) ?? {};
   const foodAttributes: FoodAttributes = {
-    ingredients: Array.isArray(foodAttrsRaw.ingredients)
-      ? (foodAttrsRaw.ingredients as string[])
-      : [],
-    allergens: Array.isArray(foodAttrsRaw.allergens)
-      ? (foodAttrsRaw.allergens as string[])
-      : [],
-    shelfLife:
-      typeof foodAttrsRaw.shelf_life === 'string' ? foodAttrsRaw.shelf_life : '12 Months',
-    storage:
-      typeof foodAttrsRaw.storage === 'string'
-        ? foodAttrsRaw.storage
-        : 'Store in a cool, dry place away from direct sunlight.',
-    isVegetarian:
-      typeof foodAttrsRaw.is_vegetarian === 'boolean' ? foodAttrsRaw.is_vegetarian : true,
-    netWeight:
-      typeof foodAttrsRaw.net_weight === 'string' ? foodAttrsRaw.net_weight : '500g',
-    fssaiLicenseNumber:
-      typeof foodAttrsRaw.fssai_license === 'string'
-        ? foodAttrsRaw.fssai_license
-        : DEFAULT_FSSAI,
-    countryOfOrigin: 'India',
+    ingredients: Array.isArray(food.ingredients) ? (food.ingredients as string[]) : [],
+    allergens: Array.isArray(food.allergens) ? (food.allergens as string[]) : [],
+    shelfLife: str(food.shelf_life) ?? '',
+    storage: str(food.storage) ?? '',
+    isVegetarian: typeof food.is_vegetarian === 'boolean' ? food.is_vegetarian : true,
+    netWeight: str(food.net_weight) ?? '',
+    fssaiLicenseNumber: str(food.fssai_license) ?? '',
+    countryOfOrigin: str(food.country_of_origin) ?? 'India',
   };
 
   const images: ProductImage[] = (dto.images ?? []).map((img) => ({
@@ -56,113 +79,74 @@ export function mapMedusaProductToDomain(dto: MedusaProductDto): Product {
     url: img.url,
     altText: dto.title,
   }));
-
-  if (images.length === 0 && dto.thumbnail) {
-    images.push({
-      id: 'thumb',
-      url: dto.thumbnail,
-      altText: dto.title,
-    });
+  if (dto.thumbnail && !images.some((img) => img.url === dto.thumbnail)) {
+    images.unshift({ id: 'thumbnail', url: dto.thumbnail, altText: dto.title });
   }
 
   const variants: ProductVariant[] = (dto.variants ?? []).map((v) => {
     const vMeta = v.metadata ?? {};
-    const packSize =
-      typeof vMeta.pack_size === 'string' ? vMeta.pack_size : (v.title ?? 'Standard');
-    const amountMinor = v.calculated_price?.amount ?? v.original_price?.amount ?? 0;
-    const currencyCode = v.calculated_price?.currency_code?.toUpperCase() ?? 'INR';
-    const compareAmount = v.original_price?.amount;
+    const packSize = str(vMeta.pack_size) ?? v.title ?? 'Standard';
+    const currencyCode = (v.calculated_price?.currency_code ?? 'inr').toUpperCase();
+    const amount = toMinor(v.calculated_price?.calculated_amount);
+    const original = toMinor(v.calculated_price?.original_amount);
+    // Inventory is only enforced when the variant manages it.
+    const inStock =
+      v.manage_inventory === false ||
+      Boolean(v.allow_backorder) ||
+      (v.inventory_quantity ?? 0) > 0;
 
     return {
       id: v.id,
       title: v.title ?? packSize,
       packSize,
-      sku: v.sku ?? `SKU-${v.id}`,
-      price: { amount: Math.round(amountMinor), currencyCode },
-      compareAtPrice:
-        compareAmount && compareAmount > amountMinor
-          ? { amount: Math.round(compareAmount), currencyCode }
-          : undefined,
-      inStock: (v.inventory_quantity ?? 1) > 0,
-      stockQuantity: v.inventory_quantity ?? undefined,
-      weightGrams: v.weight ?? 500,
+      sku: v.sku ?? '',
+      price: { amount, currencyCode },
+      compareAtPrice: original > amount ? { amount: original, currencyCode } : undefined,
+      // A variant without a price in the region can't be bought.
+      inStock: inStock && v.calculated_price?.calculated_amount != null,
+      stockQuantity:
+        v.manage_inventory === false ? undefined : (v.inventory_quantity ?? 0),
+      weightGrams: v.weight ?? 0,
     };
   });
 
-  const categoryIds = (dto.categories ?? []).map((c) => c.id);
-  const primaryCategoryId = categoryIds[0] ?? 'cat_general';
+  // Smallest pack first.
+  variants.sort((a, b) => a.price.amount - b.price.amount);
 
-  const categorySpecificAttrs =
-    (meta.category_attributes as Record<string, unknown> | undefined) ?? {};
-
-  const seoMeta = (meta.seo as Record<string, unknown> | undefined) ?? {};
+  const categories = dto.categories ?? [];
 
   return {
     id: dto.id,
     handle: dto.handle,
     title: dto.title,
+    subtitle: dto.subtitle ?? undefined,
     description: dto.description ?? '',
     images,
-    primaryCategoryId,
-    categoryIds,
+    primaryCategoryId: categories[0]?.id ?? '',
+    primaryCategoryHandle: categories[0]?.handle,
+    categoryIds: categories.map((c) => c.id),
     collectionIds: dto.collection_id ? [dto.collection_id] : [],
     tags: (dto.tags ?? []).map((t) => t.value),
-    variants:
-      variants.length > 0
-        ? variants
-        : [
-            {
-              id: `v_${dto.id}`,
-              title: 'Standard',
-              packSize: 'Standard',
-              sku: `SKU-${dto.id}`,
-              price: { amount: 0, currencyCode: 'INR' },
-              inStock: true,
-              weightGrams: 500,
-            },
-          ],
+    variants,
     foodAttributes,
-    attributes: categorySpecificAttrs,
-    seo: {
-      title: typeof seoMeta.title === 'string' ? seoMeta.title : undefined,
-      description:
-        typeof seoMeta.description === 'string' ? seoMeta.description : undefined,
-      canonicalOverride:
-        typeof seoMeta.canonical_override === 'string'
-          ? seoMeta.canonical_override
-          : undefined,
-      noindex: typeof seoMeta.noindex === 'boolean' ? seoMeta.noindex : undefined,
-      ogImage: typeof seoMeta.og_image === 'string' ? seoMeta.og_image : undefined,
-    },
-    status: (dto.status as 'published' | 'draft' | 'archived') ?? 'published',
-    featured: Boolean(meta.featured),
-    createdAt: dto.created_at ?? new Date().toISOString(),
-    updatedAt: dto.updated_at ?? new Date().toISOString(),
+    attributes: (meta.category_attributes as Record<string, unknown> | undefined) ?? {},
+    seo: seoFrom(meta),
+    status: (dto.status as Product['status'] | null | undefined) ?? 'published',
+    featured: meta.featured === true || meta.featured === 'true',
+    createdAt: dto.created_at ?? '',
+    updatedAt: dto.updated_at ?? '',
   };
 }
 
-/**
- * Maps a Medusa StoreProductCategory DTO to the pure domain Category entity.
- */
 export function mapMedusaCategoryToDomain(
   dto: MedusaCategoryDto,
   parentPath: CategoryBreadcrumb[] = [],
 ): Category {
-  const currentBreadcrumb: CategoryBreadcrumb = {
-    id: dto.id,
-    handle: dto.handle,
-    name: dto.name,
-  };
-  const path = [...parentPath, currentBreadcrumb];
-
+  const path = [...parentPath, { id: dto.id, handle: dto.handle, name: dto.name }];
   const meta = dto.metadata ?? {};
-  const seoMeta = (meta.seo as Record<string, unknown> | undefined) ?? {};
-  const faqsRaw =
-    (meta.faqs as Array<{ question: string; answer: string }> | undefined) ?? [];
-
-  const children = (dto.category_children as MedusaCategoryDto[] | undefined)?.map(
-    (child) => mapMedusaCategoryToDomain(child, path),
-  );
+  const faqsRaw = Array.isArray(meta.faqs)
+    ? (meta.faqs as Array<{ question?: unknown; answer?: unknown }>)
+    : [];
 
   return {
     id: dto.id,
@@ -171,88 +155,213 @@ export function mapMedusaCategoryToDomain(
     parentId: dto.parent_category_id ?? null,
     path,
     description: dto.description ?? '',
-    introContent: typeof meta.intro_content === 'string' ? meta.intro_content : undefined,
-    faqs: faqsRaw.map((f) => ({ question: f.question, answer: f.answer })),
-    image:
-      typeof meta.image_url === 'string'
-        ? {
-            url: meta.image_url,
-            altText: dto.name,
-          }
-        : undefined,
-    seo: {
-      title: typeof seoMeta.title === 'string' ? seoMeta.title : undefined,
-      description:
-        typeof seoMeta.description === 'string' ? seoMeta.description : undefined,
-      canonicalOverride:
-        typeof seoMeta.canonical_override === 'string'
-          ? seoMeta.canonical_override
-          : undefined,
-      noindex: typeof seoMeta.noindex === 'boolean' ? seoMeta.noindex : undefined,
-    },
-    children,
+    introContent: str(meta.intro_content),
+    faqs: faqsRaw
+      .filter((f) => typeof f.question === 'string' && typeof f.answer === 'string')
+      .map((f) => ({ question: f.question as string, answer: f.answer as string })),
+    image: str(meta.image_url)
+      ? { url: meta.image_url as string, altText: dto.name }
+      : undefined,
+    seo: seoFrom(meta),
+    children: (dto.category_children as MedusaCategoryDto[] | null | undefined)?.map(
+      (child) => mapMedusaCategoryToDomain(child, path),
+    ),
   };
 }
 
-/**
- * Maps a Medusa StoreCollection DTO to the pure domain Collection entity.
- */
-export function mapMedusaCollectionToDomain(dto: MedusaCollectionDto): Collection {
+export function mapMedusaCollectionToDomain(
+  dto: MedusaCollectionDto,
+  productCount?: number,
+): Collection {
   const meta = dto.metadata ?? {};
-  const seoMeta = (meta.seo as Record<string, unknown> | undefined) ?? {};
-
+  // `banner_url` is the admin-facing name; `image_url` kept for older data.
+  const imageUrl = str(meta.banner_url) ?? str(meta.image_url);
   return {
     id: dto.id,
     handle: dto.handle,
     title: dto.title,
-    description: typeof meta.description === 'string' ? meta.description : '',
-    introContent: typeof meta.intro_content === 'string' ? meta.intro_content : undefined,
-    image:
-      typeof meta.image_url === 'string'
-        ? {
-            url: meta.image_url,
-            altText: dto.title,
-          }
-        : undefined,
-    productCount: dto.products_count ?? undefined,
-    seo: {
-      title: typeof seoMeta.title === 'string' ? seoMeta.title : undefined,
-      description:
-        typeof seoMeta.description === 'string' ? seoMeta.description : undefined,
-    },
+    description: str(meta.description) ?? '',
+    introContent: str(meta.intro_content),
+    image: imageUrl
+      ? { url: imageUrl, altText: str(meta.banner_alt) ?? dto.title }
+      : undefined,
+    productCount,
+    seo: seoFrom(meta),
   };
 }
 
-/**
- * Maps a Medusa StoreCart DTO to the pure domain Cart entity.
- */
-export function mapMedusaCartToDomain(dto: MedusaCartDto): Cart {
-  const currencyCode = dto.currency_code?.toUpperCase() ?? 'INR';
-  const items: CartItem[] = (dto.items ?? []).map((line) => ({
+export function mapMedusaAddressToDomain(dto: MedusaAddressDto): Address {
+  return {
+    id: dto.id ?? undefined,
+    firstName: dto.first_name ?? '',
+    lastName: dto.last_name ?? '',
+    phone: dto.phone ?? '',
+    address1: dto.address_1 ?? '',
+    address2: dto.address_2 ?? undefined,
+    city: dto.city ?? '',
+    province: dto.province ?? '',
+    postalCode: dto.postal_code ?? '',
+    countryCode: dto.country_code ?? 'in',
+    label: dto.address_name ?? undefined,
+    isDefault: dto.is_default_shipping ?? undefined,
+  };
+}
+
+export function mapAddressToMedusa(address: Address) {
+  return {
+    first_name: address.firstName,
+    last_name: address.lastName,
+    phone: address.phone,
+    address_1: address.address1,
+    address_2: address.address2 ?? '',
+    city: address.city,
+    province: address.province,
+    postal_code: address.postalCode,
+    country_code: (address.countryCode || 'in').toLowerCase(),
+  };
+}
+
+/** Customer address book entries additionally carry a label. */
+export function mapCustomerAddressToMedusa(address: Address) {
+  return {
+    ...mapAddressToMedusa(address),
+    address_name: address.label ?? '',
+    is_default_shipping: Boolean(address.isDefault),
+  };
+}
+
+function mapLine(line: MedusaLineItemDto, currencyCode: string): CartItem & OrderLine {
+  const totalMajor = line.total ?? line.subtotal ?? line.unit_price * line.quantity;
+  return {
     id: line.id,
     productId: line.product_id ?? '',
     variantId: line.variant_id ?? '',
-    title: line.title,
+    title: line.product_title ?? line.title,
     variantTitle: line.variant_title ?? '',
     handle: line.product_handle ?? '',
     thumbnailUrl: line.thumbnail ?? undefined,
-    unitPrice: { amount: Math.round(line.unit_price), currencyCode },
-    totalPrice: { amount: Math.round(line.total), currencyCode },
     quantity: line.quantity,
-  }));
+    unitPrice: money(line.unit_price, currencyCode),
+    totalPrice: money(totalMajor, currencyCode),
+    total: money(totalMajor, currencyCode),
+  };
+}
 
-  const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
-  const subtotalAmount = Math.round(dto.subtotal ?? 0);
-  const shippingAmount = Math.round(dto.shipping_total ?? 0);
-  const totalAmount = Math.round(dto.total ?? subtotalAmount + shippingAmount);
+export function mapMedusaCartToDomain(dto: MedusaCartDto): Cart {
+  const currencyCode = dto.currency_code.toUpperCase();
+  const items = (dto.items ?? []).map((line) => mapLine(line, currencyCode));
+  const shippingMethod = dto.shipping_methods?.[0];
+  const shippingAddress =
+    dto.shipping_address && dto.shipping_address.address_1
+      ? mapMedusaAddressToDomain(dto.shipping_address)
+      : undefined;
 
   return {
     id: dto.id,
     items,
-    itemCount,
-    subtotal: { amount: subtotalAmount, currencyCode },
-    shippingEstimate: { amount: shippingAmount, currencyCode },
-    total: { amount: totalAmount, currencyCode },
+    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    subtotal: money(dto.item_total ?? dto.subtotal, currencyCode),
+    shippingEstimate: shippingMethod
+      ? money(dto.shipping_total, currencyCode)
+      : undefined,
+    discountTotal: money(dto.discount_total, currencyCode),
+    taxTotal: money(dto.tax_total, currencyCode),
+    total: money(dto.total, currencyCode),
     currencyCode,
+    email: dto.email ?? undefined,
+    customerId: dto.customer_id ?? undefined,
+    shippingAddress,
+    shippingOptionId: shippingMethod?.shipping_option_id ?? undefined,
+    promoCodes: (dto.promotions ?? []).map((p) => p.code ?? '').filter(Boolean),
+  };
+}
+
+export function mapMedusaShippingOptionToDomain(
+  dto: MedusaShippingOptionDto,
+  currencyCode: string,
+): ShippingOption {
+  return {
+    id: dto.id,
+    name: dto.name,
+    amount: money(dto.calculated_price?.calculated_amount ?? dto.amount, currencyCode),
+  };
+}
+
+const PAYMENT_STATUSES: readonly OrderPaymentStatus[] = [
+  'not_paid',
+  'awaiting',
+  'authorized',
+  'captured',
+  'partially_refunded',
+  'refunded',
+  'canceled',
+  'requires_action',
+];
+
+function paymentStatus(value: string | null | undefined): OrderPaymentStatus {
+  return PAYMENT_STATUSES.find((s) => s === value) ?? 'other';
+}
+
+function fulfillmentStatus(value: string | null | undefined): OrderFulfillmentStatus {
+  switch (value) {
+    case 'not_fulfilled':
+      return 'not_fulfilled';
+    case 'fulfilled':
+    case 'partially_fulfilled':
+      return 'fulfilled';
+    case 'shipped':
+    case 'partially_shipped':
+      return 'shipped';
+    case 'delivered':
+    case 'partially_delivered':
+      return 'delivered';
+    case 'canceled':
+      return 'canceled';
+    default:
+      return 'other';
+  }
+}
+
+export function mapMedusaOrderToDomain(dto: MedusaOrderDto): Order {
+  const currencyCode = dto.currency_code.toUpperCase();
+  const items = (dto.items ?? []).map((line) => mapLine(line, currencyCode));
+  const collection = dto.payment_collections?.[0];
+  const providerId =
+    collection?.payments?.[0]?.provider_id ??
+    collection?.payment_sessions?.[0]?.provider_id ??
+    undefined;
+
+  return {
+    id: dto.id,
+    displayId: dto.display_id,
+    createdAt: dto.created_at,
+    status: dto.status,
+    paymentStatus: paymentStatus(dto.payment_status),
+    fulfillmentStatus: fulfillmentStatus(dto.fulfillment_status),
+    email: dto.email ?? undefined,
+    items,
+    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    shippingAddress: dto.shipping_address
+      ? mapMedusaAddressToDomain(dto.shipping_address)
+      : undefined,
+    shippingMethodName: dto.shipping_methods?.[0]?.name ?? undefined,
+    paymentProviderId: providerId,
+    subtotal: money(dto.item_total ?? dto.subtotal, currencyCode),
+    shippingTotal: money(dto.shipping_total, currencyCode),
+    discountTotal: money(dto.discount_total, currencyCode),
+    taxTotal: money(dto.tax_total, currencyCode),
+    total: money(dto.total, currencyCode),
+    currencyCode,
+  };
+}
+
+export function mapMedusaCustomerToDomain(dto: MedusaCustomerDto): Customer {
+  return {
+    id: dto.id,
+    firstName: dto.first_name ?? '',
+    lastName: dto.last_name ?? '',
+    email: dto.email ?? undefined,
+    phone: dto.phone ?? undefined,
+    addresses: (dto.addresses ?? []).map(mapMedusaAddressToDomain),
   };
 }

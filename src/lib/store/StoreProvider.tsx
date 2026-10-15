@@ -4,7 +4,6 @@ import * as React from 'react';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { createRootStore, type RootStore, type RootStoreState } from './root-store';
-import { readStoredUser } from './slices/auth.slice';
 
 /**
  * Per-request Zustand Store Context.
@@ -26,17 +25,11 @@ export function StoreProvider({
   const [store] = React.useState(() => createRootStore(initialState));
 
   React.useEffect(() => {
-    try {
-      const storedUser = readStoredUser();
-      if (storedUser) {
-        store.getState().login(storedUser);
-        store.getState().loadWishlistForUser(storedUser.id);
-      } else {
-        store.getState().loadWishlistForUser();
-      }
-    } catch {
-      store.getState().loadWishlistForUser();
-    }
+    // The session lives in an httpOnly cookie; ask the server who is logged in.
+    void store
+      .getState()
+      .hydrateSession()
+      .then((user) => store.getState().loadWishlistForUser(user?.id));
   }, [store]);
 
   return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>;
@@ -118,10 +111,12 @@ export function useAuth() {
     useShallow((state) => ({
       user: state.user,
       isAuthenticated: state.isAuthenticated,
+      isSessionLoaded: state.isSessionLoaded,
       isAuthModalOpen: state.isAuthModalOpen,
       openAuthModal: state.openAuthModal,
       closeAuthModal: state.closeAuthModal,
       login: state.login,
+      hydrateSession: state.hydrateSession,
       logout: state.logout,
       updateProfile: state.updateProfile,
       addAddress: state.addAddress,

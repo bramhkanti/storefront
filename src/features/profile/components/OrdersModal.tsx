@@ -1,17 +1,22 @@
 'use client';
 
 import * as React from 'react';
-import { Package, Truck, CheckCircle2, Clock } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ChevronDown, Clock, Loader2, Package, PackageCheck, Truck } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/Dialog';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import type { Order } from '@/lib/api/contracts/domain';
+import { listMyOrdersAction } from '@/lib/auth/actions';
+import { describeOrderStatus, isActiveOrder } from '@/lib/orders/status';
+import { useAuth } from '@/lib/store';
 import { formatPrice } from '@/lib/utils/money';
+import { cn } from '@/lib/utils/cn';
 
 export interface OrdersModalProps {
   isOpen: boolean;
@@ -19,212 +24,227 @@ export interface OrdersModalProps {
   defaultTab?: 'active' | 'past';
 }
 
-interface OrderItem {
-  id: string;
-  orderNumber: string;
-  date: string;
-  status: 'in_transit' | 'delivered';
-  statusText: string;
-  items: Array<{ name: string; quantity: number; weight: string }>;
-  totalAmount: number;
-  deliveryEta: string;
+const dateFormat = new Intl.DateTimeFormat('en-IN', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
+
+function OrderCard({ order }: { order: Order }) {
+  const [open, setOpen] = React.useState(false);
+  const status = describeOrderStatus(order);
+
+  return (
+    <article className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-[#201d1a]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold">Order #{order.displayId}</p>
+          <p className="text-heritage-muted text-xs">
+            {dateFormat.format(new Date(order.createdAt))} · {order.itemCount}{' '}
+            {order.itemCount === 1 ? 'item' : 'items'}
+          </p>
+        </div>
+        <span
+          className={cn(
+            'rounded-full px-2.5 py-1 text-[11px] font-semibold',
+            status.tone === 'success' &&
+              'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300',
+            status.tone === 'progress' &&
+              'bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300',
+            status.tone === 'muted' &&
+              'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
+          )}
+        >
+          {status.label}
+        </span>
+      </div>
+
+      <ul className="mt-3 space-y-2.5">
+        {order.items.map((item) => (
+          <li key={item.id} className="flex items-center gap-3">
+            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
+              {item.thumbnailUrl && (
+                <Image
+                  src={item.thumbnailUrl}
+                  alt=""
+                  fill
+                  sizes="44px"
+                  className="object-cover"
+                />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <Link
+                href={`/products/${item.handle}`}
+                className="line-clamp-1 text-sm font-medium hover:underline"
+              >
+                {item.title}
+              </Link>
+              <p className="text-heritage-muted text-xs">
+                {item.variantTitle} · Qty {item.quantity}
+              </p>
+            </div>
+            <span className="text-sm tabular-nums">
+              {formatPrice(item.total.amount, item.total.currencyCode)}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-3 flex items-center justify-between border-t border-neutral-100 pt-3 dark:border-neutral-800">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="text-heritage-muted inline-flex items-center gap-1 text-xs font-medium hover:text-neutral-900 dark:hover:text-neutral-100"
+          aria-expanded={open}
+        >
+          Details
+          <ChevronDown
+            className={cn('h-3.5 w-3.5 transition-transform', open && 'rotate-180')}
+          />
+        </button>
+        <span className="text-sm font-semibold tabular-nums">
+          {formatPrice(order.total.amount, order.total.currencyCode)}
+        </span>
+      </div>
+
+      {open && (
+        <dl className="text-heritage-muted mt-3 space-y-1.5 text-xs">
+          {order.shippingAddress && (
+            <div>
+              <dt className="font-medium text-neutral-900 dark:text-neutral-100">
+                Delivering to
+              </dt>
+              <dd>
+                {order.shippingAddress.firstName} {order.shippingAddress.lastName},{' '}
+                {order.shippingAddress.address1}, {order.shippingAddress.city},{' '}
+                {order.shippingAddress.province} {order.shippingAddress.postalCode}
+              </dd>
+            </div>
+          )}
+          <div className="flex justify-between">
+            <dt>Items</dt>
+            <dd className="tabular-nums">
+              {formatPrice(order.subtotal.amount, order.currencyCode)}
+            </dd>
+          </div>
+          {order.discountTotal.amount > 0 && (
+            <div className="flex justify-between">
+              <dt>Discount</dt>
+              <dd className="tabular-nums">
+                −{formatPrice(order.discountTotal.amount, order.currencyCode)}
+              </dd>
+            </div>
+          )}
+          <div className="flex justify-between">
+            <dt>
+              Delivery{order.shippingMethodName ? ` (${order.shippingMethodName})` : ''}
+            </dt>
+            <dd className="tabular-nums">
+              {order.shippingTotal.amount === 0
+                ? 'Free'
+                : formatPrice(order.shippingTotal.amount, order.currencyCode)}
+            </dd>
+          </div>
+          <div className="flex justify-between">
+            <dt>Payment</dt>
+            <dd>{status.payment}</dd>
+          </div>
+        </dl>
+      )}
+    </article>
+  );
 }
 
-const DEMO_ORDERS: OrderItem[] = [
-  {
-    id: 'ord_1',
-    orderNumber: 'BK-89412',
-    date: '12 Oct 2026',
-    status: 'in_transit',
-    statusText: 'In Transit — Dispatched from Varanasi Barnie Facility',
-    items: [
-      { name: 'Banarasi Traditional Aam Achar (Sun-Cured)', quantity: 2, weight: '500g Glass Jar' },
-      { name: 'Himalayan Pink Salt Slow-Roasted Makhana', quantity: 3, weight: '150g Pouch' },
-    ],
-    totalAmount: 114000, // ₹1,140 in paise
-    deliveryEta: '15 Oct 2026',
-  },
-  {
-    id: 'ord_2',
-    orderNumber: 'BK-76190',
-    date: '28 Sep 2026',
-    status: 'delivered',
-    statusText: 'Delivered to Varanasi address',
-    items: [
-      { name: 'Pure Desi Cow Ghee Besan Ladoo', quantity: 1, weight: '500g Heritage Box' },
-      { name: 'Stuffed Red Chilli Pickle (Bharwa Lal Mirch)', quantity: 1, weight: '400g Glass Jar' },
-    ],
-    totalAmount: 98000, // ₹980 in paise
-    deliveryEta: '01 Oct 2026',
-  },
-];
+function OrdersModalBody({ initialTab }: { initialTab: 'active' | 'past' }) {
+  const { logout, openAuthModal } = useAuth();
+  const [tab, setTab] = React.useState(initialTab);
+  const [orders, setOrders] = React.useState<Order[] | null>(null);
+  const [error, setError] = React.useState('');
 
-interface OrdersModalBodyProps {
-  initialTab: 'active' | 'past';
-  onClose: () => void;
-}
+  React.useEffect(() => {
+    let cancelled = false;
+    void listMyOrdersAction(1).then(async (result) => {
+      if (cancelled) return;
+      if (result.ok) {
+        setOrders(result.data.items);
+      } else if (result.unauthenticated) {
+        await logout();
+        openAuthModal();
+      } else {
+        setError(result.error);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [logout, openAuthModal]);
 
-function OrdersModalBody({ initialTab, onClose }: OrdersModalBodyProps): React.JSX.Element {
-  const [activeTab, setActiveTab] = React.useState<'active' | 'past'>(initialTab);
-
-  const activeOrders = React.useMemo(
-    () => DEMO_ORDERS.filter((o) => o.status === 'in_transit'),
-    [],
-  );
-
-  const pastOrders = React.useMemo(
-    () => DEMO_ORDERS.filter((o) => o.status === 'delivered'),
-    [],
-  );
-
-  const displayedOrders = activeTab === 'active' ? activeOrders : pastOrders;
+  const active = orders?.filter(isActiveOrder) ?? [];
+  const past = orders?.filter((o) => !isActiveOrder(o)) ?? [];
+  const shown = tab === 'active' ? active : past;
 
   return (
     <>
       <DialogHeader className="text-left">
-        <div className="flex items-center gap-2.5">
-          <div className="bg-heritage-maroon-light dark:bg-heritage-maroon/20 text-heritage-maroon flex h-9 w-9 items-center justify-center rounded-full shrink-0">
-            {activeTab === 'active' ? (
-              <Truck className="h-5 w-5" />
-            ) : (
-              <Package className="h-5 w-5" />
-            )}
-          </div>
-          <div>
-            <DialogTitle className="text-heritage-maroon dark:text-red-400 font-serif text-xl font-bold">
-              {activeTab === 'active' ? 'My Active Orders' : 'My Past Orders'}
-            </DialogTitle>
-            <DialogDescription className="text-heritage-muted dark:text-neutral-400 text-xs">
-              {activeTab === 'active'
-                ? 'Track ongoing consignments and live delivery dispatches from Varanasi.'
-                : 'Review delivered heritage delicacy orders, quantities, and receipts.'}
-            </DialogDescription>
-          </div>
+        <div className="bg-heritage-maroon-light text-heritage-maroon mb-2 flex h-10 w-10 items-center justify-center rounded-full">
+          {tab === 'active' ? (
+            <Truck className="h-5 w-5" />
+          ) : (
+            <Package className="h-5 w-5" />
+          )}
         </div>
+        <DialogTitle className="text-xl font-semibold tracking-tight">
+          My orders
+        </DialogTitle>
+        <DialogDescription className="text-heritage-muted text-sm">
+          Track deliveries and see what you ordered before.
+        </DialogDescription>
       </DialogHeader>
 
-      {/* Tab Controls */}
-      <div className="mt-4 grid grid-cols-2 gap-1.5 p-1 bg-neutral-200/60 dark:bg-neutral-800/80 rounded-2xl">
-        <button
-          type="button"
-          onClick={() => setActiveTab('active')}
-          className={`py-2 px-3 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 ${
-            activeTab === 'active'
-              ? 'bg-white dark:bg-[#25211d] text-heritage-maroon dark:text-red-300'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
-          }`}
-        >
-          <Clock className="h-3.5 w-3.5" />
-          <span>Active Orders ({activeOrders.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('past')}
-          className={`py-2 px-3 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 ${
-            activeTab === 'past'
-              ? 'bg-white dark:bg-[#25211d] text-heritage-maroon dark:text-red-300'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
-          }`}
-        >
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          <span>Past Orders ({pastOrders.length})</span>
-        </button>
+      <div className="mt-4 grid grid-cols-2 gap-1 rounded-2xl bg-neutral-100 p-1 dark:bg-neutral-800/80">
+        {(
+          [
+            ['active', 'In progress', active.length, Clock],
+            ['past', 'Completed', past.length, PackageCheck],
+          ] as const
+        ).map(([key, label, count, Icon]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            className={cn(
+              'flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition-all',
+              tab === key
+                ? 'text-heritage-maroon bg-white shadow-xs dark:bg-[#25211d] dark:text-red-300'
+                : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400',
+            )}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {label}
+            {orders && ` (${count})`}
+          </button>
+        ))}
       </div>
 
-      {/* Order Cards List */}
-      <div className="mt-4 space-y-4">
-        {displayedOrders.length === 0 ? (
-          <div className="text-center py-10 px-4 bg-white dark:bg-[#201d1a] rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-800">
-            <Package className="h-8 w-8 text-neutral-300 dark:text-neutral-600 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-              {activeTab === 'active'
-                ? 'No active orders in transit'
-                : 'No past orders found'}
-            </p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-xs mx-auto">
-              {activeTab === 'active'
-                ? 'Your placed orders will show up here with live package tracking and delivery ETA.'
-                : 'Delivered orders will appear here for easy reordering and invoice records.'}
+      <div className="mt-4 space-y-3">
+        {!orders && !error && (
+          <div className="text-heritage-muted flex items-center justify-center gap-2 py-10 text-sm">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading orders…
+          </div>
+        )}
+        {error && <p className="py-6 text-center text-sm text-red-600">{error}</p>}
+        {orders && shown.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-neutral-300 px-4 py-10 text-center dark:border-neutral-700">
+            <Package className="mx-auto mb-2 h-8 w-8 text-neutral-300" />
+            <p className="text-sm font-medium">
+              {tab === 'active' ? 'No orders on the way' : 'No completed orders yet'}
             </p>
           </div>
-        ) : (
-          displayedOrders.map((order) => (
-            <div
-              key={order.id}
-              className="border-heritage-border/80 dark:border-neutral-800 bg-white dark:bg-[#201d1a] rounded-2xl border p-4"
-            >
-              <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
-                <div>
-                  <span className="text-heritage-charcoal dark:text-neutral-100 font-mono text-xs font-bold">
-                    Order #{order.orderNumber}
-                  </span>
-                  <p className="text-heritage-muted dark:text-neutral-400 text-[11px]">{order.date}</p>
-                </div>
-                {order.status === 'in_transit' ? (
-                  <Badge variant="saffron" className="flex items-center gap-1 text-[11px]">
-                    <Clock className="h-3 w-3" />
-                    <span>In Transit</span>
-                  </Badge>
-                ) : (
-                  <Badge variant="vegetarian" className="flex items-center gap-1 text-[11px]">
-                    <CheckCircle2 className="h-3 w-3" />
-                    <span>Delivered</span>
-                  </Badge>
-                )}
-              </div>
-
-              <div className="divide-neutral-100 dark:divide-neutral-800 divide-y py-2.5">
-                {order.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between py-2 text-xs">
-                    <div>
-                      <p className="text-heritage-charcoal dark:text-neutral-200 font-medium">{item.name}</p>
-                      <p className="text-heritage-muted dark:text-neutral-400 text-[11px]">
-                        Qty: {item.quantity} · {item.weight}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-heritage-border/60 dark:border-neutral-800/80 bg-heritage-cream-dark/30 dark:bg-neutral-800/40 mt-1 flex items-center justify-between rounded-xl border p-2.5 text-xs">
-                <div>
-                  <p className="text-heritage-muted dark:text-neutral-400 text-[10px] uppercase tracking-wider font-semibold">
-                    Total Amount
-                  </p>
-                  <p className="text-heritage-charcoal dark:text-neutral-100 font-bold">
-                    {formatPrice(order.totalAmount, 'INR')}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1.5 text-heritage-maroon dark:text-red-400 text-xs font-semibold">
-                  {order.status === 'in_transit' ? (
-                    <>
-                      <Truck className="h-4 w-4" />
-                      <span>ETA: {order.deliveryEta}</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                      <span className="text-emerald-700 dark:text-emerald-400">Delivered</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
         )}
-      </div>
-
-      <div className="mt-5 flex justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onClose}
-          className="rounded-xl text-xs"
-        >
-          Close
-        </Button>
+        {shown.map((order) => (
+          <OrderCard key={order.id} order={order} />
+        ))}
       </div>
     </>
   );
@@ -237,14 +257,8 @@ export function OrdersModal({
 }: OrdersModalProps): React.JSX.Element {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="border-heritage-border bg-heritage-cream dark:bg-[#1c1917] dark:border-neutral-800 max-h-[90vh] max-w-lg overflow-y-auto p-6 sm:p-7">
-        {isOpen && (
-          <OrdersModalBody
-            key={defaultTab}
-            initialTab={defaultTab}
-            onClose={onClose}
-          />
-        )}
+      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto p-6 sm:p-7 dark:border-neutral-800 dark:bg-[#1c1917]">
+        {isOpen && <OrdersModalBody key={defaultTab} initialTab={defaultTab} />}
       </DialogContent>
     </Dialog>
   );

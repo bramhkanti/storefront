@@ -1,11 +1,12 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import type { CartItem } from '@/lib/api/contracts/domain';
 import { formatPrice } from '@/lib/utils/money';
-import { Badge } from '@/components/ui/Badge';
+import { cn } from '@/lib/utils/cn';
 
 export interface CartItemRowProps {
   item: CartItem;
@@ -13,6 +14,7 @@ export interface CartItemRowProps {
   onUpdateQuantity: (lineItemId: string, quantity: number) => void;
   onRemove: (lineItemId: string) => void;
   onItemClick?: (() => void) | undefined;
+  size?: 'compact' | 'large';
 }
 
 export function CartItemRow({
@@ -21,79 +23,95 @@ export function CartItemRow({
   onUpdateQuantity,
   onRemove,
   onItemClick,
+  size = 'compact',
 }: CartItemRowProps): React.JSX.Element {
-  return (
-    <div className="border-heritage-border/60 flex items-start gap-3 border-b py-4 last:border-b-0">
-      {/* Thumbnail placeholder with pure veg indicator */}
-      <div className="border-heritage-border bg-heritage-cream-dark/50 relative flex h-18 w-18 shrink-0 items-center justify-center rounded-lg border text-center">
-        <Badge variant="vegetarian" className="scale-75 text-[9px]">
-          Veg
-        </Badge>
-      </div>
+  const large = size === 'large';
 
-      {/* Item info */}
-      <div className="flex-1 space-y-1">
+  return (
+    <div className="flex gap-4 py-4">
+      <Link
+        href={`/products/${item.handle}`}
+        onClick={() => onItemClick?.()}
+        className={cn(
+          'relative shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800',
+          large ? 'h-24 w-24 sm:h-28 sm:w-28' : 'h-20 w-20',
+        )}
+      >
+        {item.thumbnailUrl && (
+          <Image
+            src={item.thumbnailUrl}
+            alt={item.title}
+            fill
+            sizes={large ? '112px' : '80px'}
+            className="object-cover"
+          />
+        )}
+      </Link>
+
+      <div className="flex min-w-0 flex-1 flex-col justify-between">
         <div className="flex items-start justify-between gap-2">
-          <Link
-            href={`/products/${item.handle}`}
-            onClick={() => onItemClick?.()}
-            className="text-heritage-charcoal hover:text-heritage-maroon line-clamp-1 text-sm font-semibold transition-colors"
+          <div className="min-w-0">
+            <Link
+              href={`/products/${item.handle}`}
+              onClick={() => onItemClick?.()}
+              className={cn(
+                'line-clamp-2 font-medium hover:underline',
+                large ? 'text-base' : 'text-sm',
+              )}
+            >
+              {item.title}
+            </Link>
+            {item.variantTitle && (
+              <p className="text-heritage-muted mt-0.5 text-xs">{item.variantTitle}</p>
+            )}
+          </div>
+          <span
+            className={cn('font-semibold tabular-nums', large ? 'text-base' : 'text-sm')}
           >
-            {item.title}
-          </Link>
-          <button
-            type="button"
-            onClick={() => onRemove(item.id)}
-            disabled={disabled}
-            className="text-heritage-muted p-1 transition-colors hover:text-rose-700 disabled:opacity-40"
-            aria-label={`Remove ${item.title} from bag`}
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+            {formatPrice(item.totalPrice.amount, item.totalPrice.currencyCode)}
+          </span>
         </div>
 
-        {/* Variant Pack Size */}
-        {item.variantTitle && (
-          <div className="text-heritage-muted text-xs">Pack: {item.variantTitle}</div>
-        )}
-
-        {/* Price and Quantity Controls */}
-        <div className="flex items-center justify-between pt-2">
-          {/* Quantity Controls */}
-          <div className="border-heritage-border bg-heritage-cream inline-flex h-8 items-center rounded-md border">
+        <div className="mt-2 flex items-center justify-between">
+          <div className="inline-flex h-9 items-center rounded-full border border-neutral-200 dark:border-neutral-700">
             <button
               type="button"
               onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
               disabled={disabled || item.quantity <= 1}
-              className="text-heritage-charcoal hover:bg-heritage-cream-dark inline-flex h-8 w-8 items-center justify-center rounded-l-md transition-colors disabled:opacity-30"
-              aria-label="Decrease quantity"
+              className="flex h-9 w-9 items-center justify-center rounded-l-full transition-colors hover:bg-neutral-100 disabled:opacity-30 dark:hover:bg-neutral-800"
+              aria-label={`Decrease quantity of ${item.title}`}
             >
-              <Minus className="h-3 w-3" />
+              <Minus className="h-3.5 w-3.5" />
             </button>
-            <span className="text-heritage-charcoal w-7 text-center text-xs font-semibold">
+            <span className="w-7 text-center text-sm font-medium tabular-nums">
               {item.quantity}
             </span>
             <button
               type="button"
               onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
               disabled={disabled}
-              className="text-heritage-charcoal hover:bg-heritage-cream-dark inline-flex h-8 w-8 items-center justify-center rounded-r-md transition-colors disabled:opacity-30"
-              aria-label="Increase quantity"
+              className="flex h-9 w-9 items-center justify-center rounded-r-full transition-colors hover:bg-neutral-100 disabled:opacity-30 dark:hover:bg-neutral-800"
+              aria-label={`Increase quantity of ${item.title}`}
             >
-              <Plus className="h-3 w-3" />
+              <Plus className="h-3.5 w-3.5" />
             </button>
           </div>
 
-          {/* Total Line Price */}
-          <div className="text-right">
-            <div className="text-heritage-maroon font-serif text-sm font-bold">
-              {formatPrice(item.totalPrice.amount, item.totalPrice.currencyCode)}
-            </div>
+          <div className="flex items-center gap-3">
             {item.quantity > 1 && (
-              <div className="text-heritage-muted text-[10px]">
+              <span className="text-heritage-muted hidden text-xs tabular-nums sm:inline">
                 {formatPrice(item.unitPrice.amount, item.unitPrice.currencyCode)} each
-              </div>
+              </span>
             )}
+            <button
+              type="button"
+              onClick={() => onRemove(item.id)}
+              disabled={disabled}
+              className="text-heritage-muted rounded-full p-2 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-40 dark:hover:bg-red-950/40"
+              aria-label={`Remove ${item.title} from bag`}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>

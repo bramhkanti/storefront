@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/layout/Container';
@@ -19,7 +20,10 @@ interface CollectionPageProps {
 
 export async function generateStaticParams(): Promise<Array<{ handle: string }>> {
   const collections = await listCollections();
-  return collections.map((c) => ({ handle: c.handle }));
+  return atLeastOne(
+    collections.map((c) => ({ handle: c.handle })),
+    { handle: PLACEHOLDER_SLUG },
+  );
 }
 
 export async function generateMetadata({

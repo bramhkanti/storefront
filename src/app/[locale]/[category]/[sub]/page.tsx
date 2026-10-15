@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { Container } from '@/components/layout/Container';
@@ -39,7 +40,7 @@ export async function generateStaticParams(): Promise<
     }
   }
 
-  return params;
+  return atLeastOne(params, { category: PLACEHOLDER_SLUG, sub: PLACEHOLDER_SLUG });
 }
 
 export async function generateMetadata({

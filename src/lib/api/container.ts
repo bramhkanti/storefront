@@ -6,7 +6,9 @@ import { MockAdapter } from './adapters/mock';
 import type {
   CartService,
   CategoryReader,
+  CheckoutService,
   CollectionReader,
+  CustomerAuthService,
   ProductReader,
   RedirectReader,
   SearchService,
@@ -27,6 +29,8 @@ interface ApiContainer {
   redirectReader: RedirectReader;
   searchService: SearchService;
   cartService: CartService;
+  checkoutService: CheckoutService;
+  customerAuthService: CustomerAuthService;
 }
 
 let containerInstance: ApiContainer | null = null;
@@ -42,6 +46,7 @@ function createContainer(): ApiContainer {
     const medusaAdapter = new MedusaAdapter({
       baseUrl: serverEnv.API_BASE_URL,
       publishableKey: serverEnv.MEDUSA_PUBLISHABLE_KEY,
+      regionId: serverEnv.MEDUSA_REGION_ID,
       timeoutMs: serverEnv.API_TIMEOUT_MS,
     });
 
@@ -52,6 +57,8 @@ function createContainer(): ApiContainer {
       redirectReader: medusaAdapter,
       searchService: medusaAdapter,
       cartService: medusaAdapter,
+      checkoutService: medusaAdapter,
+      customerAuthService: medusaAdapter,
     };
   }
 
@@ -65,6 +72,8 @@ function createContainer(): ApiContainer {
     redirectReader: mockAdapter,
     searchService: mockAdapter,
     cartService: mockAdapter,
+    checkoutService: mockAdapter,
+    customerAuthService: mockAdapter,
   };
 }
 
@@ -98,4 +107,12 @@ export function getSearchService(): SearchService {
 
 export function getCartService(): CartService {
   return getContainer().cartService;
+}
+
+export function getCheckoutService(): CheckoutService {
+  return getContainer().checkoutService;
+}
+
+export function getCustomerAuthService(): CustomerAuthService {
+  return getContainer().customerAuthService;
 }

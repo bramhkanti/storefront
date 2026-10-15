@@ -32,6 +32,8 @@ const nextConfig: NextConfig = {
 
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Local Medusa serves uploads from http://localhost:9000 in development.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV !== 'production',
     remotePatterns: [
       {
         protocol: 'https',

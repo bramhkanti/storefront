@@ -66,6 +66,33 @@ Key environment variables:
 | `NEXT_PUBLIC_SITE_URL`   | Canonical site host                                         | `https://bramhkanti.com`     |
 | `NEXT_PUBLIC_BRAND_NAME` | Brand display name                                          | `Bramhkanti`                 |
 
+### Connecting to the Medusa backend (real catalog, cart, checkout, login)
+
+```bash
+# .env.local
+API_ADAPTER=medusa
+API_BASE_URL=http://localhost:9000            # or https://<your-backend>.onrender.com
+MEDUSA_PUBLISHABLE_KEY=pk_...                 # Medusa admin > Settings > Publishable API Keys
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+What runs against Medusa (`src/lib/api/adapters/medusa/`):
+
+| Area     | How                                                                                                                                                                                                 |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Catalog  | products with region prices (INR, GST-inclusive), stock, categories, collections (`metadata.banner_url` = collection banner)                                                                        |
+| Bag      | Medusa cart; id in the httpOnly `bramhkanti_cart_id` cookie; promo codes                                                                                                                            |
+| Checkout | `/checkout`: address → delivery option (from Medusa shipping options) → payment (Razorpay if enabled on the region, otherwise cash on delivery via `pp_system_default`) → `/order-confirmed?order=` |
+| Login    | mobile OTP (backend `phone-otp` provider, see backend `OTP_LOGIN.md`); customer token in the httpOnly `bramhkanti_customer_token` cookie; guest bag is moved to the account on login                |
+| Account  | profile (name/email), saved addresses, order history: all from Medusa                                                                                                                               |
+| Wishlist | browser storage per user (no backend yet)                                                                                                                                                           |
+
+Payments are never confirmed by the browser: `placeOrderAction` asks Medusa to complete
+the cart, and Medusa verifies the payment with Razorpay itself.
+
+`API_ADAPTER=mock` still works for UI work without a backend (demo OTP `123456`, demo delivery
+options, cash on delivery only).
+
 ### Running the Application
 
 ```bash

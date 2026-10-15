@@ -6,3 +6,4 @@ export * from './components/TrustBar';
 export * from './components/HeritageStory';
 export * from './components/Testimonials';
 export * from './components/PromoBanner';
+export * from './resolve';
