@@ -5,16 +5,15 @@ import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
 import { getCart } from '@/lib/cart/queries';
 import { formatPrice } from '@/lib/utils/money';
+import { buildMetadata } from '@/lib/seo/metadata';
 import { SITE_CONFIG } from '@/content/site';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Shopping Bag',
   description: 'Review your items and proceed to checkout.',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  canonicalPath: '/cart',
+  noindex: true,
+});
 
 export default async function CartPage(): Promise<React.JSX.Element> {
   const cart = await getCart();

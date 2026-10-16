@@ -22,7 +22,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   return (
     <article
       className={cn(
-        'group border-heritage-border bg-heritage-cream hover:border-heritage-maroon/30 flex min-h-[340px] flex-col justify-between rounded-xl border p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md',
+        'group border-line bg-surface hover:border-brand-600 flex min-h-[340px] flex-col justify-between rounded-2xl border p-5 shadow-xs transition-colors duration-200',
         !inStock && 'opacity-85',
         className,
       )}
@@ -34,7 +34,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             <Badge variant="vegetarian">Veg</Badge>
             {!inStock && <Badge variant="saffron">Sold Out</Badge>}
             {inStock && product.foodAttributes.shelfLife && (
-              <span className="text-heritage-muted text-[11px]">
+              <span className="text-fg-muted text-[11px]">
                 {product.foodAttributes.shelfLife}
               </span>
             )}
@@ -47,13 +47,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
           href={`/products/${product.handle}`}
           className="block group-hover:underline"
         >
-          <h3 className="text-heritage-charcoal group-hover:text-heritage-maroon line-clamp-2 min-h-[3.25rem] font-serif text-lg font-bold transition-colors">
+          <h3 className="text-fg group-hover:text-primary line-clamp-2 min-h-[3.25rem] font-serif text-lg font-bold transition-colors">
             {product.title}
           </h3>
         </Link>
 
         {/* Short description with reserved stable line height */}
-        <p className="text-heritage-muted mt-1.5 line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed">
+        <p className="text-fg-muted mt-1.5 line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed">
           {product.description}
         </p>
 
@@ -63,7 +63,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             {product.tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="bg-heritage-cream-dark text-heritage-charcoal rounded-xs px-1.5 py-0.5 text-[10px] font-medium"
+                className="bg-surface-soft border border-line text-fg rounded-xs px-1.5 py-0.5 text-[10px] font-medium"
               >
                 #{tag}
               </span>
@@ -73,15 +73,15 @@ export function ProductCard({ product, className }: ProductCardProps) {
       </div>
 
       {/* Pricing & CTA */}
-      <div className="border-heritage-border/60 mt-6 flex items-center justify-between border-t pt-4">
+      <div className="border-line mt-6 flex items-center justify-between border-t pt-4">
         <div>
           {price && (
-            <div className="text-heritage-maroon font-serif text-lg font-extrabold tabular-nums">
+            <div className="text-primary font-serif text-lg font-extrabold tabular-nums">
               {formatPrice(price.amount, price.currencyCode)}
             </div>
           )}
           {primaryVariant?.title && (
-            <div className="text-heritage-muted text-[11px]">
+            <div className="text-fg-muted text-[11px]">
               Pack: {primaryVariant.title}
             </div>
           )}
@@ -91,9 +91,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <Button
             variant={inStock ? 'outline' : 'ghost'}
             size="sm"
-            className="rounded-md text-xs font-semibold"
+            className="rounded-full text-xs font-semibold px-4"
           >
-            {inStock ? 'View Options' : 'Out of Stock'}
+            {inStock ? 'Select Pack' : 'Out of Stock'}
           </Button>
         </Link>
       </div>

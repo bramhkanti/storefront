@@ -153,15 +153,17 @@ export function buildCategoryJsonLd(
   category: Category,
   products: Product[],
   baseUrl?: string,
+  canonicalPath?: string,
 ) {
   const siteUrl = baseUrl ?? publicEnv.NEXT_PUBLIC_SITE_URL;
+  const path = canonicalPath ?? `/${category.handle}`;
 
   return {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: category.name,
     description: category.description,
-    url: `${siteUrl}/${category.handle}`,
+    url: `${siteUrl}${path.startsWith('/') ? path : `/${path}`}`,
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: products.length,

@@ -7,9 +7,18 @@ import { Home, LayoutGrid, Gift, User } from 'lucide-react';
 import { useAuth } from '@/lib/store';
 import { cn } from '@/lib/utils/cn';
 
-export function MobileBottomNav(): React.JSX.Element {
-  const pathname = usePathname();
+export function MobileBottomNav(): React.JSX.Element | null {
+  const pathname = usePathname() || '';
   const { isAuthenticated, user } = useAuth();
+
+  // Hide mobile bottom navigation bar on product details pages in favor of sticky purchase actions
+  const segments = pathname.split('/').filter(Boolean);
+  const productsIndex = segments.indexOf('products');
+  const isProductPage = productsIndex !== -1 && segments.length > productsIndex + 1;
+
+  if (isProductPage) {
+    return null;
+  }
 
   // Check active states
   const isHome = pathname === '/' || pathname === '/en' || pathname === '/hi';

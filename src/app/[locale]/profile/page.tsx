@@ -27,7 +27,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const safeLocale = (isSupportedLocale(locale) ? locale : DEFAULT_LOCALE) as Locale;
 
-  const meta = buildMetadata({
+  return buildMetadata({
     title: `My Profile | ${SITE_CONFIG.brand.name} Handcrafted Heritage`,
     description:
       'Manage your Bramhkanti profile, track your heritage pickles and sweets orders, and manage delivery addresses.',
@@ -35,20 +35,6 @@ export async function generateMetadata({
     locale: safeLocale,
     noindex: true,
   });
-
-  return {
-    ...meta,
-    robots: {
-      index: false,
-      follow: false,
-      nocache: true,
-      googleBot: {
-        index: false,
-        follow: false,
-        noimageindex: true,
-      },
-    },
-  };
 }
 
 export default async function ProfilePage({

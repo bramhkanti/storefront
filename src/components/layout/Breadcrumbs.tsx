@@ -12,6 +12,7 @@ export interface BreadcrumbsProps {
   items: BreadcrumbItem[];
   className?: string | undefined;
   baseUrl?: string | undefined;
+  singleLine?: boolean | undefined;
 }
 
 /**
@@ -21,6 +22,7 @@ export function Breadcrumbs({
   items,
   className,
   baseUrl = 'https://bramhkanti.com',
+  singleLine = false,
 }: BreadcrumbsProps) {
   const allItems: BreadcrumbItem[] = [{ name: 'Home', href: '/' }, ...items];
 
@@ -38,37 +40,49 @@ export function Breadcrumbs({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn('text-heritage-muted py-3 text-sm', className)}
+      className={cn('text-fg-muted py-1 text-xs sm:text-sm', className)}
     >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ol className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <ol
+        className={cn(
+          'flex items-center gap-1.5 sm:gap-2',
+          singleLine
+            ? 'flex-nowrap overflow-x-auto no-scrollbar whitespace-nowrap'
+            : 'flex-wrap',
+        )}
+      >
         {allItems.map((item, index) => {
           const isLast = index === allItems.length - 1;
 
           return (
             <li
               key={`${item.name}-${index}`}
-              className="inline-flex items-center gap-1.5"
+              className="inline-flex items-center gap-1.5 sm:gap-2 shrink-0"
             >
               {index > 0 && (
                 <ChevronRight
-                  className="text-heritage-border h-3.5 w-3.5"
+                  className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-fg-muted/50 stroke-[2.2]"
                   aria-hidden="true"
                 />
               )}
               {isLast ? (
-                <span className="text-heritage-charcoal font-medium" aria-current="page">
+                <span
+                  className="text-fg font-semibold truncate max-w-[190px] sm:max-w-none"
+                  aria-current="page"
+                >
                   {item.name}
                 </span>
               ) : (
                 <Link
                   href={item.href ?? '/'}
-                  className="hover:text-heritage-maroon inline-flex items-center gap-1 transition-colors"
+                  className="hover:text-primary text-fg-muted inline-flex items-center gap-1 transition-colors"
                 >
-                  {index === 0 && <Home className="h-3.5 w-3.5" aria-hidden="true" />}
+                  {index === 0 && (
+                    <Home className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-fg-muted" aria-hidden="true" />
+                  )}
                   <span>{item.name}</span>
                 </Link>
               )}

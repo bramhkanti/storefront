@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { SITE_CONFIG } from '@/content/site';
 import { formatPrice } from '@/lib/utils/money';
+import { buildMetadata } from '@/lib/seo/metadata';
 
 interface OrderConfirmedPageProps {
   searchParams: Promise<{
@@ -22,15 +23,13 @@ interface OrderConfirmedPageProps {
 
 export const instant = false;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Order Confirmed | Bramhkanti Heritage Foods',
   description:
     'Thank you for your order. Handcrafted heritage foods dispatched from Varanasi.',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  canonicalPath: '/order-confirmed',
+  noindex: true,
+});
 
 export default async function OrderConfirmedPage({
   searchParams,

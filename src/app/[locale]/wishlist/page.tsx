@@ -10,7 +10,6 @@ import {
   ArrowRight,
   ShieldCheck,
   LogIn,
-  ChevronRight,
 } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
@@ -70,38 +69,22 @@ export default function WishlistPage(): React.JSX.Element {
     <div className="py-8 sm:py-12">
       <Container>
         <div className="mx-auto max-w-6xl">
-          {/* Breadcrumbs */}
-          <nav
-            aria-label="Breadcrumb"
-            className="text-heritage-muted mb-6 flex items-center gap-1.5 text-xs"
-          >
-            <Link
-              href="/"
-              className="hover:text-heritage-maroon transition-colors"
-            >
-              Home
-            </Link>
-            <ChevronRight className="h-3 w-3" />
-            <span className="text-heritage-charcoal font-medium">Wishlist</span>
-          </nav>
-
-          {/* Page Heading */}
-          <div className="border-heritage-border/80 mb-8 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          {/* Page Heading matching My Account styling */}
+          <div className="border-b border-line mb-8 flex flex-col gap-4 pb-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
               <div className="flex items-center gap-2.5">
-                <div className="bg-red-50 text-red-600 dark:bg-red-950/40 flex h-10 w-10 items-center justify-center rounded-full">
-                  <Heart fill="#dc2626" color="#dc2626" className="h-5 w-5 fill-red-600 text-red-600" />
-                </div>
-                <div>
-                  <h1 className="text-heritage-maroon font-serif text-2xl font-bold sm:text-3xl">
-                    My Wishlist
-                  </h1>
-                  <p className="text-heritage-muted text-xs sm:text-sm">
-                    {wishlistItems.length}{' '}
-                    {wishlistItems.length === 1 ? 'delicacy' : 'delicacies'} saved
-                  </p>
-                </div>
+                <h1 className="text-[22px] font-semibold tracking-tight text-neutral-900 sm:text-3xl lg:text-4xl dark:text-neutral-50">
+                  My Wishlist
+                </h1>
+                {wishlistItems.length > 0 && (
+                  <span className="rounded-full bg-brand-50 border border-brand-600/30 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
+                    {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'}
+                  </span>
+                )}
               </div>
+              <p className="mt-1 text-[14px] leading-relaxed font-normal text-neutral-500 sm:text-base dark:text-neutral-400">
+                Browse your saved delicacies, check batch availability, and move handcrafted favorites directly to your shopping bag.
+              </p>
             </div>
 
             {wishlistItems.length > 0 && (
@@ -109,9 +92,9 @@ export default function WishlistPage(): React.JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={clearWishlist}
-                className="text-heritage-muted hover:text-red-700 self-start text-xs font-semibold sm:self-auto"
+                className="text-neutral-500 hover:text-red-700 self-start text-xs font-semibold sm:self-auto shrink-0"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                 <span>Clear Wishlist</span>
               </Button>
             )}

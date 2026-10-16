@@ -8,7 +8,7 @@ import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
 import { Button } from '@/components/ui/Button';
 import { SITE_CONFIG } from '@/content/site';
-import { useCartUi, useSearchUi, useWishlist } from '@/lib/store';
+import { useCartUi, useWishlist } from '@/lib/store';
 import { useCart } from '@/lib/cart';
 import type { Category } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
@@ -21,7 +21,6 @@ export interface HeaderNavProps {
 export function HeaderNav({ categories, cartCount = 0 }: HeaderNavProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { openCart } = useCartUi();
-  const { openSearch } = useSearchUi();
   const { optimisticCart } = useCart();
   const { wishlistCount } = useWishlist();
 
@@ -30,16 +29,15 @@ export function HeaderNav({ categories, cartCount = 0 }: HeaderNavProps) {
   return (
     <>
       <div className="flex items-center gap-1 sm:gap-2">
-        {/* Search button (triggers search modal) */}
-        <button
-          type="button"
-          onClick={openSearch}
+        {/* Search button (navigates directly to /search) */}
+        <Link
+          href="/search"
           aria-label={SITE_CONFIG.ui.searchPlaceholder}
           className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
         >
           <Search className="h-5 w-5" aria-hidden="true" />
           <span className="sr-only">Search</span>
-        </button>
+        </Link>
 
         {/* Wishlist button */}
         <Link

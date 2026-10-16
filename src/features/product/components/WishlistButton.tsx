@@ -126,8 +126,8 @@ export function WishlistButton({
       className={cn(
         'group/wish relative inline-flex items-center justify-center rounded-full transition-all active:scale-90 focus-visible:outline-2 focus-visible:outline-heritage-maroon',
         isFavorited
-          ? 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/50 dark:border-red-800 hover:bg-red-100 shadow-xs'
-          : 'bg-heritage-cream/90 text-heritage-muted hover:bg-heritage-cream-dark hover:text-red-600 border border-heritage-border/70 shadow-2xs',
+          ? 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/50 dark:border-red-800 hover:bg-red-100 shadow-none'
+          : 'bg-white/90 text-heritage-muted hover:bg-heritage-cream-dark hover:text-red-600 border border-heritage-border shadow-none',
         iconDimensions[size],
         className,
       )}

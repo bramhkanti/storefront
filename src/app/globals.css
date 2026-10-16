@@ -3,28 +3,26 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Brand Primary Tokens */
-  --color-primary: #dc2b1b;
-  --color-primary-hover: #bb2417;
-  --color-primary-dark: #8f1c11;
-  --color-primary-light: #fdedec;
+  /* Primitives */
+  --color-brand-50: #fdefec;  --color-brand-100: #f8e6e2; --color-brand-200: #f1c4bd;
+  --color-brand-300: #e6978c; --color-brand-400: #d66a5c; --color-brand-500: #c14436;
+  --color-brand-600: #ad2f26; --color-brand-700: #8e261e; --color-brand-800: #6b1a17;
+  --color-brand-900: #4a1210;
 
-  /* Heritage Semantic Tokens */
-  --color-heritage-cream: #fcfaf7;
-  --color-heritage-cream-dark: #f4ede4;
-  --color-heritage-maroon: #dc2b1b;
-  --color-heritage-maroon-hover: #bb2417;
-  --color-heritage-maroon-dark: #8f1c11;
-  --color-heritage-maroon-light: #fdedec;
-  --color-heritage-saffron: #d97706;
-  --color-heritage-saffron-dark: #78350f;
-  --color-heritage-saffron-light: #fef3c7;
-  --color-heritage-gold: #f6ce40;
-  --color-heritage-charcoal: #241814;
-  --color-heritage-muted: #685950;
-  --color-heritage-border: #e7ded3;
-  --color-heritage-green: #14532d;
-  --color-heritage-green-bg: #ecfdf5;
+  --color-turmeric-50: #fff8e5;  --color-turmeric-100: #fdeec2; --color-turmeric-200: #f8dc8a;
+  --color-turmeric-300: #f0c255; --color-turmeric-400: #e3a62b; --color-turmeric-500: #c48a12;
+  --color-turmeric-600: #9a6808; --color-turmeric-700: #7a5009; --color-turmeric-800: #573807;
+  --color-turmeric-900: #3a2605;
+
+  --color-leaf-50: #eaf4ee;  --color-leaf-100: #cfe6d7; --color-leaf-200: #a3cdb2;
+  --color-leaf-300: #6fae87; --color-leaf-400: #408a5f; --color-leaf-500: #2a7449;
+  --color-leaf-600: #1e6b3a; --color-leaf-700: #1a5e33; --color-leaf-800: #14532d;
+  --color-leaf-900: #0c2a18;
+
+  --color-warm-50: #fcfaf7;  --color-warm-100: #f4ede4; --color-warm-200: #e7ded3;
+  --color-warm-300: #d3c6b8; --color-warm-400: #a99b8f; --color-warm-500: #85766c;
+  --color-warm-600: #685950; --color-warm-700: #4a3d36; --color-warm-800: #33271f;
+  --color-warm-900: #241814;
 
   --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-sans:
@@ -33,10 +31,90 @@
     sans-serif;
 }
 
+/* Legacy aliases: same names as before, now pointing at the new scales */
+@theme inline {
+  --color-heritage-cream: var(--color-warm-50);
+  --color-heritage-cream-dark: var(--color-warm-100);
+  --color-heritage-maroon: var(--color-brand-600);
+  --color-heritage-maroon-hover: var(--color-brand-700);
+  --color-heritage-maroon-dark: var(--color-brand-800);
+  --color-heritage-maroon-light: var(--color-brand-50);
+  --color-heritage-saffron: var(--color-turmeric-600);
+  --color-heritage-saffron-dark: var(--color-turmeric-800);
+  --color-heritage-saffron-light: var(--color-turmeric-100);
+  --color-heritage-gold: var(--color-turmeric-300);
+  --color-heritage-charcoal: var(--color-warm-900);
+  --color-heritage-muted: var(--color-warm-600);
+  --color-heritage-border: var(--color-warm-200);
+  --color-heritage-green: var(--color-leaf-800);
+  --color-heritage-green-bg: var(--color-leaf-50);
+  --color-primary-dark: var(--color-brand-800);
+  --color-primary-light: var(--color-brand-50);
+}
+
+/* Semantic roles (theme-aware) */
 :root {
   color-scheme: light;
   --line-height-body: 1.5;
   --line-height-heading: 1.25;
+
+  --c-page: #fcfaf7; --c-surface: #ffffff; --c-surface-soft: #f4ede4;
+  --c-fg: #241814; --c-fg-muted: #685950;
+  --c-line: #e7ded3; --c-line-strong: #85766c;
+  --c-primary: #ad2f26; --c-primary-hover: #8e261e; --c-on-primary: #ffffff;
+  --c-primary-tint: #f8e6e2; --c-link: #ad2f26; --c-brand-deep: #6b1a17;
+  --c-accent: #e3a62b; --c-on-accent: #241814; --c-accent-tint: #fdeec2; --c-accent-text: #7a5009;
+  --c-success: #1e6b3a; --c-success-text: #14532d; --c-success-tint: #eaf4ee;
+  --c-danger: #b42318; --c-danger-tint: #fef0ee;
+  --c-info: #1d5f8a; --c-info-tint: #e8f1f7;
+  --c-focus: #ad2f26; --c-star: #e3a62b; --c-star-empty: #e7ded3;
+  --c-overlay: rgb(36 24 20 / 0.55);
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --c-page: #161412; --c-surface: #1f1b18; --c-surface-soft: #28231f;
+  --c-fg: #f5f0e8; --c-fg-muted: #b8ab9e;
+  --c-line: #3a332d; --c-line-strong: #8c7f73;
+  --c-primary: #c8392c; --c-primary-hover: #ad2f26;
+  --c-primary-tint: #3a1b18; --c-link: #f08a7c;
+  --c-accent-tint: #33270f; --c-accent-text: #f0c255;
+  --c-success-text: #6fcb8f; --c-success-tint: #16281d;
+  --c-danger: #f4857a; --c-danger-tint: #3a1815;
+  --c-info: #7fb6de; --c-info-tint: #14232d;
+  --c-focus: #f08a7c; --c-star-empty: #3a332d;
+}
+
+@theme inline {
+  --color-page: var(--c-page);
+  --color-surface: var(--c-surface);
+  --color-surface-soft: var(--c-surface-soft);
+  --color-fg: var(--c-fg);
+  --color-fg-muted: var(--c-fg-muted);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-primary: var(--c-primary);
+  --color-primary-hover: var(--c-primary-hover);
+  --color-on-primary: var(--c-on-primary);
+  --color-primary-tint: var(--c-primary-tint);
+  --color-link: var(--c-link);
+  --color-brand-deep: var(--c-brand-deep);
+  --color-accent: var(--c-accent);
+  --color-on-accent: var(--c-on-accent);
+  --color-accent-tint: var(--c-accent-tint);
+  --color-accent-text: var(--c-accent-text);
+  --color-success: var(--c-success);
+  --color-success-text: var(--c-success-text);
+  --color-success-tint: var(--c-success-tint);
+  --color-danger: var(--c-danger);
+  --color-danger-tint: var(--c-danger-tint);
+  --color-info: var(--c-info);
+  --color-info-tint: var(--c-info-tint);
+  --color-focus: var(--c-focus);
+  --color-star: var(--c-star);
+  --color-star-empty: var(--c-star-empty);
+  --color-overlay: var(--c-overlay);
 }
 
 /* Base English Typography */
@@ -88,22 +166,13 @@
   font-style: normal !important;
 }
 
-html.dark {
-  color-scheme: dark;
-}
-
-html.dark body {
-  background-color: #161412;
-  color: #f5f0e8;
-}
-
 body {
   margin: 0;
   padding: 0;
   font-family: var(--font-sans);
   line-height: var(--line-height-body, 1.5);
-  background-color: var(--color-heritage-cream);
-  color: var(--color-heritage-charcoal);
+  background-color: var(--color-page);
+  color: var(--color-fg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition:
@@ -121,16 +190,17 @@ h6 {
 }
 
 /* Form controls: ensure font family, line height, and font features inherit cleanly */
-input,
-button,
-textarea,
-select,
-optgroup {
-  font-family: inherit;
-  font-feature-settings: inherit;
-  font-variation-settings: inherit;
-  font-size: 100%;
-  line-height: inherit;
+@layer base {
+  input,
+  button,
+  textarea,
+  select,
+  optgroup {
+    font-family: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    line-height: inherit;
+  }
 }
 
 /* Tabular numerals for prices, cart subtotals, and counters */
@@ -142,19 +212,21 @@ optgroup {
 
 /* Custom focus ring for accessible keyboard navigation */
 :focus-visible {
-  outline: 2px solid var(--color-heritage-maroon);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
-/* Form inputs: clean crisp borders on selection without outer halo ring */
-input:focus,
 input:focus-visible,
-textarea:focus,
 textarea:focus-visible,
-select:focus,
 select:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+::selection {
+  background: var(--color-accent-tint);
+  color: var(--color-fg);
 }
 
 /* Print Stylesheet for clean order receipts and documentation */

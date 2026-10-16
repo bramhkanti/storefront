@@ -15,6 +15,7 @@ export interface BuildMetadataParams {
   ogImage?: string;
   noindex?: boolean;
   locale?: Locale;
+  robots?: Metadata['robots'];
 }
 
 /**
@@ -30,6 +31,7 @@ export function buildMetadata({
   ogImage,
   noindex = false,
   locale = DEFAULT_LOCALE,
+  robots,
 }: BuildMetadataParams): Metadata {
   const siteUrl = publicEnv.NEXT_PUBLIC_SITE_URL;
   const normalizedPath = canonicalPath.startsWith('/')
@@ -89,14 +91,32 @@ export function buildMetadata({
       description,
       images: [image],
     },
-    robots: noindex
-      ? {
-          index: false,
-          follow: false,
-        }
-      : {
-          index: true,
-          follow: true,
-        },
+    robots:
+      robots ??
+      (noindex
+        ? {
+            index: false,
+            follow: false,
+            nocache: true,
+            googleBot: {
+              index: false,
+              follow: false,
+              noimageindex: true,
+              'max-video-preview': -1,
+              'max-image-preview': 'none',
+              'max-snippet': -1,
+            },
+          }
+        : {
+            index: true,
+            follow: true,
+            googleBot: {
+              index: true,
+              follow: true,
+              'max-video-preview': -1,
+              'max-image-preview': 'large',
+              'max-snippet': -1,
+            },
+          }),
   };
 }

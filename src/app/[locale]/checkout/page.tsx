@@ -4,18 +4,17 @@ import { ArrowLeft, Lock, ShieldCheck, Truck } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { getCart } from '@/lib/cart/queries';
 import { formatPrice } from '@/lib/utils/money';
+import { buildMetadata } from '@/lib/seo/metadata';
 import { SITE_CONFIG } from '@/content/site';
 import { I18nProvider, getNamespaceDictionary } from '@/lib/i18n';
 import { CheckoutForm } from './CheckoutForm';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: 'Secure Checkout',
   description: 'Complete your authentic Indian food order.',
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+  canonicalPath: '/checkout',
+  noindex: true,
+});
 
 export default async function CheckoutPage(): Promise<React.JSX.Element> {
   const [cart, checkoutDict] = await Promise.all([
