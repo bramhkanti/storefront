@@ -69,7 +69,7 @@ export function Testimonials({
 
           <h2
             id="testimonials-heading"
-            className="text-heritage-maroon mt-3 font-serif text-3xl font-extrabold tracking-tight sm:text-4xl"
+            className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
           >
             Real People. Real Flavours.
           </h2>

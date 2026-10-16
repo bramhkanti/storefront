@@ -1,112 +1,77 @@
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Leaf, Sparkles, Utensils, Gift } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { cn } from '@/lib/utils/cn';
 import { SIGNATURE_RANGE_ITEMS } from '../constants';
 import type { SignatureRangeItem } from '../types';
 
-const ICON_MAP = {
-  leaf: Leaf,
-  sparkle: Sparkles,
-  sweet: Utensils,
-  gift: Gift,
-};
-
 export interface SignatureRangeProps {
   items?: SignatureRangeItem[];
 }
 
+/** Shop-by-category tiles with the name on the photo. */
 export function SignatureRange({
   items = SIGNATURE_RANGE_ITEMS,
 }: SignatureRangeProps): React.JSX.Element | null {
   if (items.length === 0) return null;
   return (
-    <section className="py-16 sm:py-24" aria-labelledby="signature-range-heading">
+    <section className="py-14 sm:py-20" aria-labelledby="signature-range-heading">
       <Container>
-        {/* Section Header */}
-        <div className="mx-auto max-w-2xl text-center">
-          <div className="flex items-center justify-center gap-2">
-            <span
-              className="text-heritage-border h-px w-8 bg-current"
-              aria-hidden="true"
-            />
-            <span className="text-heritage-saffron-dark text-xs font-semibold tracking-widest uppercase">
-              Our Signature Range
-            </span>
-            <span
-              className="text-heritage-border h-px w-8 bg-current"
-              aria-hidden="true"
-            />
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-xl">
+            <p className="text-heritage-maroon text-xs font-semibold tracking-[0.18em] uppercase">
+              Shop by category
+            </p>
+            <h2
+              id="signature-range-heading"
+              className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+            >
+              Pure. Traditional. Delicious.
+            </h2>
           </div>
-
-          <h2
-            id="signature-range-heading"
-            className="text-heritage-maroon mt-3 font-serif text-3xl font-extrabold tracking-tight sm:text-4xl"
+          <Link
+            href="/categories"
+            className="text-heritage-maroon inline-flex items-center gap-1 text-sm font-semibold hover:underline"
           >
-            Pure. Traditional. Delicious.
-          </h2>
-
-          <p className="text-heritage-muted mt-3 text-sm leading-relaxed sm:text-base">
-            From tangy pickles to crunchy makhana and rich sweets, every bite tells a
-            story of tradition, purity and unmatched taste.
-          </p>
+            All categories <ArrowUpRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        {/* 4 Category Cards Grid */}
         <div
           className={cn(
-            'mx-auto mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2',
+            'mt-8 grid grid-cols-2 gap-3 sm:gap-5',
             items.length >= 4 && 'lg:grid-cols-4',
             items.length === 3 && 'lg:grid-cols-3',
-            items.length <= 2 && 'max-w-3xl',
           )}
         >
-          {items.map((item) => {
-            const Icon = ICON_MAP[item.iconName] ?? Leaf;
-
-            return (
-              <div
-                key={item.id}
-                className="group border-heritage-border bg-heritage-cream hover:border-heritage-maroon/40 flex flex-col overflow-hidden rounded-2xl border shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
-              >
-                {/* Product Image Header */}
-                <div className="bg-heritage-cream-dark/50 relative aspect-4/3 w-full overflow-hidden">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.imageAlt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-
-                {/* Card Content & Action Link */}
-                <div className="flex flex-1 flex-col justify-between p-5 pt-5 text-center">
-                  <div>
-                    <div className="flex justify-center pb-2">
-                      <Icon className="text-heritage-green h-5 w-5" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-heritage-maroon font-serif text-xl font-bold tracking-tight">
-                      {item.name}
-                    </h3>
-                    <p className="text-heritage-muted mt-1 text-xs">{item.tagline}</p>
-                  </div>
-
-                  <div className="mt-5 pt-3">
-                    <Link
-                      href={item.href}
-                      className="text-heritage-maroon hover:text-heritage-maroon-dark inline-flex items-center gap-1.5 text-xs font-bold transition-colors group-hover:underline"
-                    >
-                      <span>{item.linkText}</span>
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="group relative isolate flex aspect-[3/4] flex-col justify-end overflow-hidden rounded-3xl bg-neutral-900 p-4 text-white sm:p-6"
+            >
+              <Image
+                src={item.imageUrl}
+                alt={item.imageAlt}
+                fill
+                sizes="(max-width: 1024px) 50vw, 25vw"
+                className="-z-10 object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+              <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+              <span className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md transition-all group-hover:bg-white group-hover:text-neutral-900 sm:top-5 sm:right-5">
+                <ArrowUpRight className="h-5 w-5" />
+              </span>
+              <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">
+                {item.name}
+              </h3>
+              <p className="mt-1 text-xs text-white/80 sm:text-sm">{item.tagline}</p>
+              <span className="mt-3 hidden text-sm font-semibold underline-offset-4 group-hover:underline sm:block">
+                {item.linkText}
+              </span>
+            </Link>
+          ))}
         </div>
       </Container>
     </section>

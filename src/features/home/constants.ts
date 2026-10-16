@@ -4,7 +4,26 @@ import type {
   TestimonialItem,
   StorySectionData,
   PromoBannerData,
+  HeroSlide,
 } from './types';
+
+/** First hero slide. Collection banners from the admin follow it. */
+export const BRAND_HERO_SLIDE: HeroSlide = {
+  id: 'hero_brand',
+  eyebrow: 'Handmade in Varanasi',
+  title: 'Ghar jaisa swaad, in every jar',
+  description:
+    'Sun-cured achar, slow-roasted makhana and desi ghee sweets, made in small batches from family recipes.',
+  imageUrl: '/images/home/hero-barnie.jpg',
+  imageAlt:
+    'Traditional mango achar in a ceramic barnie jar with fresh green mangoes and whole spices',
+  imagePosition: 'object-[center_60%]',
+  ctaLabel: 'Shop pickles',
+  ctaHref: '/categories',
+  secondaryLabel: 'Explore all',
+  secondaryHref: '/categories',
+  badges: ['100% vegetarian', 'FSSAI licensed kitchen'],
+};
 
 export const SIGNATURE_RANGE_ITEMS: SignatureRangeItem[] = [
   {
@@ -80,7 +99,7 @@ export const TRUST_PILLARS: TrustPillarItem[] = [
   },
   {
     id: 'pillar_shipping',
-    title: 'Free Express Shipping Above ₹499',
+    title: 'Delivery Across India',
     iconName: 'truck',
   },
 ];
@@ -134,7 +153,7 @@ export const PROMO_BANNER_DATA: PromoBannerData = {
   eyebrow: 'BRING HOME THE TRUE TASTE OF INDIA',
   title: 'Taste Tradition. Feel the Purity.',
   description:
-    'Order handcrafted Indian pickles, slow-roasted makhana, and pure desi ghee sweets made in small batches with ancestral care. Enjoy free pan-India express shipping on orders above ₹499.',
+    'Order handcrafted Indian pickles, slow-roasted makhana, and pure desi ghee sweets made in small batches with ancestral care. Delivered across India.',
   ctaText: 'Shop Now',
   ctaHref: '/categories',
   trustBadges: ['Pure Ingredients', 'Traditional Recipes', 'Made with Love'],

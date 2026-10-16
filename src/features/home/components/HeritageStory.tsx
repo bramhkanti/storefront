@@ -60,7 +60,7 @@ export function HeritageStory({
 
             <h2
               id="heritage-story-heading"
-              className="text-heritage-maroon font-serif text-3xl leading-tight font-extrabold sm:text-4xl"
+              className="text-3xl leading-tight font-semibold tracking-tight sm:text-4xl"
             >
               {data.title}
             </h2>

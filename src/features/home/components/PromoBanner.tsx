@@ -27,7 +27,7 @@ export function PromoBanner({
 
               <h2
                 id="promo-banner-heading"
-                className="font-serif text-3xl leading-tight font-extrabold sm:text-4xl lg:text-5xl"
+                className="text-3xl leading-tight font-semibold tracking-tight sm:text-4xl lg:text-5xl"
               >
                 {data.title}
               </h2>

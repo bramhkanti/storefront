@@ -7,3 +7,4 @@ export * from './components/HeritageStory';
 export * from './components/Testimonials';
 export * from './components/PromoBanner';
 export * from './resolve';
+export * from './components/CollectionSpotlight';

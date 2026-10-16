@@ -255,3 +255,17 @@ select:focus-visible {
   animation: sheetSlideOutBottom 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
 }
+
+/* Home hero: progress bar of the active slide (duration set inline). */
+@keyframes hero-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+.animate-hero-progress {
+  width: 0%;
+  animation: hero-progress linear forwards;
+}
