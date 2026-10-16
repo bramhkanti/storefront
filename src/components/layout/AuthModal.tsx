@@ -17,7 +17,7 @@ import {
 } from '@/lib/auth/actions';
 import type { UserProfile } from '@/lib/auth/profile';
 import { useCart } from '@/lib/cart';
-import { useAuth, useToast, useWishlist } from '@/lib/store';
+import { useAuth, useCartUi, useToast, useWishlist } from '@/lib/store';
 import { cn } from '@/lib/utils/cn';
 
 const OTP_LENGTH = 6;
@@ -90,7 +90,9 @@ function OtpInput({
 }
 
 export function AuthModal(): React.JSX.Element {
-  const { isAuthModalOpen, closeAuthModal, login } = useAuth();
+  const { isAuthModalOpen, closeAuthModal, login, authIntent, clearAuthIntent } =
+    useAuth();
+  const { openCart } = useCartUi();
   const { refreshCart } = useCart();
   const { addToast } = useToast();
   const {
@@ -125,6 +127,7 @@ export function AuthModal(): React.JSX.Element {
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       closeAuthModal();
+      clearAuthIntent();
       setPendingWishlistProduct(null);
       reset();
     }
@@ -134,6 +137,11 @@ export function AuthModal(): React.JSX.Element {
     login(user);
     loadWishlistForUser(user.id);
     await refreshCart();
+    // Logged in from the bag: take the shopper straight back to it.
+    if (authIntent === 'checkout') {
+      clearAuthIntent();
+      openCart();
+    }
     if (pendingWishlistProduct) {
       addToWishlist(pendingWishlistProduct);
       setPendingWishlistProduct(null);

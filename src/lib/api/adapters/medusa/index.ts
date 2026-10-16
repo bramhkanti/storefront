@@ -284,10 +284,10 @@ export class MedusaAdapter
 
       const priceOf = (p: Product) => p.variants[0]?.price.amount ?? 0;
       if (filter.minPrice !== undefined) {
-        items = items.filter((p) => priceOf(p) >= filter.minPrice! * 100);
+        items = items.filter((p) => priceOf(p) >= filter.minPrice!);
       }
       if (filter.maxPrice !== undefined) {
-        items = items.filter((p) => priceOf(p) <= filter.maxPrice! * 100);
+        items = items.filter((p) => priceOf(p) <= filter.maxPrice!);
       }
       if (filter.inStockOnly) {
         items = items.filter((p) => p.variants.some((v) => v.inStock));

@@ -329,6 +329,7 @@ export interface ProductFilterParams {
   categoryHandle?: string | undefined;
   collectionHandle?: string | undefined;
   tags?: string[] | undefined;
+  /** Minor units (paise), like all domain money. */
   minPrice?: number | undefined;
   maxPrice?: number | undefined;
   inStockOnly?: boolean | undefined;

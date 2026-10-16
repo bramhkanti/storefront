@@ -78,6 +78,13 @@ function toAddress(input: CheckoutAddressInput): Address {
   };
 }
 
+const LOGIN_REQUIRED = 'Please log in with your mobile number to checkout.';
+
+/** Checkout is for logged-in shoppers only (the UI asks guests to log in). */
+async function isLoggedIn(): Promise<boolean> {
+  return Boolean(await getCustomerToken());
+}
+
 /**
  * Step 1: save the delivery address and return the delivery options for it.
  */
@@ -91,6 +98,7 @@ export async function saveCheckoutAddressAction(
   if (Object.keys(fieldErrors).length > 0) {
     return { ok: false, error: 'Please check the highlighted fields', fieldErrors };
   }
+  if (!(await isLoggedIn())) return { ok: false, error: LOGIN_REQUIRED };
   const cartId = await currentCartId();
   if (!cartId) return { ok: false, error: 'Your bag is empty' };
 
@@ -163,6 +171,7 @@ export async function listPaymentMethodsAction(): Promise<
 export async function startPaymentAction(
   providerId: string,
 ): Promise<CheckoutResult<PaymentSession>> {
+  if (!(await isLoggedIn())) return { ok: false, error: LOGIN_REQUIRED };
   const cartId = await currentCartId();
   if (!cartId) return { ok: false, error: 'Your bag is empty' };
   try {
@@ -180,6 +189,7 @@ export async function startPaymentAction(
  * payment with Razorpay itself; a browser "success" alone never creates an order.
  */
 export async function placeOrderAction(): Promise<CheckoutResult<{ orderId: string }>> {
+  if (!(await isLoggedIn())) return { ok: false, error: LOGIN_REQUIRED };
   const cartId = await currentCartId();
   if (!cartId) return { ok: false, error: 'Your bag is empty' };
   try {

@@ -2,7 +2,16 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, CreditCard, Lock, MapPin, Plus, Truck, Wallet } from 'lucide-react';
+import {
+  Check,
+  CreditCard,
+  Lock,
+  MapPin,
+  Plus,
+  Smartphone,
+  Truck,
+  Wallet,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { INDIAN_STATES } from '@/content/indian-states';
 import type { Cart, PaymentMethod, ShippingOption } from '@/lib/api/contracts/domain';
@@ -339,6 +348,32 @@ export function CheckoutFlow({
     if (!placed) setBusy(null);
   };
 
+  // Checkout needs a logged-in shopper (the server actions check this too).
+  const gate = !isSessionLoaded ? (
+    <div className="space-y-4" aria-busy="true" aria-label="Loading checkout">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="h-20 animate-pulse rounded-2xl bg-neutral-200/70 dark:bg-neutral-800"
+        />
+      ))}
+    </div>
+  ) : !isAuthenticated ? (
+    <div className="rounded-2xl border border-neutral-200 bg-white p-8 text-center sm:p-10 dark:border-neutral-800 dark:bg-[#1c1917]">
+      <div className="bg-heritage-maroon-light text-heritage-maroon mx-auto flex h-14 w-14 items-center justify-center rounded-full">
+        <Smartphone className="h-6 w-6" />
+      </div>
+      <h2 className="mt-4 text-xl font-semibold tracking-tight">Log in to checkout</h2>
+      <p className="text-heritage-muted mx-auto mt-2 max-w-sm text-sm">
+        Verify your mobile number with a one-time code. We&apos;ll keep your bag, save
+        your address and send order updates to this number.
+      </p>
+      <Button size="lg" className="mt-6 rounded-xl px-8" onClick={openAuthModal}>
+        Log in with OTP
+      </Button>
+    </div>
+  ) : null;
+
   const selectedOption = shippingOptions.find((o) => o.id === cart.shippingOptionId);
   const addressDone = Boolean(cart.shippingAddress);
   const deliveryDone = Boolean(cart.shippingOptionId);
@@ -346,394 +381,382 @@ export function CheckoutFlow({
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10">
       <div className="space-y-4">
-        {isSessionLoaded && !isAuthenticated && (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-200 bg-white px-5 py-4 text-sm dark:border-neutral-800 dark:bg-[#1c1917]">
-            <span>
-              <strong className="font-semibold">Have an account?</strong>{' '}
-              <span className="text-heritage-muted">
-                Log in to use saved addresses and track this order.
-              </span>
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full"
-              onClick={openAuthModal}
+        {gate ?? (
+          <>
+            <StepCard
+              index={1}
+              title="Delivery address"
+              icon={MapPin}
+              active={step === 'address'}
+              done={addressDone}
+              onEdit={busy ? undefined : () => setStep('address')}
+              summary={
+                cart.shippingAddress && (
+                  <>
+                    <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                      {cart.shippingAddress.firstName} {cart.shippingAddress.lastName}
+                    </span>{' '}
+                    · {cart.shippingAddress.phone}
+                    <br />
+                    {cart.shippingAddress.address1}
+                    {cart.shippingAddress.address2
+                      ? `, ${cart.shippingAddress.address2}`
+                      : ''}
+                    , {cart.shippingAddress.city}, {cart.shippingAddress.province}{' '}
+                    {cart.shippingAddress.postalCode}
+                  </>
+                )
+              }
             >
-              Log in with OTP
-            </Button>
-          </div>
-        )}
-
-        <StepCard
-          index={1}
-          title="Delivery address"
-          icon={MapPin}
-          active={step === 'address'}
-          done={addressDone}
-          onEdit={busy ? undefined : () => setStep('address')}
-          summary={
-            cart.shippingAddress && (
-              <>
-                <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                  {cart.shippingAddress.firstName} {cart.shippingAddress.lastName}
-                </span>{' '}
-                · {cart.shippingAddress.phone}
-                <br />
-                {cart.shippingAddress.address1}
-                {cart.shippingAddress.address2
-                  ? `, ${cart.shippingAddress.address2}`
-                  : ''}
-                , {cart.shippingAddress.city}, {cart.shippingAddress.province}{' '}
-                {cart.shippingAddress.postalCode}
-              </>
-            )
-          }
-        >
-          {isAuthenticated && savedAddresses.length > 0 && (
-            <div className="mb-5 grid gap-3 sm:grid-cols-2">
-              {savedAddresses.map((saved) => (
-                <button
-                  key={saved.id}
-                  type="button"
-                  onClick={() => {
-                    setSelectedAddressId(saved.id);
-                    setForm(formFromSaved(saved, user?.email));
-                    setFieldErrors({});
-                  }}
-                  className={cn(
-                    'rounded-xl border p-3.5 text-left text-sm transition-colors',
-                    selectedAddressId === saved.id
-                      ? 'border-heritage-maroon ring-heritage-maroon/15 bg-heritage-maroon-light/40 ring-2'
-                      : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
-                  )}
-                >
-                  <span className="font-semibold">{saved.label}</span>
-                  <span className="text-heritage-muted mt-1 line-clamp-2 block text-xs">
-                    {saved.name}, {saved.street}, {saved.city} {saved.pincode}
-                  </span>
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedAddressId('new');
-                  setForm({
-                    ...EMPTY_FORM,
-                    fullName: user?.name ?? '',
-                    phone: user?.phone.replace(/\D/g, '').slice(-10) ?? '',
-                    email: user?.email ?? '',
-                  });
-                }}
-                className={cn(
-                  'flex items-center justify-center gap-2 rounded-xl border border-dashed p-3.5 text-sm font-medium',
-                  selectedAddressId === 'new'
-                    ? 'border-heritage-maroon text-heritage-maroon'
-                    : 'border-neutral-300 text-neutral-600 dark:border-neutral-700',
-                )}
-              >
-                <Plus className="h-4 w-4" /> New address
-              </button>
-            </div>
-          )}
-
-          <form
-            onSubmit={submitAddress}
-            noValidate
-            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
-          >
-            <Field
-              id="fullName"
-              label="Full name"
-              error={fieldErrors.fullName}
-              className="sm:col-span-2"
-            >
-              <input
-                id="fullName"
-                autoComplete="name"
-                value={form.fullName}
-                onChange={update('fullName')}
-                className={cn(
-                  inputBase,
-                  fieldErrors.fullName
-                    ? 'border-red-400'
-                    : 'border-neutral-200 dark:border-neutral-700',
-                )}
-              />
-            </Field>
-            <Field id="phone" label="Mobile number" error={fieldErrors.phone}>
-              <div
-                className={cn(
-                  'focus-within:border-heritage-maroon focus-within:ring-heritage-maroon/15 flex h-11 overflow-hidden rounded-xl border bg-white focus-within:ring-2 dark:bg-neutral-900',
-                  fieldErrors.phone
-                    ? 'border-red-400'
-                    : 'border-neutral-200 dark:border-neutral-700',
-                )}
-              >
-                <span className="text-heritage-muted flex items-center border-r border-neutral-200 px-3 text-sm dark:border-neutral-700">
-                  +91
-                </span>
-                <input
-                  id="phone"
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel-national"
-                  maxLength={10}
-                  value={form.phone}
-                  onChange={update('phone')}
-                  className="w-full bg-transparent px-3 text-sm outline-none"
-                />
-              </div>
-            </Field>
-            <Field
-              id="email"
-              label="Email (optional, for receipt)"
-              error={fieldErrors.email}
-            >
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={form.email ?? ''}
-                onChange={update('email')}
-                className={cn(
-                  inputBase,
-                  fieldErrors.email
-                    ? 'border-red-400'
-                    : 'border-neutral-200 dark:border-neutral-700',
-                )}
-              />
-            </Field>
-            <Field
-              id="address1"
-              label="House no., building, street"
-              error={fieldErrors.address1}
-              className="sm:col-span-2"
-            >
-              <input
-                id="address1"
-                autoComplete="address-line1"
-                value={form.address1}
-                onChange={update('address1')}
-                className={cn(
-                  inputBase,
-                  fieldErrors.address1
-                    ? 'border-red-400'
-                    : 'border-neutral-200 dark:border-neutral-700',
-                )}
-              />
-            </Field>
-            <Field
-              id="address2"
-              label="Area, landmark (optional)"
-              className="sm:col-span-2"
-            >
-              <input
-                id="address2"
-                autoComplete="address-line2"
-                value={form.address2 ?? ''}
-                onChange={update('address2')}
-                className={cn(inputBase, 'border-neutral-200 dark:border-neutral-700')}
-              />
-            </Field>
-            <Field id="postalCode" label="PIN code" error={fieldErrors.postalCode}>
-              <input
-                id="postalCode"
-                inputMode="numeric"
-                autoComplete="postal-code"
-                maxLength={6}
-                value={form.postalCode}
-                onChange={update('postalCode')}
-                className={cn(
-                  inputBase,
-                  fieldErrors.postalCode
-                    ? 'border-red-400'
-                    : 'border-neutral-200 dark:border-neutral-700',
-                )}
-              />
-            </Field>
-            <Field id="city" label="City" error={fieldErrors.city}>
-              <input
-                id="city"
-                autoComplete="address-level2"
-                value={form.city}
-                onChange={update('city')}
-                className={cn(
-                  inputBase,
-                  fieldErrors.city
-                    ? 'border-red-400'
-                    : 'border-neutral-200 dark:border-neutral-700',
-                )}
-              />
-            </Field>
-            <Field
-              id="province"
-              label="State"
-              error={fieldErrors.province}
-              className="sm:col-span-2"
-            >
-              <select
-                id="province"
-                autoComplete="address-level1"
-                value={form.province}
-                onChange={update('province')}
-                className={cn(
-                  inputBase,
-                  fieldErrors.province
-                    ? 'border-red-400'
-                    : 'border-neutral-200 dark:border-neutral-700',
-                )}
-              >
-                <option value="">Select state</option>
-                {INDIAN_STATES.map((state) => (
-                  <option key={state} value={state}>
-                    {state}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            {isAuthenticated && selectedAddressId === 'new' && (
-              <label className="flex items-center gap-2 text-sm sm:col-span-2">
-                <input
-                  type="checkbox"
-                  checked={Boolean(form.saveToAccount)}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, saveToAccount: e.target.checked }))
-                  }
-                  className="accent-heritage-maroon h-4 w-4"
-                />
-                Save this address to my account
-              </label>
-            )}
-            <div className="sm:col-span-2">
-              <Button
-                type="submit"
-                size="lg"
-                isLoading={busy === 'address'}
-                className="w-full rounded-xl sm:w-auto sm:px-8"
-              >
-                Continue to delivery
-              </Button>
-            </div>
-          </form>
-        </StepCard>
-
-        <StepCard
-          index={2}
-          title="Delivery option"
-          icon={Truck}
-          active={step === 'delivery'}
-          done={deliveryDone && step !== 'address'}
-          onEdit={busy ? undefined : () => setStep('delivery')}
-          summary={
-            selectedOption &&
-            `${selectedOption.name} · ${selectedOption.amount.amount === 0 ? 'Free' : formatPrice(selectedOption.amount.amount, selectedOption.amount.currencyCode)}`
-          }
-        >
-          {shippingOptions.length === 0 ? (
-            <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-              We can&apos;t deliver to this address online yet. Please contact us on
-              WhatsApp to place the order.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {shippingOptions.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  disabled={busy !== null}
-                  onClick={() => chooseShipping(option.id)}
-                  className={cn(
-                    'flex w-full items-center justify-between rounded-xl border p-4 text-left text-sm transition-colors disabled:opacity-60',
-                    cart.shippingOptionId === option.id
-                      ? 'border-heritage-maroon ring-heritage-maroon/15 ring-2'
-                      : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
-                  )}
-                >
-                  <span className="font-medium">{option.name}</span>
-                  <span className="tabular-nums">
-                    {option.amount.amount === 0 ? (
-                      <span className="font-semibold text-emerald-700">Free</span>
-                    ) : (
-                      formatPrice(option.amount.amount, option.amount.currencyCode)
-                    )}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </StepCard>
-
-        <StepCard
-          index={3}
-          title="Payment"
-          icon={Lock}
-          active={step === 'payment'}
-          done={false}
-        >
-          {paymentMethods.length === 0 ? (
-            <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-              Payments are not set up yet. Please try again later.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {paymentMethods.map((method) => {
-                const Icon = PAYMENT_ICONS[method.kind];
-                return (
-                  <label
-                    key={method.providerId}
+              {isAuthenticated && savedAddresses.length > 0 && (
+                <div className="mb-5 grid gap-3 sm:grid-cols-2">
+                  {savedAddresses.map((saved) => (
+                    <button
+                      key={saved.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedAddressId(saved.id);
+                        setForm(formFromSaved(saved, user?.email));
+                        setFieldErrors({});
+                      }}
+                      className={cn(
+                        'rounded-xl border p-3.5 text-left text-sm transition-colors',
+                        selectedAddressId === saved.id
+                          ? 'border-heritage-maroon ring-heritage-maroon/15 bg-heritage-maroon-light/40 ring-2'
+                          : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
+                      )}
+                    >
+                      <span className="font-semibold">{saved.label}</span>
+                      <span className="text-heritage-muted mt-1 line-clamp-2 block text-xs">
+                        {saved.name}, {saved.street}, {saved.city} {saved.pincode}
+                      </span>
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedAddressId('new');
+                      setForm({
+                        ...EMPTY_FORM,
+                        fullName: user?.name ?? '',
+                        phone: user?.phone.replace(/\D/g, '').slice(-10) ?? '',
+                        email: user?.email ?? '',
+                      });
+                    }}
                     className={cn(
-                      'flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-sm transition-colors',
-                      paymentProviderId === method.providerId
-                        ? 'border-heritage-maroon ring-heritage-maroon/15 ring-2'
-                        : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
+                      'flex items-center justify-center gap-2 rounded-xl border border-dashed p-3.5 text-sm font-medium',
+                      selectedAddressId === 'new'
+                        ? 'border-heritage-maroon text-heritage-maroon'
+                        : 'border-neutral-300 text-neutral-600 dark:border-neutral-700',
                     )}
                   >
+                    <Plus className="h-4 w-4" /> New address
+                  </button>
+                </div>
+              )}
+
+              <form
+                onSubmit={submitAddress}
+                noValidate
+                className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+              >
+                <Field
+                  id="fullName"
+                  label="Full name"
+                  error={fieldErrors.fullName}
+                  className="sm:col-span-2"
+                >
+                  <input
+                    id="fullName"
+                    autoComplete="name"
+                    value={form.fullName}
+                    onChange={update('fullName')}
+                    className={cn(
+                      inputBase,
+                      fieldErrors.fullName
+                        ? 'border-red-400'
+                        : 'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  />
+                </Field>
+                <Field id="phone" label="Mobile number" error={fieldErrors.phone}>
+                  <div
+                    className={cn(
+                      'focus-within:border-heritage-maroon focus-within:ring-heritage-maroon/15 flex h-11 overflow-hidden rounded-xl border bg-white focus-within:ring-2 dark:bg-neutral-900',
+                      fieldErrors.phone
+                        ? 'border-red-400'
+                        : 'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  >
+                    <span className="text-heritage-muted flex items-center border-r border-neutral-200 px-3 text-sm dark:border-neutral-700">
+                      +91
+                    </span>
                     <input
-                      type="radio"
-                      name="payment"
-                      value={method.providerId}
-                      checked={paymentProviderId === method.providerId}
-                      onChange={() => setPaymentProviderId(method.providerId)}
+                      id="phone"
+                      type="tel"
+                      inputMode="numeric"
+                      autoComplete="tel-national"
+                      maxLength={10}
+                      value={form.phone}
+                      onChange={update('phone')}
+                      className="w-full bg-transparent px-3 text-sm outline-none"
+                    />
+                  </div>
+                </Field>
+                <Field
+                  id="email"
+                  label="Email (optional, for receipt)"
+                  error={fieldErrors.email}
+                >
+                  <input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    value={form.email ?? ''}
+                    onChange={update('email')}
+                    className={cn(
+                      inputBase,
+                      fieldErrors.email
+                        ? 'border-red-400'
+                        : 'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  />
+                </Field>
+                <Field
+                  id="address1"
+                  label="House no., building, street"
+                  error={fieldErrors.address1}
+                  className="sm:col-span-2"
+                >
+                  <input
+                    id="address1"
+                    autoComplete="address-line1"
+                    value={form.address1}
+                    onChange={update('address1')}
+                    className={cn(
+                      inputBase,
+                      fieldErrors.address1
+                        ? 'border-red-400'
+                        : 'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  />
+                </Field>
+                <Field
+                  id="address2"
+                  label="Area, landmark (optional)"
+                  className="sm:col-span-2"
+                >
+                  <input
+                    id="address2"
+                    autoComplete="address-line2"
+                    value={form.address2 ?? ''}
+                    onChange={update('address2')}
+                    className={cn(
+                      inputBase,
+                      'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  />
+                </Field>
+                <Field id="postalCode" label="PIN code" error={fieldErrors.postalCode}>
+                  <input
+                    id="postalCode"
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    maxLength={6}
+                    value={form.postalCode}
+                    onChange={update('postalCode')}
+                    className={cn(
+                      inputBase,
+                      fieldErrors.postalCode
+                        ? 'border-red-400'
+                        : 'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  />
+                </Field>
+                <Field id="city" label="City" error={fieldErrors.city}>
+                  <input
+                    id="city"
+                    autoComplete="address-level2"
+                    value={form.city}
+                    onChange={update('city')}
+                    className={cn(
+                      inputBase,
+                      fieldErrors.city
+                        ? 'border-red-400'
+                        : 'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  />
+                </Field>
+                <Field
+                  id="province"
+                  label="State"
+                  error={fieldErrors.province}
+                  className="sm:col-span-2"
+                >
+                  <select
+                    id="province"
+                    autoComplete="address-level1"
+                    value={form.province}
+                    onChange={update('province')}
+                    className={cn(
+                      inputBase,
+                      fieldErrors.province
+                        ? 'border-red-400'
+                        : 'border-neutral-200 dark:border-neutral-700',
+                    )}
+                  >
+                    <option value="">Select state</option>
+                    {INDIAN_STATES.map((state) => (
+                      <option key={state} value={state}>
+                        {state}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                {isAuthenticated && selectedAddressId === 'new' && (
+                  <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(form.saveToAccount)}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, saveToAccount: e.target.checked }))
+                      }
                       className="accent-heritage-maroon h-4 w-4"
                     />
-                    <Icon className="text-heritage-muted h-4 w-4" />
-                    <span className="font-medium">{method.label}</span>
+                    Save this address to my account
                   </label>
-                );
-              })}
-            </div>
-          )}
+                )}
+                <div className="sm:col-span-2">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    isLoading={busy === 'address'}
+                    className="w-full rounded-xl sm:w-auto sm:px-8"
+                  >
+                    Continue to delivery
+                  </Button>
+                </div>
+              </form>
+            </StepCard>
 
-          <Button
-            size="lg"
-            onClick={placeOrder}
-            isLoading={busy === 'order'}
-            disabled={busy !== null || paymentMethods.length === 0 || !deliveryDone}
-            className="mt-5 w-full rounded-xl"
-          >
-            <Lock className="h-4 w-4" />
-            {paymentMethods.find((m) => m.providerId === paymentProviderId)?.kind ===
-            'razorpay'
-              ? 'Pay'
-              : 'Place order'}{' '}
-            {formatPrice(cart.total.amount, cart.currencyCode)}
-          </Button>
-          <p className="text-heritage-muted mt-3 text-center text-xs">
-            {paymentMethods.find((m) => m.providerId === paymentProviderId)?.kind ===
-            'cod'
-              ? 'Pay in cash or UPI when your order arrives.'
-              : 'Your order is confirmed once the payment is verified.'}
-          </p>
-        </StepCard>
+            <StepCard
+              index={2}
+              title="Delivery option"
+              icon={Truck}
+              active={step === 'delivery'}
+              done={deliveryDone && step !== 'address'}
+              onEdit={busy ? undefined : () => setStep('delivery')}
+              summary={
+                selectedOption &&
+                `${selectedOption.name} · ${selectedOption.amount.amount === 0 ? 'Free' : formatPrice(selectedOption.amount.amount, selectedOption.amount.currencyCode)}`
+              }
+            >
+              {shippingOptions.length === 0 ? (
+                <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+                  We can&apos;t deliver to this address online yet. Please contact us on
+                  WhatsApp to place the order.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {shippingOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      disabled={busy !== null}
+                      onClick={() => chooseShipping(option.id)}
+                      className={cn(
+                        'flex w-full items-center justify-between rounded-xl border p-4 text-left text-sm transition-colors disabled:opacity-60',
+                        cart.shippingOptionId === option.id
+                          ? 'border-heritage-maroon ring-heritage-maroon/15 ring-2'
+                          : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
+                      )}
+                    >
+                      <span className="font-medium">{option.name}</span>
+                      <span className="tabular-nums">
+                        {option.amount.amount === 0 ? (
+                          <span className="font-semibold text-emerald-700">Free</span>
+                        ) : (
+                          formatPrice(option.amount.amount, option.amount.currencyCode)
+                        )}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </StepCard>
 
-        {error && (
-          <p
-            role="alert"
-            className="rounded-xl bg-red-50 p-4 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300"
-          >
-            {error}
-          </p>
+            <StepCard
+              index={3}
+              title="Payment"
+              icon={Lock}
+              active={step === 'payment'}
+              done={false}
+            >
+              {paymentMethods.length === 0 ? (
+                <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+                  Payments are not set up yet. Please try again later.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {paymentMethods.map((method) => {
+                    const Icon = PAYMENT_ICONS[method.kind];
+                    return (
+                      <label
+                        key={method.providerId}
+                        className={cn(
+                          'flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-sm transition-colors',
+                          paymentProviderId === method.providerId
+                            ? 'border-heritage-maroon ring-heritage-maroon/15 ring-2'
+                            : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="payment"
+                          value={method.providerId}
+                          checked={paymentProviderId === method.providerId}
+                          onChange={() => setPaymentProviderId(method.providerId)}
+                          className="accent-heritage-maroon h-4 w-4"
+                        />
+                        <Icon className="text-heritage-muted h-4 w-4" />
+                        <span className="font-medium">{method.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+
+              <Button
+                size="lg"
+                onClick={placeOrder}
+                isLoading={busy === 'order'}
+                disabled={busy !== null || paymentMethods.length === 0 || !deliveryDone}
+                className="mt-5 w-full rounded-xl"
+              >
+                <Lock className="h-4 w-4" />
+                {paymentMethods.find((m) => m.providerId === paymentProviderId)?.kind ===
+                'razorpay'
+                  ? 'Pay'
+                  : 'Place order'}{' '}
+                {formatPrice(cart.total.amount, cart.currencyCode)}
+              </Button>
+              <p className="text-heritage-muted mt-3 text-center text-xs">
+                {paymentMethods.find((m) => m.providerId === paymentProviderId)?.kind ===
+                'cod'
+                  ? 'Pay in cash or UPI when your order arrives.'
+                  : 'Your order is confirmed once the payment is verified.'}
+              </p>
+            </StepCard>
+
+            {error && (
+              <p
+                role="alert"
+                className="rounded-xl bg-red-50 p-4 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300"
+              >
+                {error}
+              </p>
+            )}
+          </>
         )}
       </div>
 

@@ -5,8 +5,8 @@ import { notFound } from 'next/navigation';
 import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { CategoryHero } from '@/features/catalog/components/CategoryHero';
-import { CatalogFilters } from '@/features/catalog/components/CatalogFilters';
-import { parseCatalogFilters } from '@/features/catalog/filters';
+import { ListingShell } from '@/features/catalog/components/ListingShell';
+import { applyListing, parseListingParams } from '@/features/catalog/listing';
 import { ProductGrid } from '@/features/product/components/ProductGrid';
 import { getCategoryByHandle, listCategories } from '@/features/catalog/queries';
 import { listProducts } from '@/features/product/queries';
@@ -78,29 +78,22 @@ export default async function SubcategoryPage({
     notFound();
   }
 
-  const rawFilters = await searchParams;
-  const filters = parseCatalogFilters(rawFilters);
+  const listingParams = parseListingParams(await searchParams);
 
   const [parent, sub, productsResult] = await Promise.all([
     getCategoryByHandle(categorySlug),
     getCategoryByHandle(subSlug),
-    listProducts({
-      categoryHandle: subSlug,
-      page: filters.page,
-      limit: filters.limit,
-      sort: filters.sort,
-      ...(filters.spiceLevel ? { tags: [filters.spiceLevel] } : {}),
-      ...(filters.minPrice !== undefined ? { minPrice: filters.minPrice } : {}),
-      ...(filters.maxPrice !== undefined ? { maxPrice: filters.maxPrice } : {}),
-      ...(filters.inStockOnly !== undefined ? { inStockOnly: filters.inStockOnly } : {}),
-    }),
+    listProducts({ categoryHandle: subSlug, limit: 200 }),
   ]);
 
   if (!parent || !sub) {
     notFound();
   }
 
-  const products = productsResult.items;
+  const { items: products, ...listing } = applyListing(
+    productsResult.items,
+    listingParams,
+  );
   const categoryJsonLd = buildCategoryJsonLd(sub, products);
 
   return (
@@ -123,18 +116,14 @@ export default async function SubcategoryPage({
         {/* Category Hero with parent and active subcategory context */}
         <CategoryHero category={parent} activeSubHandle={sub.handle} />
 
-        {/* Filter & Sort Controls */}
-        <CatalogFilters
-          currentFilters={filters}
-          categorySlug={`${parent.handle}/${sub.handle}`}
-        />
-
-        {/* Product Grid */}
+        {/* Sort, filter chips and product grid */}
         <section aria-labelledby="subcategory-products-heading">
           <h2 id="subcategory-products-heading" className="sr-only">
             {sub.name} Catalog
           </h2>
-          <ProductGrid products={products} />
+          <ListingShell params={listingParams} result={listing}>
+            <ProductGrid products={products} />
+          </ListingShell>
         </section>
       </Container>
     </div>

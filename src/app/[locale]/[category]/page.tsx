@@ -14,8 +14,12 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import { CategoryHero } from '@/features/catalog/components/CategoryHero';
-import { CatalogFilters } from '@/features/catalog/components/CatalogFilters';
-import { parseCatalogFilters } from '@/features/catalog/filters';
+import { ListingShell } from '@/features/catalog/components/ListingShell';
+import {
+  applyListing,
+  childCategoryFacets,
+  parseListingParams,
+} from '@/features/catalog/listing';
 import { ProductGrid } from '@/features/product/components/ProductGrid';
 import { getAllCategoryHandles, getCategoryByHandle } from '@/features/catalog/queries';
 import { listProducts } from '@/features/product/queries';
@@ -69,28 +73,22 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const rawFilters = await searchParams;
-  const filters = parseCatalogFilters(rawFilters);
+  const listingParams = parseListingParams(await searchParams);
 
   const [category, productsResult] = await Promise.all([
     getCategoryByHandle(categorySlug),
-    listProducts({
-      categoryHandle: categorySlug,
-      page: filters.page,
-      limit: filters.limit,
-      sort: filters.sort,
-      ...(filters.spiceLevel ? { tags: [filters.spiceLevel] } : {}),
-      ...(filters.minPrice !== undefined ? { minPrice: filters.minPrice } : {}),
-      ...(filters.maxPrice !== undefined ? { maxPrice: filters.maxPrice } : {}),
-      ...(filters.inStockOnly !== undefined ? { inStockOnly: filters.inStockOnly } : {}),
-    }),
+    listProducts({ categoryHandle: categorySlug, limit: 200 }),
   ]);
 
   if (!category) {
     notFound();
   }
 
-  const products = productsResult.items;
+  const { items: products, ...listing } = applyListing(
+    productsResult.items,
+    listingParams,
+    childCategoryFacets(category),
+  );
   const categoryJsonLd = buildCategoryJsonLd(category, products);
   const faqJsonLd = category.faqs ? buildFaqJsonLd(category.faqs) : null;
 
@@ -186,15 +184,17 @@ export default async function CategoryPage({
           </section>
         )}
 
-        {/* Filter & Sort Controls (Zero-JS Form) */}
-        <CatalogFilters currentFilters={filters} categorySlug={category.handle} />
-
-        {/* Product Grid */}
-        <section aria-labelledby="category-products-heading">
-          <h2 id="category-products-heading" className="sr-only">
-            {category.name} Catalog
+        {/* Sort, filter chips and product grid */}
+        <section aria-labelledby="category-products-heading" className="space-y-5">
+          <h2
+            id="category-products-heading"
+            className="text-2xl font-semibold tracking-tight sm:text-3xl"
+          >
+            Shop all {category.name}
           </h2>
-          <ProductGrid products={products} />
+          <ListingShell params={listingParams} result={listing} typeLabel="Variety">
+            <ProductGrid products={products} />
+          </ListingShell>
         </section>
 
         {/* Category SEO FAQs Accordion */}

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, Truck } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
 import { useCartUi } from '@/lib/store';
@@ -10,6 +10,7 @@ import { useCart } from '@/lib/cart';
 import { useTranslation } from '@/lib/i18n';
 import { CartItemRow } from './CartItemRow';
 import { CartSummary } from './CartSummary';
+import { CheckoutCta } from './CheckoutCta';
 
 export function CartDrawer(): React.JSX.Element {
   const { isCartOpen, closeCart } = useCartUi();
@@ -64,19 +65,20 @@ export function CartDrawer(): React.JSX.Element {
         </div>
 
         {cart && items.length > 0 && (
-          <div className="border-t border-neutral-100 p-5 dark:border-neutral-800">
+          <div className="border-t border-neutral-100 bg-white p-5 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.12)] dark:border-neutral-800 dark:bg-[#1c1917]">
             <CartSummary cart={cart} />
-            <div className="mt-4 space-y-2">
-              <Link href="/checkout" onClick={closeCart} className="block">
-                <Button size="lg" className="w-full rounded-xl" disabled={isPending}>
-                  {t('cart.proceedToCheckout')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+            <CheckoutCta disabled={isPending} onNavigate={closeCart} className="mt-4" />
+            <div className="text-heritage-muted mt-4 flex items-center justify-between text-xs">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5" /> Secure checkout
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Truck className="h-3.5 w-3.5" /> Delivery across India
+              </span>
               <Link
                 href="/cart"
                 onClick={closeCart}
-                className="text-heritage-muted block text-center text-sm hover:text-neutral-900 hover:underline dark:hover:text-neutral-100"
+                className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
               >
                 View bag
               </Link>

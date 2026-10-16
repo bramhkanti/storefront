@@ -2,11 +2,12 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useCart } from '@/lib/cart';
 import { CartItemRow } from './CartItemRow';
 import { CartSummary } from './CartSummary';
+import { CheckoutCta } from './CheckoutCta';
 
 /** Full-page bag; reads the same live cart as the drawer. */
 export function CartView(): React.JSX.Element {
@@ -48,11 +49,7 @@ export function CartView(): React.JSX.Element {
       <div className="rounded-2xl border border-neutral-200 bg-white p-6 lg:sticky lg:top-24 dark:border-neutral-800 dark:bg-[#1c1917]">
         <h2 className="mb-4 text-base font-semibold">Order summary</h2>
         <CartSummary cart={cart} />
-        <Link href="/checkout" className="mt-5 block">
-          <Button size="lg" className="w-full rounded-xl" disabled={isPending}>
-            Checkout <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        <CheckoutCta disabled={isPending} reopenBag={false} className="mt-5" />
         <Link
           href="/categories"
           className="text-heritage-muted mt-3 block text-center text-sm hover:underline"

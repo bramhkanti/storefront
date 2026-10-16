@@ -12,6 +12,8 @@ import type { SavedAddress, UserProfile } from '@/lib/auth/profile';
 
 export type { SavedAddress, UserProfile };
 
+export type AuthIntent = 'checkout';
+
 /**
  * Client view of the login session. The source of truth is the httpOnly
  * customer-token cookie on the server; this slice only mirrors the profile.
@@ -22,7 +24,12 @@ export interface AuthSlice {
   /** False until the first session check finishes (avoid login flashes). */
   isSessionLoaded: boolean;
   isAuthModalOpen: boolean;
+  /** What to resume after a successful login ('checkout' reopens the bag). */
+  authIntent: AuthIntent | null;
   openAuthModal: () => void;
+  /** Opens the login modal and remembers what the shopper was doing. */
+  openAuthModalFor: (intent: AuthIntent) => void;
+  clearAuthIntent: () => void;
   closeAuthModal: () => void;
   hydrateSession: () => Promise<UserProfile | null>;
   login: (user: UserProfile) => void;
@@ -59,7 +66,11 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set,
     isAuthenticated: false,
     isSessionLoaded: false,
     isAuthModalOpen: false,
+    authIntent: null,
+    // Used directly as an onClick handler, so it takes no arguments.
     openAuthModal: () => set({ isAuthModalOpen: true }),
+    openAuthModalFor: (authIntent) => set({ isAuthModalOpen: true, authIntent }),
+    clearAuthIntent: () => set({ authIntent: null }),
     closeAuthModal: () => set({ isAuthModalOpen: false }),
     hydrateSession: async () => {
       try {

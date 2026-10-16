@@ -1,14 +1,16 @@
 import type { Metadata } from 'next';
 import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { ProductGallery } from '@/features/product/components/ProductGallery';
 import { ProductDetails } from '@/features/product/components/ProductDetails';
-import { AttributeRenderer } from '@/features/product/components/AttributeRenderer';
 import { ProductGrid } from '@/features/product/components/ProductGrid';
 import {
+  getFeaturedProducts,
   getProductByHandle,
   getProductsByCategory,
   getTopProductHandles,
@@ -64,12 +66,17 @@ export default async function ProductPage({
 
   // Medusa products carry the category handle; mock fixtures use the id as handle.
   const categoryHandle = product.primaryCategoryHandle ?? product.primaryCategoryId;
-  const [category, relatedProducts] = await Promise.all([
+  const [category, relatedProducts, featured] = await Promise.all([
     categoryHandle ? getCategoryByHandle(categoryHandle) : Promise.resolve(null),
-    categoryHandle ? getProductsByCategory(categoryHandle, 5) : Promise.resolve([]),
+    categoryHandle ? getProductsByCategory(categoryHandle, 8) : Promise.resolve([]),
+    getFeaturedProducts(8),
   ]);
 
-  const filteredRelated = relatedProducts.filter((p) => p.id !== product.id).slice(0, 4);
+  // Same category first, then popular picks so the row is always full.
+  const seen = new Set([product.id]);
+  const filteredRelated = [...relatedProducts, ...featured]
+    .filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)))
+    .slice(0, 4);
 
   const productJsonLd = buildProductJsonLd(product);
 
@@ -81,49 +88,53 @@ export default async function ProductPage({
   ];
 
   return (
-    <div className="space-y-12 py-8 sm:space-y-16 sm:py-12">
+    <div className="pt-6 pb-16 sm:pt-8 sm:pb-24">
       {/* Schema.org Product Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
 
-      <Container className="space-y-8 sm:space-y-12">
+      <Container className="space-y-6 sm:space-y-8">
         {/* Breadcrumb Trail */}
         <Breadcrumbs items={breadcrumbs} />
 
-        {/* Top Product Hero (Gallery + Purchasing Details) */}
-        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-14">
-          <ProductGallery images={product.images} title={product.title} />
-          <ProductDetails product={product} categoryName={category?.name} />
-        </div>
-
-        {/* Attribute & Regulatory Specification Card */}
-        <div className="border-heritage-border border-t pt-8">
-          <AttributeRenderer
-            primaryCategory={category?.name ?? product.primaryCategoryId}
-            foodAttributes={product.foodAttributes}
-            categoryAttributes={product.attributes}
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14">
+          <ProductGallery
+            images={product.images}
+            title={product.title}
+            className="lg:sticky lg:top-28"
+          />
+          <ProductDetails
+            product={product}
+            categoryName={category?.name}
+            categoryHref={category ? `/${category.handle}` : undefined}
           />
         </div>
 
-        {/* Related Products from the same Kitchen */}
         {filteredRelated.length > 0 && (
-          <section
-            aria-label="Related Heritage Products"
-            className="border-heritage-border space-y-6 border-t pt-10"
-          >
-            <div className="flex items-center justify-between">
+          <section aria-labelledby="related-heading" className="space-y-6 pt-8 sm:pt-12">
+            <div className="flex items-end justify-between gap-4">
               <div>
-                <span className="text-heritage-saffron-dark text-xs font-semibold tracking-wider uppercase">
-                  Handcrafted from the same Kitchen
-                </span>
-                <h2 className="text-heritage-charcoal mt-1 font-serif text-2xl font-bold">
-                  You May Also Relish
+                <p className="text-heritage-maroon text-xs font-semibold tracking-[0.15em] uppercase">
+                  From the same kitchen
+                </p>
+                <h2
+                  id="related-heading"
+                  className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl"
+                >
+                  You may also like
                 </h2>
               </div>
+              {category && (
+                <Link
+                  href={`/${category.handle}`}
+                  className="text-heritage-maroon hidden items-center gap-1 text-sm font-semibold hover:underline sm:inline-flex"
+                >
+                  Shop all {category.name} <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
-
             <ProductGrid products={filteredRelated} />
           </section>
         )}

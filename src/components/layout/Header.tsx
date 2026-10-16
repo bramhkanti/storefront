@@ -139,9 +139,12 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                   className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400"
                   aria-hidden="true"
                 />
-                <span className="truncate text-xs font-normal text-neutral-400 dark:text-neutral-400">
+                <span className="flex-1 truncate text-xs font-normal text-neutral-400 dark:text-neutral-400">
                   Search for your favourite achar...
                 </span>
+                <kbd className="hidden rounded border border-neutral-200 bg-white px-1.5 py-0.5 font-sans text-[10px] font-medium text-neutral-400 xl:inline dark:border-neutral-700 dark:bg-neutral-900">
+                  ⌘K
+                </kbd>
               </button>
 
               {/* Vertical Divider */}
