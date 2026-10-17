@@ -1,15 +1,36 @@
 import type { Metadata } from 'next';
-import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { ArrowRight, HelpCircle, Check } from 'lucide-react';
+
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
+import { cn } from '@/lib/utils/cn';
+import { isSupportedLocale } from '@/lib/i18n';
+import { buildCollectionJsonLd, buildFaqJsonLd } from '@/lib/seo/json-ld';
+import { buildMetadata } from '@/lib/seo/metadata';
+
 import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, Check } from 'lucide-react';
-import { ProductGrid } from '@/features/product/components/ProductGrid';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/Accordion';
+
+import { CollectionCraftPillars } from '@/features/collection/components/CollectionCraftPillars';
+import { CollectionGiftingNotes } from '@/features/collection/components/CollectionGiftingNotes';
+import { CollectionHeritageStory } from '@/features/collection/components/CollectionHeritageStory';
+import { CollectionHero } from '@/features/collection/components/CollectionHero';
+import { CollectionSiblingNav } from '@/features/collection/components/CollectionSiblingNav';
+import { getEnrichedCollection } from '@/features/collection/data/collectionContent';
 import { getCollectionByHandle, listCollections } from '@/features/collection/queries';
+
+import { ProductGrid } from '@/features/product/components/ProductGrid';
 import { listProducts } from '@/features/product/queries';
+
 import { getCategoryTree } from '@/features/catalog/queries';
 import { ListingShell } from '@/features/catalog/components/ListingShell';
 import {
@@ -17,10 +38,6 @@ import {
   parseListingParams,
   rootCategoryFacets,
 } from '@/features/catalog/listing';
-import { cn } from '@/lib/utils/cn';
-import { buildCollectionJsonLd } from '@/lib/seo/json-ld';
-import { buildMetadata } from '@/lib/seo/metadata';
-import { isSupportedLocale } from '@/lib/i18n';
 
 export const instant = false;
 
@@ -31,8 +48,11 @@ interface CollectionPageProps {
 
 export async function generateStaticParams(): Promise<Array<{ handle: string }>> {
   const collections = await listCollections();
+
   return atLeastOne(
-    collections.map((c) => ({ handle: c.handle })),
+    collections.map((collection) => ({
+      handle: collection.handle,
+    })),
     { handle: PLACEHOLDER_SLUG },
   );
 }
@@ -47,9 +67,22 @@ export async function generateMetadata({
     return {};
   }
 
+  const enriched = getEnrichedCollection(
+    collection.handle,
+    collection.title,
+    collection.description,
+  );
+
+  const title = collection.seo?.title ?? `${enriched.h1Title} | Bramhkanti Collections`;
+
+  const description =
+    collection.seo?.description ??
+    (collection.description ||
+      `Explore our handcrafted ${collection.title} gift hampers and heirloom sets prepared in Varanasi with 100% pure ingredients.`);
+
   return buildMetadata({
-    title: collection.seo?.title ?? `${collection.title} | Bramhkanti Collections`,
-    description: collection.seo?.description ?? collection.description,
+    title,
+    description,
     canonicalPath: `/collections/${collection.handle}`,
     locale: isSupportedLocale(locale) ? locale : 'en',
   });
@@ -61,9 +94,14 @@ export default async function CollectionPage({
 }: CollectionPageProps): Promise<ReactNode> {
   const { handle } = await params;
   const listingParams = parseListingParams(await searchParams);
-  const [collection, allCollections, categoryTree] = await Promise.all([
+
+  const [collection, allCollections, productsResult, categoryTree] = await Promise.all([
     getCollectionByHandle(handle),
     listCollections(),
+    listProducts({
+      collectionHandle: handle,
+      limit: 200,
+    }),
     getCategoryTree(),
   ]);
 
@@ -71,27 +109,48 @@ export default async function CollectionPage({
     notFound();
   }
 
-  const { items: allProducts } = await listProducts({
-    collectionHandle: collection.handle,
-    limit: 200,
-  });
+  const allProducts = productsResult.items;
+
   const { items: products, ...listing } = applyListing(
     allProducts,
     listingParams,
     rootCategoryFacets(categoryTree),
   );
-  const otherCollections = allCollections.filter((c) => c.id !== collection.id);
+
+  const enriched = getEnrichedCollection(
+    collection.handle,
+    collection.title,
+    collection.description,
+  );
+
+  const otherCollections = allCollections.filter((item) => item.id !== collection.id);
+
   const collectionJsonLd = buildCollectionJsonLd(collection, allProducts);
+
+  const faqJsonLd = enriched.faqs.length > 0 ? buildFaqJsonLd(enriched.faqs) : null;
+
   const eyebrow = [collection.badge, collection.subtitle].filter(Boolean).join(' · ');
 
   return (
-    <div className="pb-16 sm:pb-24">
+    <div className="bg-page text-fg space-y-10 py-8 sm:space-y-14 sm:py-12">
+      {/* Collection and FAQ structured data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(collectionJsonLd),
+        }}
       />
 
-      <Container className="space-y-8 pt-6 sm:space-y-10 sm:pt-8">
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqJsonLd),
+          }}
+        />
+      )}
+
+      <Container className="space-y-10 sm:space-y-12">
         <Breadcrumbs
           items={[
             { name: 'Collections', href: '/collections' },
@@ -99,87 +158,78 @@ export default async function CollectionPage({
           ]}
         />
 
-        {/* Hero: banner from collection metadata (banner_url / banner_mobile_url) */}
-        <section
-          className={cn(
-            'relative isolate overflow-hidden rounded-3xl',
-            collection.image
-              ? 'bg-neutral-900 text-white'
-              : 'bg-heritage-cream-dark text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50',
-          )}
-        >
-          {collection.image && (
-            <>
-              <picture>
-                {collection.mobileImage && (
-                  <source
-                    media="(max-width: 639px)"
-                    srcSet={collection.mobileImage.url}
-                  />
-                )}
-                <img
-                  src={collection.image.url}
-                  alt={collection.image.altText ?? collection.title}
-                  className="absolute inset-0 -z-10 h-full w-full object-cover"
-                />
-              </picture>
-              <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/40 to-black/5" />
-            </>
-          )}
-          <div className="flex min-h-72 flex-col justify-end gap-4 p-6 sm:min-h-96 sm:p-10 lg:p-14">
-            {eyebrow && (
-              <p
-                className={cn(
-                  'text-xs font-semibold tracking-[0.2em] uppercase',
-                  collection.image ? 'text-white/75' : 'text-heritage-maroon',
-                )}
-              >
-                {eyebrow}
-              </p>
-            )}
-            <h1 className="max-w-2xl text-4xl font-semibold tracking-tight sm:text-6xl">
-              {collection.title}
-            </h1>
-            {collection.description && (
-              <p
-                className={cn(
-                  'max-w-xl text-base leading-relaxed sm:text-lg',
-                  collection.image ? 'text-white/85' : 'text-heritage-muted',
-                )}
-              >
-                {collection.description}
-              </p>
-            )}
-            {collection.highlights && collection.highlights.length > 0 && (
-              <ul className="flex flex-wrap gap-2 pt-1">
-                {collection.highlights.map((h) => (
-                  <li
-                    key={h}
-                    className={cn(
-                      'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur',
-                      collection.image
-                        ? 'bg-white/15 text-white ring-1 ring-white/25'
-                        : 'bg-white text-neutral-800 ring-1 ring-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:ring-neutral-700',
-                    )}
-                  >
-                    <Check className="h-3.5 w-3.5" />
-                    {h}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
+        {/* Collection hero with API-provided collection data */}
+        <CollectionHero
+          collection={collection}
+          h1Title={enriched.h1Title}
+          badgeLabel={enriched.badgeLabel}
+        />
 
-        <section aria-label={`${collection.title} products`}>
+        {/* Collection craft standards */}
+        <CollectionCraftPillars pillars={enriched.craftPillars} />
+
+        {/* Product listing with current-branch filtering logic */}
+        <section aria-labelledby="collection-products-heading" className="space-y-5 pt-2">
+          <div className="border-line flex flex-col justify-between gap-1 border-b pb-3 sm:flex-row sm:items-end">
+            <div>
+              <h2
+                id="collection-products-heading"
+                className="text-fg font-sans text-xl font-bold sm:text-2xl"
+              >
+                {collection.title} Selection
+              </h2>
+
+              <p className="text-fg-muted mt-0.5 text-xs sm:text-sm">
+                {collection.description ||
+                  `Handcrafted authentic delicacies included in our ${collection.title} presentation`}
+              </p>
+            </div>
+
+            <span className="border-line bg-surface-soft text-fg-muted self-start rounded-full border px-3 py-1 text-xs font-semibold sm:self-auto">
+              {listing.total ?? products.length}{' '}
+              {(listing.total ?? products.length) === 1 ? 'item' : 'items'}
+            </span>
+          </div>
+
           <ListingShell params={listingParams} result={listing}>
-            <ProductGrid
-              products={products}
-              emptyMessage="Products for this collection are coming soon."
-            />
+            {products.length > 0 ? (
+              <ProductGrid products={products} />
+            ) : (
+              <div className="border-line bg-surface space-y-4 rounded-2xl border p-8 text-center">
+                <p className="text-fg-muted mx-auto max-w-md text-sm">
+                  Items for the {collection.title} hamper are currently being freshly
+                  prepared in our Varanasi kitchen. Explore our full range or other
+                  curated collections.
+                </p>
+
+                <Link
+                  href="/collections"
+                  className="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-colors"
+                >
+                  <span>Browse All Collections</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            )}
           </ListingShell>
         </section>
 
+        {/* Heritage story */}
+        <CollectionHeritageStory story={enriched.editorialStory} />
+
+        {/* Gifting occasions */}
+        <CollectionGiftingNotes
+          collectionTitle={collection.title}
+          notes={enriched.giftingNotes}
+        />
+
+        {/* Related collections */}
+        <CollectionSiblingNav
+          currentHandle={collection.handle}
+          collections={allCollections}
+        />
+
+        {/* Additional collections from the current branch */}
         {otherCollections.length > 0 && (
           <section aria-labelledby="more-collections" className="space-y-5 pt-6">
             <div className="flex items-end justify-between gap-4">
@@ -189,46 +239,97 @@ export default async function CollectionPage({
               >
                 Explore more collections
               </h2>
+
               <Link
                 href="/collections"
                 className="text-heritage-maroon inline-flex items-center gap-1 text-sm font-semibold hover:underline"
               >
-                View all <ArrowRight className="h-4 w-4" />
+                View all
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
+
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {otherCollections.slice(0, 3).map((c) => (
+              {otherCollections.slice(0, 3).map((item) => (
                 <Link
-                  key={c.id}
-                  href={`/collections/${c.handle}`}
+                  key={item.id}
+                  href={`/collections/${item.handle}`}
                   className="group relative isolate flex aspect-[16/9] flex-col justify-end overflow-hidden rounded-2xl bg-neutral-900 p-5 text-white"
                 >
-                  {c.image && (
+                  {item.image && (
                     <Image
-                      src={c.image.url}
+                      src={item.image.url}
                       alt=""
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="-z-10 object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   )}
+
                   <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  {c.badge && (
+
+                  {item.badge && (
                     <span className="mb-2 w-fit rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase backdrop-blur">
-                      {c.badge}
+                      {item.badge}
                     </span>
                   )}
+
                   <span className="flex items-center justify-between text-lg font-semibold">
-                    {c.title}
+                    {item.title}
                     <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </span>
-                  {c.description && (
+
+                  {item.description && (
                     <span className="mt-0.5 line-clamp-1 text-sm text-white/75">
-                      {c.description}
+                      {item.description}
                     </span>
                   )}
                 </Link>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* Collection SEO FAQs */}
+        {enriched.faqs.length > 0 && (
+          <section
+            aria-labelledby="collection-faq-heading"
+            className="border-line space-y-4 border-t pt-4"
+          >
+            <div className="flex items-center gap-2 pb-1">
+              <HelpCircle className="text-brand-600 h-5 w-5" />
+
+              <h2
+                id="collection-faq-heading"
+                className="text-fg font-sans text-xl font-bold tracking-tight sm:text-2xl"
+              >
+                Frequently Asked Questions About {collection.title}
+              </h2>
+            </div>
+
+            <p className="text-fg-muted -mt-2 text-xs sm:text-sm">
+              Hamper details, customization options, and pan-India delivery for{' '}
+              {collection.title.toLowerCase()}
+            </p>
+
+            <div className="border-line bg-surface mt-4 rounded-2xl border p-4 sm:p-6">
+              <Accordion type="single" collapsible className="w-full">
+                {enriched.faqs.map((faq, index) => (
+                  <AccordionItem
+                    key={faq.question}
+                    value={`faq-${index}`}
+                    className="border-line"
+                  >
+                    <AccordionTrigger className="text-fg hover:text-brand-700 py-3 text-left text-sm font-semibold sm:text-base">
+                      {faq.question}
+                    </AccordionTrigger>
+
+                    <AccordionContent className="text-fg-muted pb-3 text-xs leading-relaxed sm:text-sm">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           </section>
         )}

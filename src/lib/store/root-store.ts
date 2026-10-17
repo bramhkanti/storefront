@@ -8,10 +8,7 @@ import {
   createNavigationUiSlice,
   type NavigationUiSlice,
 } from './slices/navigation-ui.slice';
-import {
-  createWishlistSlice,
-  type WishlistSlice,
-} from './slices/wishlist.slice';
+import { createWishlistSlice, type WishlistSlice } from './slices/wishlist.slice';
 
 export interface RootStoreState
   extends

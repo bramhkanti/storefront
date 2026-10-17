@@ -4,7 +4,8 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Search, ShoppingCart, Heart } from 'lucide-react';
+import { Search, Heart } from 'lucide-react';
+
 import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
@@ -13,17 +14,24 @@ import { CategoryMegaMenu } from './CategoryMegaMenu';
 import { CollectionMegaMenu } from './CollectionMegaMenu';
 import { SkipLink } from '@/components/ui/SkipLink';
 import { Button } from '@/components/ui/Button';
+import { CartButton } from './CartButton';
 import { SITE_CONFIG } from '@/content/site';
-import { useCartUi, useSearchUi, useNavigationUi, useWishlist } from '@/lib/store';
+import { useNavigationUi, useWishlist } from '@/lib/store';
 import { useCart } from '@/lib/cart';
 import type { Category, Collection } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
 /**
- * Modern 3-bar asymmetrical hamburger icon matching the brand design mockup.
- * Top & middle bars are full-width, bottom bar is a right-aligned short bar.
+ * Modern three-bar asymmetrical hamburger icon.
+ * The bottom bar can be mirrored for the mobile layout.
  */
-function HamburgerMenuIcon({ className }: { className?: string }): React.JSX.Element {
+function HamburgerMenuIcon({
+  className,
+  mirrored = false,
+}: {
+  className?: string;
+  mirrored?: boolean;
+}): React.JSX.Element {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -37,7 +45,11 @@ function HamburgerMenuIcon({ className }: { className?: string }): React.JSX.Ele
     >
       <line x1="3.5" y1="5.5" x2="20.5" y2="5.5" />
       <line x1="3.5" y1="12" x2="20.5" y2="12" />
-      <line x1="11" y1="18.5" x2="20.5" y2="18.5" />
+      {mirrored ? (
+        <line x1="3.5" y1="18.5" x2="13" y2="18.5" />
+      ) : (
+        <line x1="11" y1="18.5" x2="20.5" y2="18.5" />
+      )}
     </svg>
   );
 }
@@ -48,8 +60,23 @@ export interface HeaderProps {
   cartCount?: number;
 }
 
-export function Header({ categories, collections, cartCount = 0 }: HeaderProps) {
+export function Header({
+  categories,
+  collections,
+  cartCount = 0,
+}: HeaderProps): React.JSX.Element {
   const pathname = usePathname() || '';
+
+  const { isMobileMenuOpen, openMobileMenu, closeMobileMenu } = useNavigationUi();
+
+  const { optimisticCart } = useCart();
+  const { wishlistCount } = useWishlist();
+
+  const segments = pathname.split('/').filter(Boolean);
+  const productsIndex = segments.indexOf('products');
+
+  const isProductPage = productsIndex !== -1 && segments.length > productsIndex + 1;
+
   const isHome =
     pathname === '/' ||
     pathname === '/en' ||
@@ -57,23 +84,22 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
     pathname === '/en-IN' ||
     pathname === '/hi-IN';
 
-  const { openCart } = useCartUi();
-  const { openSearch } = useSearchUi();
-  const { isMobileMenuOpen, openMobileMenu, closeMobileMenu } = useNavigationUi();
-  const { optimisticCart } = useCart();
-  const { wishlistCount } = useWishlist();
-
   const liveCartCount = optimisticCart?.itemCount ?? cartCount;
 
   return (
-    <header className="border-heritage-border bg-heritage-cream/95 sticky top-0 z-40 w-full border-b backdrop-blur-md transition-shadow">
+    <header
+      className={cn(
+        'border-heritage-border bg-heritage-cream/95 sticky top-0 z-40 w-full border-b backdrop-blur-md transition-shadow',
+        isProductPage && 'hidden lg:block',
+      )}
+    >
       <SkipLink />
 
-      {/* Main Header Container */}
+      {/* Main header container */}
       <Container>
-        {/* DESKTOP HEADER (lg:flex) */}
+        {/* Desktop header */}
         <div className="relative hidden h-20 items-center justify-between gap-4 lg:flex">
-          {/* Left: Brand Logo */}
+          {/* Left: Brand logo */}
           <div className="flex shrink-0 items-center">
             <Link
               href="/"
@@ -91,9 +117,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             </Link>
           </div>
 
-          {/* Right: Navigation Links, Search Box, Divider & Action Icons */}
+          {/* Right: Navigation, search and action icons */}
           <div className="flex items-center gap-6 xl:gap-8">
-            {/* Desktop Navigation */}
+            {/* Desktop navigation */}
             <nav
               aria-label="Main Navigation"
               className="flex items-center gap-5 text-sm font-semibold lg:gap-6 xl:gap-7"
@@ -111,13 +137,13 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 Home
               </Link>
 
-              {/* Single Group Category with 3-Column Popover */}
+              {/* Categories */}
               <CategoryMegaMenu categories={categories} />
 
-              {/* Curated Collections with 3-Column Popover */}
+              {/* Collections */}
               <CollectionMegaMenu collections={collections} />
 
-              {/* Brand Story */}
+              {/* Brand story */}
               <Link
                 href="/about"
                 className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-semibold transition-colors focus-visible:outline-2"
@@ -126,36 +152,33 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
               </Link>
             </nav>
 
-            {/* Right Action Items: Pill Search Bar, Vertical Divider, and 4 Action Icons */}
+            {/* Search and action icons */}
             <div className="flex items-center gap-3 lg:gap-4 xl:gap-5">
-              {/* Pill Search Button */}
-              <button
-                type="button"
-                onClick={openSearch}
-                aria-label="Search for your favourite achar..."
-                className="flex w-52 items-center gap-2.5 rounded-full border border-neutral-200/60 bg-neutral-100/90 px-4 py-2 text-left transition-all hover:bg-neutral-200/70 xl:w-72 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:hover:bg-neutral-700/70"
+              {/* Search link */}
+              <Link
+                href="/search"
+                aria-label="Search for your favourite achar, sweets, or makhana"
+                className="hover:border-brand-600 flex w-52 items-center gap-2.5 rounded-full border border-neutral-200/60 bg-neutral-100/90 px-4 py-2 text-left transition-all hover:bg-neutral-200/70 xl:w-72 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:hover:bg-neutral-700/70"
               >
                 <Search
                   className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400"
                   aria-hidden="true"
                 />
+
                 <span className="flex-1 truncate text-xs font-normal text-neutral-400 dark:text-neutral-400">
                   Search for your favourite achar...
                 </span>
-                <kbd className="hidden rounded border border-neutral-200 bg-white px-1.5 py-0.5 font-sans text-[10px] font-medium text-neutral-400 xl:inline dark:border-neutral-700 dark:bg-neutral-900">
-                  ⌘K
-                </kbd>
-              </button>
+              </Link>
 
-              {/* Vertical Divider */}
+              {/* Vertical divider */}
               <div
                 className="mx-1 h-6 w-px bg-neutral-200 dark:bg-neutral-700"
                 aria-hidden="true"
               />
 
-              {/* 4 Action Icons Cluster: Wishlist, Cart, Profile Avatar, Hamburger Menu */}
+              {/* Wishlist, cart, profile and menu */}
               <div className="flex items-center gap-4 sm:gap-5 lg:gap-6 xl:gap-7">
-                {/* 1. Wishlist */}
+                {/* Wishlist */}
                 <Link
                   href="/wishlist"
                   aria-label={
@@ -174,7 +197,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                     )}
                     aria-hidden="true"
                   />
+
                   <span className="sr-only">Wishlist</span>
+
                   {wishlistCount > 0 && (
                     <span
                       className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
@@ -185,29 +210,13 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                   )}
                 </Link>
 
-                {/* 2. Cart with count badge */}
-                <button
-                  type="button"
-                  onClick={openCart}
-                  aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
-                  className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon focus-visible:outline-heritage-maroon relative inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors focus-visible:outline-2"
-                >
-                  <ShoppingCart className="h-5 w-5" aria-hidden="true" />
-                  <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
-                  {liveCartCount > 0 && (
-                    <span
-                      className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
-                      aria-hidden="true"
-                    >
-                      {liveCartCount > 99 ? '99+' : liveCartCount}
-                    </span>
-                  )}
-                </button>
+                {/* Cart */}
+                <CartButton cartCount={liveCartCount} className="h-9 w-9" />
 
-                {/* 3. Profile menu */}
+                {/* Profile */}
                 <ProfileMenu />
 
-                {/* 4. Hamburger menu drawer toggle */}
+                {/* Menu drawer toggle */}
                 <button
                   type="button"
                   onClick={openMobileMenu}
@@ -221,9 +230,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
           </div>
         </div>
 
-        {/* MOBILE HEADER (lg:hidden) */}
+        {/* Mobile header */}
         <div className="flex h-16 items-center justify-between lg:hidden">
-          {/* Left: Hamburger menu toggle */}
+          {/* Left: Hamburger menu */}
           <Button
             variant="ghost"
             size="icon"
@@ -231,10 +240,10 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             onClick={openMobileMenu}
             aria-label="Open navigation menu"
           >
-            <HamburgerMenuIcon className="h-6 w-6" />
+            <HamburgerMenuIcon className="h-6 w-6" mirrored />
           </Button>
 
-          {/* Center: Brand Logo centered */}
+          {/* Center: Brand logo */}
           <Link
             href="/"
             className="focus-visible:outline-heritage-maroon flex items-center justify-center rounded-xs focus-visible:outline-2"
@@ -250,8 +259,19 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             />
           </Link>
 
-          {/* Right: Wishlist & Cart Bag with badge */}
-          <div className="flex items-center gap-0.5">
+          {/* Right: Search, wishlist and cart */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Search */}
+            <Link
+              href="/search"
+              aria-label="Search catalog"
+              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+            >
+              <Search className="h-5 w-5" aria-hidden="true" />
+              <span className="sr-only">Search</span>
+            </Link>
+
+            {/* Wishlist */}
             <Link
               href="/wishlist"
               aria-label={
@@ -268,7 +288,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 )}
                 aria-hidden="true"
               />
+
               <span className="sr-only">Wishlist</span>
+
               {wishlistCount > 0 && (
                 <span
                   className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
@@ -279,50 +301,20 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
               )}
             </Link>
 
-            <button
-              type="button"
-              onClick={openCart}
-              aria-label={`${SITE_CONFIG.ui.cartTitle} with ${liveCartCount} items`}
-              className="text-heritage-charcoal hover:bg-heritage-cream-dark hover:text-heritage-maroon relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-            >
-              <ShoppingCart className="h-5 w-5" aria-hidden="true" />
-              <span className="sr-only">{SITE_CONFIG.ui.cartTitle}</span>
-              {liveCartCount > 0 && (
-                <span
-                  className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
-                  aria-hidden="true"
-                >
-                  {liveCartCount > 99 ? '99+' : liveCartCount}
-                </span>
-              )}
-            </button>
+            {/* Cart */}
+            <CartButton cartCount={liveCartCount} className="h-10 w-10" />
           </div>
         </div>
       </Container>
 
-      {/* Dedicated Mobile Search Bar (Below Header on mobile) */}
-      <div className="border-heritage-border/60 bg-heritage-cream/95 px-4 pt-0.5 pb-2.5 lg:hidden">
-        <button
-          type="button"
-          onClick={openSearch}
-          className="border-heritage-border bg-heritage-cream-dark/60 text-heritage-muted hover:border-heritage-maroon flex w-full items-center gap-2.5 rounded-lg border px-3.5 py-2 text-left text-sm transition-colors"
-          aria-label="Search for your favourite achar..."
-        >
-          <Search className="text-heritage-muted h-4 w-4 shrink-0" />
-          <span className="text-heritage-muted text-xs font-normal">
-            Search for your favourite achar...
-          </span>
-        </button>
-      </div>
-
-      {/* Slide-out Mobile Menu Drawer */}
+      {/* Slide-out mobile menu */}
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={closeMobileMenu}
         categories={categories}
       />
 
-      {/* Auth Modal */}
+      {/* Authentication modal */}
       <AuthModal />
     </header>
   );

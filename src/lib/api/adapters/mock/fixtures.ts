@@ -441,7 +441,11 @@ export const MOCK_CATEGORIES: Category[] = [
         parentId: 'cat_sweets',
         path: [
           { id: 'cat_sweets', handle: 'sweets', name: 'Sweets' },
-          { id: 'cat_sweets_motichur', handle: 'moti-chur-laddu', name: 'Motichoor Ladoo' },
+          {
+            id: 'cat_sweets_motichur',
+            handle: 'moti-chur-laddu',
+            name: 'Motichoor Ladoo',
+          },
         ],
         description:
           'Ultra-fine gram flour pearls (boondi) fried in pure desi cow ghee, simmered in saffron-infused syrup, and garnished with roasted melon seeds (magaz).',
@@ -529,11 +533,27 @@ export const MOCK_REDIRECTS: Redirect[] = [
   { fromPath: '/achar/mango-pickles', toPath: '/achar/aam-ka-achar', statusCode: 301 },
   { fromPath: '/achar/chilli-pickles', toPath: '/achar/bhara-marcha', statusCode: 301 },
   { fromPath: '/achar/heritage-specials', toPath: '/achar/nimbu', statusCode: 301 },
-  { fromPath: '/sweets/ladoo-collection', toPath: '/sweets/besan-laddu', statusCode: 301 },
+  {
+    fromPath: '/sweets/ladoo-collection',
+    toPath: '/sweets/besan-laddu',
+    statusCode: 301,
+  },
   { fromPath: '/sweets/regional-sweets', toPath: '/sweets/thekua', statusCode: 301 },
-  { fromPath: '/collections/best-seller-combo', toPath: '/collections/best-sellers', statusCode: 301 },
-  { fromPath: '/collections/grand-maa', toPath: '/collections/grandmas-specials', statusCode: 301 },
-  { fromPath: '/collections/diwali-and-fest', toPath: '/collections/diwali-gifting', statusCode: 301 },
+  {
+    fromPath: '/collections/best-seller-combo',
+    toPath: '/collections/best-sellers',
+    statusCode: 301,
+  },
+  {
+    fromPath: '/collections/grand-maa',
+    toPath: '/collections/grandmas-specials',
+    statusCode: 301,
+  },
+  {
+    fromPath: '/collections/diwali-and-fest',
+    toPath: '/collections/diwali-gifting',
+    statusCode: 301,
+  },
   {
     fromPath: '/products/old-mango-pickle',
     toPath: '/products/heritage-aam-ka-achar',

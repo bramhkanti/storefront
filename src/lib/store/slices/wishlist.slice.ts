@@ -4,7 +4,9 @@ import type { Product } from '@/lib/api/contracts/domain';
 export const WISHLIST_STORAGE_KEY_PREFIX = 'bramhkanti_wishlist';
 
 function getStorageKey(userId?: string): string {
-  return userId ? `${WISHLIST_STORAGE_KEY_PREFIX}_${userId}` : WISHLIST_STORAGE_KEY_PREFIX;
+  return userId
+    ? `${WISHLIST_STORAGE_KEY_PREFIX}_${userId}`
+    : WISHLIST_STORAGE_KEY_PREFIX;
 }
 
 export function readStoredWishlist(userId?: string): Product[] {

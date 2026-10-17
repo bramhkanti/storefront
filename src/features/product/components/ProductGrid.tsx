@@ -16,8 +16,8 @@ export function ProductGrid({
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-neutral-300 p-12 text-center dark:border-neutral-700">
-        <p className="text-heritage-muted text-sm font-medium">{emptyMessage}</p>
+      <div className="border-line bg-surface-soft rounded-2xl border border-dashed p-12 text-center">
+        <p className="text-fg-muted text-sm font-medium">{emptyMessage}</p>
       </div>
     );
   }

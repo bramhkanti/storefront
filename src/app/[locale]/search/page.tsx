@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Search, SearchX } from 'lucide-react';
+
 import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { ProductGrid } from '@/features/product/components/ProductGrid';
@@ -33,10 +34,10 @@ export async function generateMetadata({
 
   return buildMetadata({
     title: query
-      ? `Search results for "${query}" | Bramhkanti Heritage Foods`
-      : 'Search | Bramhkanti',
+      ? `Search Results for "${query}" | Bramhkanti Heritage Foods`
+      : 'Search Authentic Indian Foods | Bramhkanti',
     description:
-      'Search authentic Banarasi pickles, pure cow ghee sweets, and roasted makhana.',
+      'Search our collection of handcrafted Banarasi pickles, pure cow ghee sweets, and roasted makhana.',
     canonicalPath: '/search',
     noindex: true,
   });
@@ -62,7 +63,7 @@ export default async function SearchPage({
   const suggestions = seeds.categories.slice(0, 8);
 
   return (
-    <div className="pb-16 sm:pb-24">
+    <div className="bg-page text-fg min-h-[70vh] pb-16 sm:pb-24">
       <Container className="space-y-8 pt-6 sm:pt-8">
         <Breadcrumbs
           items={[
@@ -90,6 +91,7 @@ export default async function SearchPage({
             className="relative max-w-2xl"
           >
             <Search className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+
             <input
               type="search"
               name="q"
@@ -99,6 +101,7 @@ export default async function SearchPage({
               enterKeyHint="search"
               className="focus:border-heritage-maroon focus:ring-heritage-maroon/15 h-14 w-full rounded-2xl border border-neutral-200 bg-white pr-28 pl-12 text-base shadow-xs outline-none focus:ring-4 dark:border-neutral-700 dark:bg-neutral-900"
             />
+
             <button
               type="submit"
               className="bg-heritage-maroon hover:bg-heritage-maroon-dark absolute top-1/2 right-2 h-10 -translate-y-1/2 rounded-xl px-5 text-sm font-semibold text-white transition-colors"
@@ -110,13 +113,14 @@ export default async function SearchPage({
           {result && result.categories.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <span className="text-heritage-muted">Matching categories:</span>
-              {result.categories.map((c) => (
+
+              {result.categories.map((category) => (
                 <Link
-                  key={c.href}
-                  href={c.href}
+                  key={category.href}
+                  href={category.href}
                   className="hover:border-heritage-maroon hover:text-heritage-maroon inline-flex h-8 items-center rounded-full border border-neutral-200 bg-white px-3 font-medium transition-colors dark:border-neutral-700 dark:bg-neutral-900"
                 >
-                  {c.name}
+                  {category.name}
                 </Link>
               ))}
             </div>
@@ -138,23 +142,26 @@ export default async function SearchPage({
                 <Search className="text-heritage-muted h-6 w-6" />
               )}
             </div>
+
             <h2 className="mt-4 text-xl font-semibold">
               {query ? `Nothing found for "${query}"` : 'What are you craving today?'}
             </h2>
+
             <p className="text-heritage-muted mx-auto mt-2 max-w-md text-sm">
               {query
                 ? 'Check the spelling, try fewer words, or browse a category below.'
                 : 'Search by product, ingredient or flavour, or start with a category.'}
             </p>
+
             {suggestions.length > 0 && (
               <div className="mt-6 flex flex-wrap justify-center gap-2">
-                {suggestions.map((c) => (
+                {suggestions.map((category) => (
                   <Link
-                    key={c.href}
-                    href={c.href}
+                    key={category.href}
+                    href={category.href}
                     className="hover:border-heritage-maroon hover:text-heritage-maroon inline-flex h-9 items-center rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium transition-colors dark:border-neutral-700 dark:bg-neutral-900"
                   >
-                    {c.name}
+                    {category.name}
                   </Link>
                 ))}
               </div>
@@ -167,6 +174,7 @@ export default async function SearchPage({
             <h2 id="popular-heading" className="text-2xl font-semibold tracking-tight">
               Popular right now
             </h2>
+
             <ProductGrid products={seeds.products} />
           </section>
         )}

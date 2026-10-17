@@ -14,6 +14,8 @@ export default function robots(): MetadataRoute.Robots {
           '/order-confirmed',
           '/api/',
           '/search',
+          '/en/search',
+          '/hi/search',
           '/profile',
           '/account',
           '/en/profile',

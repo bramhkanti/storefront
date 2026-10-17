@@ -6,50 +6,49 @@ import type { Category } from '@/lib/api/contracts/domain';
 import { CACHE_TAGS } from '@/lib/cache/tags';
 
 /**
- * Fetch a single category by slug handle (e.g. 'achar', 'sweets', 'makhana').
+ * Fetch a single category by handle.
  */
 export async function getCategoryByHandle(handle: string): Promise<Category | null> {
   'use cache';
+
   cacheLife('catalog');
   cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories, CACHE_TAGS.category(handle));
 
-  const reader = getCategoryReader();
-  return reader.getCategoryByHandle(handle);
+  return getCategoryReader().getCategoryByHandle(handle);
 }
 
 /**
- * Fetch all categories (flat list).
+ * Fetch all categories as a flat list.
  */
 export async function listCategories(): Promise<Category[]> {
   'use cache';
+
   cacheLife('navigation');
   cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories, CACHE_TAGS.navigation);
 
-  const reader = getCategoryReader();
-  return reader.listCategories();
+  return getCategoryReader().listCategories();
 }
 
 /**
- * Fetch hierarchical category tree (root categories with populated children)
- * for building dynamic, zero-hardcode navigation menus and mega-menus.
+ * Fetch the hierarchical category tree for navigation and mega-menus.
  */
 export async function getCategoryTree(): Promise<Category[]> {
   'use cache';
+
   cacheLife('navigation');
   cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories, CACHE_TAGS.navigation);
 
-  const reader = getCategoryReader();
-  return reader.getCategoryTree();
+  return getCategoryReader().getCategoryTree();
 }
 
 /**
- * Fetch all category handles for generateStaticParams and sitemap builders.
+ * Fetch all category handles for static params and sitemap generation.
  */
 export async function getAllCategoryHandles(): Promise<string[]> {
   'use cache';
+
   cacheLife('navigation');
   cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.categories);
 
-  const reader = getCategoryReader();
-  return reader.getAllCategoryHandles();
+  return getCategoryReader().getAllCategoryHandles();
 }
