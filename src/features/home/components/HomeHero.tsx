@@ -1,102 +1,246 @@
+'use client';
+
 import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Leaf,
+  Pause,
+  Play,
+  ShieldCheck,
+} from 'lucide-react';
 import { Container } from '@/components/layout/Container';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { SITE_CONFIG } from '@/content/site';
+import { cn } from '@/lib/utils/cn';
+import type { HeroSlide } from '../types';
 
-export function HomeHero(): React.JSX.Element {
+const AUTOPLAY_MS = 6500;
+const SWIPE_PX = 50;
+
+export interface HomeHeroProps {
+  slides: HeroSlide[];
+}
+
+/**
+ * Full-width banner slider with the copy on the image. Slides come from the
+ * brand slide plus every collection that has a banner in the admin.
+ * Autoplay pauses on hover, focus, hidden tabs and reduced-motion.
+ */
+export function HomeHero({ slides }: HomeHeroProps): React.JSX.Element | null {
+  const [index, setIndex] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
+  const [hovering, setHovering] = React.useState(false);
+  const [reducedMotion, setReducedMotion] = React.useState(false);
+  const touchStart = React.useRef<number | null>(null);
+  const count = slides.length;
+
+  React.useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  const running = count > 1 && !paused && !hovering && !reducedMotion;
+
+  React.useEffect(() => {
+    if (!running) return;
+    const timer = window.setTimeout(() => {
+      if (document.visibilityState === 'visible') setIndex((i) => (i + 1) % count);
+    }, AUTOPLAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [running, index, count]);
+
+  if (count === 0) return null;
+  const go = (next: number) => setIndex((next + count) % count);
+
   return (
-    <section className="from-heritage-cream via-heritage-cream to-heritage-cream-dark/40 relative overflow-hidden bg-gradient-to-b pt-10 pb-16 sm:pt-16 sm:pb-24">
-      <Container>
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
-          {/* Left Column: Headline, Copy & CTAs */}
-          <div className="space-y-6 lg:col-span-7">
-            <div className="flex flex-wrap items-center gap-3">
-              <Badge variant="vegetarian" className="gap-1.5 px-3 py-1 text-xs">
-                {SITE_CONFIG.ui.vegetarianBadge}
-              </Badge>
-              <span className="text-heritage-saffron-dark text-xs font-semibold tracking-widest uppercase">
-                Ancestral Family Recipes
-              </span>
-            </div>
-
-            <h1 className="text-heritage-maroon font-serif text-4xl leading-[1.12] font-extrabold tracking-tight sm:text-5xl lg:text-[3.5rem]">
-              Authentic Indian Flavours, Crafted with Purity &amp; Heritage
-            </h1>
-
-            <p className="text-heritage-muted max-w-xl text-base leading-relaxed sm:text-lg">
-              Handcrafted traditional Indian pickles (achar), pure desi ghee sweets
-              (mithai), and slow-roasted foxnuts (makhana) — prepared using time-honoured
-              ancestral recipes, cold-pressed oils, and zero artificial preservatives.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link href="/achar">
-                <Button
-                  size="lg"
-                  className="bg-heritage-maroon hover:bg-heritage-maroon-dark rounded-full px-7 py-3 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg"
-                >
-                  <span>Explore Handcrafted Achar</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/sweets">
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="border-heritage-border hover:bg-heritage-cream-dark text-heritage-charcoal rounded-full border bg-white px-7 py-3 text-sm font-medium transition-colors"
-                >
-                  <span>Pure Desi Ghee Mithai</span>
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column: Hero Product Composition with Floating Calligraphy Badge */}
-          <div className="relative flex justify-center lg:col-span-5">
-            {/* Ambient Background Warm Glow */}
+    <section
+      aria-roledescription="carousel"
+      aria-label="Featured"
+      className="relative"
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      onFocusCapture={() => setHovering(true)}
+      onBlurCapture={() => setHovering(false)}
+    >
+      <div
+        className="relative isolate h-[min(82svh,640px)] min-h-[500px] w-full overflow-hidden bg-neutral-900 text-white sm:h-[clamp(520px,46vw,780px)]"
+        onTouchStart={(e) => {
+          touchStart.current = e.touches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(e) => {
+          const start = touchStart.current;
+          const end = e.changedTouches[0]?.clientX;
+          touchStart.current = null;
+          if (start === null || end === undefined || count < 2) return;
+          if (end - start > SWIPE_PX) go(index - 1);
+          if (start - end > SWIPE_PX) go(index + 1);
+        }}
+      >
+        {slides.map((slide, i) => {
+          const active = i === index;
+          const Heading = i === 0 ? 'h1' : 'h2';
+          return (
             <div
-              className="bg-heritage-gold/20 absolute -inset-4 rounded-full blur-3xl"
-              aria-hidden="true"
-            />
-
-            {/* Main Focal Composition Card */}
-            <div className="border-heritage-border/80 bg-heritage-cream relative w-full max-w-md overflow-hidden rounded-3xl border shadow-xl transition-transform hover:scale-[1.01]">
-              <div className="relative aspect-4/3 w-full sm:aspect-square">
+              key={slide.id}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${count}: ${slide.title}`}
+              aria-hidden={!active}
+              inert={!active}
+              className={cn(
+                'absolute inset-0 transition-opacity duration-700 ease-out',
+                active ? 'z-10 opacity-100' : 'z-0 opacity-0',
+              )}
+            >
+              <picture>
+                {slide.mobileImageUrl && (
+                  <source media="(max-width: 639px)" srcSet={slide.mobileImageUrl} />
+                )}
                 <Image
-                  src="/images/home/hero-barnie.jpg"
-                  alt="Traditional handcrafted Indian mango achar in authentic ceramic barnie jar with fresh green mangoes and spices"
+                  src={slide.imageUrl}
+                  alt={slide.imageAlt}
                   fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 480px"
-                  className="object-cover object-center"
+                  priority={i === 0}
+                  sizes="100vw"
+                  className={cn(
+                    'object-cover transition-transform ease-out',
+                    slide.imagePosition ?? 'object-center',
+                    active && !reducedMotion
+                      ? 'scale-105 duration-[7000ms]'
+                      : 'scale-100 duration-700',
+                  )}
                 />
-              </div>
+              </picture>
 
-              {/* Floating Calligraphic Badge: "Desi Achar. Real Taste." */}
-              <div className="absolute top-4 right-4 z-10 rounded-2xl bg-black/60 px-4 py-2.5 backdrop-blur-md">
-                <p className="font-serif text-sm font-bold tracking-wide text-amber-200 italic sm:text-base">
-                  Desi Achar.
-                </p>
-                <p className="font-serif text-xs font-semibold tracking-wider text-white">
-                  Real Taste.
-                </p>
-              </div>
+              {/* Keeps the copy readable on any photo: bottom fade on phones, left fade on desktop. */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10 sm:bg-gradient-to-r sm:from-black/80 sm:via-black/45 sm:to-transparent" />
 
-              {/* Subtle Bottom Caption Bar */}
-              <div className="border-heritage-border/60 bg-heritage-cream/90 flex items-center justify-between border-t px-4 py-2.5 text-xs">
-                <span className="text-heritage-charcoal font-medium">
-                  Sun-Cured In Earthen Martabans
-                </span>
-                <span className="text-heritage-maroon font-bold">Zero Chemicals</span>
-              </div>
+              <Container className="relative flex h-full flex-col justify-end pt-10 pb-24 sm:justify-center sm:pb-20">
+                <div
+                  className={cn(
+                    'max-w-xl space-y-5 transition-all delay-150 duration-700',
+                    active ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',
+                  )}
+                >
+                  {slide.eyebrow && (
+                    <p className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-semibold tracking-[0.18em] uppercase ring-1 ring-white/25 backdrop-blur-md">
+                      <span className="bg-heritage-gold h-1.5 w-1.5 rounded-full" />
+                      {slide.eyebrow}
+                    </p>
+                  )}
+                  <Heading className="text-4xl leading-[1.05] font-semibold tracking-tight text-balance drop-shadow-sm sm:text-5xl lg:text-6xl">
+                    {slide.title}
+                  </Heading>
+                  {slide.description && (
+                    <p className="max-w-lg text-base leading-relaxed text-white/85 sm:text-lg">
+                      {slide.description}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap items-center gap-3 pt-1">
+                    <Link
+                      href={slide.ctaHref}
+                      className="group bg-heritage-maroon hover:bg-heritage-maroon-hover inline-flex h-12 items-center gap-2 rounded-full px-7 text-sm font-semibold text-white shadow-lg shadow-black/20 transition-colors"
+                    >
+                      {slide.ctaLabel}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                    {slide.secondaryHref && slide.secondaryLabel && (
+                      <Link
+                        href={slide.secondaryHref}
+                        className="inline-flex h-12 items-center rounded-full bg-white/10 px-6 text-sm font-semibold text-white ring-1 ring-white/40 backdrop-blur-md transition-colors hover:bg-white hover:text-neutral-900"
+                      >
+                        {slide.secondaryLabel}
+                      </Link>
+                    )}
+                  </div>
+                  {slide.badges && slide.badges.length > 0 && (
+                    <ul className="flex flex-wrap gap-x-5 gap-y-2 pt-2 text-sm text-white/80">
+                      {slide.badges.map((badge, b) => {
+                        const Icon = b === 0 ? Leaf : ShieldCheck;
+                        return (
+                          <li key={badge} className="flex items-center gap-1.5">
+                            <Icon className="text-heritage-gold h-4 w-4" />
+                            {badge}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              </Container>
             </div>
+          );
+        })}
+
+        {count > 1 && (
+          <div className="absolute inset-x-0 bottom-6 z-20">
+            <Container className="flex items-center gap-4">
+              {/* Progress segments double as slide pickers. */}
+              <div className="flex flex-1 gap-2" role="tablist" aria-label="Choose slide">
+                {slides.map((slide, i) => (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === index}
+                    aria-label={`Show slide ${i + 1}: ${slide.title}`}
+                    onClick={() => go(i)}
+                    className="group relative h-6 max-w-24 flex-1 py-2.5"
+                  >
+                    <span className="block h-1 overflow-hidden rounded-full bg-white/30">
+                      <span
+                        key={i === index ? `active-${index}-${running}` : 'idle'}
+                        className={cn(
+                          'block h-full rounded-full bg-white',
+                          i < index && 'w-full',
+                          i > index && 'w-0',
+                          i === index && (running ? 'animate-hero-progress' : 'w-full'),
+                        )}
+                        style={
+                          i === index && running
+                            ? { animationDuration: `${AUTOPLAY_MS}ms` }
+                            : undefined
+                        }
+                      />
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaused((p) => !p)}
+                  aria-label={paused ? 'Play slideshow' : 'Pause slideshow'}
+                  className="hidden h-10 w-10 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md transition-colors hover:bg-white/25 sm:flex"
+                >
+                  {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(index - 1)}
+                  aria-label="Previous slide"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md transition-colors hover:bg-white hover:text-neutral-900"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(index + 1)}
+                  aria-label="Next slide"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30 backdrop-blur-md transition-colors hover:bg-white hover:text-neutral-900"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            </Container>
           </div>
-        </div>
-      </Container>
+        )}
+      </div>
     </section>
   );
 }

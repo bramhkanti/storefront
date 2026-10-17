@@ -29,21 +29,24 @@ export interface ProductSnapshotProps {
   className?: string | undefined;
 }
 
-export function ProductSnapshot({ highlights, className }: ProductSnapshotProps): React.JSX.Element {
+export function ProductSnapshot({
+  highlights,
+  className,
+}: ProductSnapshotProps): React.JSX.Element {
   if (!highlights || highlights.length === 0) return <></>;
 
   return (
     <div
       className={cn(
-        'border border-neutral-200 bg-white space-y-3.5 rounded-2xl p-4 sm:p-5 shadow-none',
+        'space-y-3.5 rounded-2xl border border-neutral-200 bg-white p-4 shadow-none sm:p-5',
         className,
       )}
     >
       <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
-        <h3 className="text-neutral-900 text-sm font-semibold tracking-wide uppercase">
+        <h3 className="text-sm font-semibold tracking-wide text-neutral-900 uppercase">
           A Snapshot View
         </h3>
-        <span className="text-neutral-500 text-xs font-medium">
+        <span className="text-xs font-medium text-neutral-500">
           Artisanal Craft Standards
         </span>
       </div>
@@ -54,16 +57,16 @@ export function ProductSnapshot({ highlights, className }: ProductSnapshotProps)
           return (
             <div
               key={item.id}
-              className="rounded-2xl border border-neutral-200 bg-white flex items-start gap-3 p-3.5 transition-colors hover:border-neutral-300"
+              className="flex items-start gap-3 rounded-2xl border border-neutral-200 bg-white p-3.5 transition-colors hover:border-neutral-300"
             >
-              <div className="bg-neutral-100 text-neutral-800 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl">
+              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-800">
                 <IconComponent className="h-4 w-4" aria-hidden="true" />
               </div>
               <div className="min-w-0 flex-1">
-                <span className="text-neutral-900 text-sm font-semibold block leading-tight">
+                <span className="block text-sm leading-tight font-semibold text-neutral-900">
                   {item.label}
                 </span>
-                <p className="text-neutral-600 mt-1 text-sm leading-relaxed">
+                <p className="mt-1 text-sm leading-relaxed text-neutral-600">
                   {item.description}
                 </p>
               </div>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, Heart } from 'lucide-react';
+
 import { Container } from './Container';
 import { ProfileMenu } from './ProfileMenu';
 import { AuthModal } from './AuthModal';
@@ -21,8 +22,8 @@ import type { Category, Collection } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
 /**
- * Modern 3-bar asymmetrical hamburger icon matching the brand design mockup.
- * Top & middle bars are full-width, bottom bar can be mirrored for left-side mobile placement.
+ * Modern three-bar asymmetrical hamburger icon.
+ * The bottom bar can be mirrored for the mobile layout.
  */
 function HamburgerMenuIcon({
   className,
@@ -59,15 +60,21 @@ export interface HeaderProps {
   cartCount?: number;
 }
 
-export function Header({ categories, collections, cartCount = 0 }: HeaderProps) {
+export function Header({
+  categories,
+  collections,
+  cartCount = 0,
+}: HeaderProps): React.JSX.Element {
   const pathname = usePathname() || '';
 
   const { isMobileMenuOpen, openMobileMenu, closeMobileMenu } = useNavigationUi();
+
   const { optimisticCart } = useCart();
   const { wishlistCount } = useWishlist();
 
   const segments = pathname.split('/').filter(Boolean);
   const productsIndex = segments.indexOf('products');
+
   const isProductPage = productsIndex !== -1 && segments.length > productsIndex + 1;
 
   const isHome =
@@ -88,11 +95,11 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
     >
       <SkipLink />
 
-      {/* Main Header Container */}
+      {/* Main header container */}
       <Container>
-        {/* DESKTOP HEADER (lg:flex) */}
+        {/* Desktop header */}
         <div className="relative hidden h-20 items-center justify-between gap-4 lg:flex">
-          {/* Left: Brand Logo */}
+          {/* Left: Brand logo */}
           <div className="flex shrink-0 items-center">
             <Link
               href="/"
@@ -110,9 +117,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             </Link>
           </div>
 
-          {/* Right: Navigation Links, Search Box, Divider & Action Icons */}
+          {/* Right: Navigation, search and action icons */}
           <div className="flex items-center gap-6 xl:gap-8">
-            {/* Desktop Navigation */}
+            {/* Desktop navigation */}
             <nav
               aria-label="Main Navigation"
               className="flex items-center gap-5 text-sm font-semibold lg:gap-6 xl:gap-7"
@@ -130,13 +137,13 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 Home
               </Link>
 
-              {/* Single Group Category with 3-Column Popover */}
+              {/* Categories */}
               <CategoryMegaMenu categories={categories} />
 
-              {/* Curated Collections with 3-Column Popover */}
+              {/* Collections */}
               <CollectionMegaMenu collections={collections} />
 
-              {/* Brand Story */}
+              {/* Brand story */}
               <Link
                 href="/about"
                 className="text-heritage-charcoal hover:text-heritage-maroon focus-visible:outline-heritage-maroon rounded-xs py-2 font-semibold transition-colors focus-visible:outline-2"
@@ -145,32 +152,33 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
               </Link>
             </nav>
 
-            {/* Right Action Items: Pill Search Bar, Vertical Divider, and 4 Action Icons */}
+            {/* Search and action icons */}
             <div className="flex items-center gap-3 lg:gap-4 xl:gap-5">
-              {/* Pill Search Button - Navigates directly to /search */}
+              {/* Search link */}
               <Link
                 href="/search"
-                aria-label="Search for your favourite achar, sweets, or makhana..."
-                className="flex w-52 items-center gap-2.5 rounded-full border border-neutral-200/60 bg-neutral-100/90 px-4 py-2 text-left transition-all hover:border-brand-600 hover:bg-neutral-200/70 xl:w-72 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:hover:bg-neutral-700/70"
+                aria-label="Search for your favourite achar, sweets, or makhana"
+                className="hover:border-brand-600 flex w-52 items-center gap-2.5 rounded-full border border-neutral-200/60 bg-neutral-100/90 px-4 py-2 text-left transition-all hover:bg-neutral-200/70 xl:w-72 dark:border-neutral-700/60 dark:bg-neutral-800/80 dark:hover:bg-neutral-700/70"
               >
                 <Search
                   className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400"
                   aria-hidden="true"
                 />
-                <span className="truncate text-xs font-normal text-neutral-400 dark:text-neutral-400">
+
+                <span className="flex-1 truncate text-xs font-normal text-neutral-400 dark:text-neutral-400">
                   Search for your favourite achar...
                 </span>
               </Link>
 
-              {/* Vertical Divider */}
+              {/* Vertical divider */}
               <div
                 className="mx-1 h-6 w-px bg-neutral-200 dark:bg-neutral-700"
                 aria-hidden="true"
               />
 
-              {/* 4 Action Icons Cluster: Wishlist, Cart, Profile Avatar, Hamburger Menu */}
+              {/* Wishlist, cart, profile and menu */}
               <div className="flex items-center gap-4 sm:gap-5 lg:gap-6 xl:gap-7">
-                {/* 1. Wishlist */}
+                {/* Wishlist */}
                 <Link
                   href="/wishlist"
                   aria-label={
@@ -189,7 +197,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                     )}
                     aria-hidden="true"
                   />
+
                   <span className="sr-only">Wishlist</span>
+
                   {wishlistCount > 0 && (
                     <span
                       className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
@@ -200,16 +210,13 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                   )}
                 </Link>
 
-                {/* 2. Cart with count badge */}
-                <CartButton
-                  cartCount={liveCartCount}
-                  className="h-9 w-9"
-                />
+                {/* Cart */}
+                <CartButton cartCount={liveCartCount} className="h-9 w-9" />
 
-                {/* 3. Profile menu */}
+                {/* Profile */}
                 <ProfileMenu />
 
-                {/* 4. Hamburger menu drawer toggle */}
+                {/* Menu drawer toggle */}
                 <button
                   type="button"
                   onClick={openMobileMenu}
@@ -223,9 +230,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
           </div>
         </div>
 
-        {/* MOBILE HEADER (lg:hidden) */}
+        {/* Mobile header */}
         <div className="flex h-16 items-center justify-between lg:hidden">
-          {/* Left: Hamburger menu toggle */}
+          {/* Left: Hamburger menu */}
           <Button
             variant="ghost"
             size="icon"
@@ -236,7 +243,7 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             <HamburgerMenuIcon className="h-6 w-6" mirrored />
           </Button>
 
-          {/* Center: Brand Logo centered */}
+          {/* Center: Brand logo */}
           <Link
             href="/"
             className="focus-visible:outline-heritage-maroon flex items-center justify-center rounded-xs focus-visible:outline-2"
@@ -252,9 +259,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
             />
           </Link>
 
-          {/* Right: Search, Wishlist & Cart Bag with increased breathing spacing */}
+          {/* Right: Search, wishlist and cart */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Search Icon */}
+            {/* Search */}
             <Link
               href="/search"
               aria-label="Search catalog"
@@ -281,7 +288,9 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
                 )}
                 aria-hidden="true"
               />
+
               <span className="sr-only">Wishlist</span>
+
               {wishlistCount > 0 && (
                 <span
                   className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
@@ -292,22 +301,20 @@ export function Header({ categories, collections, cartCount = 0 }: HeaderProps) 
               )}
             </Link>
 
-            <CartButton
-              cartCount={liveCartCount}
-              className="h-10 w-10"
-            />
+            {/* Cart */}
+            <CartButton cartCount={liveCartCount} className="h-10 w-10" />
           </div>
         </div>
       </Container>
 
-      {/* Slide-out Mobile Menu Drawer */}
+      {/* Slide-out mobile menu */}
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={closeMobileMenu}
         categories={categories}
       />
 
-      {/* Auth Modal */}
+      {/* Authentication modal */}
       <AuthModal />
     </header>
   );

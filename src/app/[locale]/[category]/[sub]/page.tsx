@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -47,7 +48,7 @@ export async function generateStaticParams(): Promise<
     }
   }
 
-  return params;
+  return atLeastOne(params, { category: PLACEHOLDER_SLUG, sub: PLACEHOLDER_SLUG });
 }
 
 export async function generateMetadata({
@@ -67,8 +68,7 @@ export async function generateMetadata({
     return {};
   }
 
-  const title =
-    sub.seo?.title ?? `${sub.name} — Handcrafted ${parent.name} | Bramhkanti`;
+  const title = sub.seo?.title ?? `${sub.name} — Handcrafted ${parent.name} | Bramhkanti`;
   const description =
     sub.seo?.description ??
     (sub.description ||
@@ -113,17 +113,11 @@ export default async function SubcategoryPage({
 
   const products = productsResult.items;
   const canonicalPath = `/${parent.handle}/${sub.handle}`;
-  const categoryJsonLd = buildCategoryJsonLd(
-    sub,
-    products,
-    undefined,
-    canonicalPath,
-  );
-  const faqJsonLd =
-    enriched.faqs.length > 0 ? buildFaqJsonLd(enriched.faqs) : null;
+  const categoryJsonLd = buildCategoryJsonLd(sub, products, undefined, canonicalPath);
+  const faqJsonLd = enriched.faqs.length > 0 ? buildFaqJsonLd(enriched.faqs) : null;
 
   return (
-    <div className="space-y-10 py-8 sm:space-y-14 sm:py-12 bg-page text-fg">
+    <div className="bg-page text-fg space-y-10 py-8 sm:space-y-14 sm:py-12">
       {/* Schema.org Structured Data */}
       <script
         type="application/ld+json"
@@ -161,20 +155,20 @@ export default async function SubcategoryPage({
           aria-labelledby="subcategory-products-heading"
           className="space-y-5 pt-2"
         >
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-1 border-b border-line pb-3">
+          <div className="border-line flex flex-col justify-between gap-1 border-b pb-3 sm:flex-row sm:items-end">
             <div>
               <h2
                 id="subcategory-products-heading"
-                className="text-xl sm:text-2xl font-bold font-sans text-fg"
+                className="text-fg font-sans text-xl font-bold sm:text-2xl"
               >
                 {sub.name} Selection
               </h2>
-              <p className="text-xs sm:text-sm text-fg-muted mt-0.5">
+              <p className="text-fg-muted mt-0.5 text-xs sm:text-sm">
                 {sub.description ||
                   `Explore authentic handcrafted ${sub.name.toLowerCase()} prepared with pure ingredients`}
               </p>
             </div>
-            <span className="text-fg-muted bg-surface-soft border border-line rounded-full px-3 py-1 text-xs font-semibold self-start sm:self-auto">
+            <span className="text-fg-muted bg-surface-soft border-line self-start rounded-full border px-3 py-1 text-xs font-semibold sm:self-auto">
               {products.length} {products.length === 1 ? 'item' : 'items'}
             </span>
           </div>
@@ -182,15 +176,15 @@ export default async function SubcategoryPage({
           {products.length > 0 ? (
             <ProductGrid products={products} />
           ) : (
-            <div className="rounded-2xl border border-line bg-surface p-8 text-center space-y-4">
-              <p className="text-fg-muted text-sm max-w-md mx-auto">
-                Our artisanal batch of {sub.name} is currently curing or
-                preparing fresh in Varanasi. Check back shortly or browse other
-                varieties from this collection.
+            <div className="border-line bg-surface space-y-4 rounded-2xl border p-8 text-center">
+              <p className="text-fg-muted mx-auto max-w-md text-sm">
+                Our artisanal batch of {sub.name} is currently curing or preparing fresh
+                in Varanasi. Check back shortly or browse other varieties from this
+                collection.
               </p>
               <Link
                 href={`/${parent.handle}`}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-primary-hover transition-colors"
+                className="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-colors"
               >
                 <span>Explore All {parent.name}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -200,38 +194,32 @@ export default async function SubcategoryPage({
         </section>
 
         {/* 5. Traditional Culinary Pairings & Serving Suggestions */}
-        <SubcategoryPairings
-          subName={sub.name}
-          pairingNotes={enriched.pairingNotes}
-        />
+        <SubcategoryPairings subName={sub.name} pairingNotes={enriched.pairingNotes} />
 
         {/* 6. Sibling Varieties Navigation (Eliminates dead-ends, horizontal cards) */}
-        <SubcategorySiblingNav
-          parentCategory={parent}
-          currentSubHandle={sub.handle}
-        />
+        <SubcategorySiblingNav parentCategory={parent} currentSubHandle={sub.handle} />
 
         {/* 7. Subcategory SEO FAQs Accordion */}
         {enriched.faqs.length > 0 && (
           <section
             aria-labelledby="subcategory-faq-heading"
-            className="space-y-4 pt-4 border-t border-line"
+            className="border-line space-y-4 border-t pt-4"
           >
             <div className="flex items-center gap-2 pb-1">
-              <HelpCircle className="h-5 w-5 text-brand-600" />
+              <HelpCircle className="text-brand-600 h-5 w-5" />
               <h2
                 id="subcategory-faq-heading"
-                className="text-fg font-sans text-xl sm:text-2xl font-bold tracking-tight"
+                className="text-fg font-sans text-xl font-bold tracking-tight sm:text-2xl"
               >
                 Frequently Asked Questions About {sub.name}
               </h2>
             </div>
-            <p className="text-fg-muted text-xs sm:text-sm -mt-2">
+            <p className="text-fg-muted -mt-2 text-xs sm:text-sm">
               Authenticity, preparation methods, and storage advice for our{' '}
               {sub.name.toLowerCase()}
             </p>
 
-            <div className="rounded-2xl border border-line bg-surface p-4 sm:p-6 mt-4">
+            <div className="border-line bg-surface mt-4 rounded-2xl border p-4 sm:p-6">
               <Accordion type="single" collapsible className="w-full">
                 {enriched.faqs.map((faq, index) => (
                   <AccordionItem
@@ -239,10 +227,10 @@ export default async function SubcategoryPage({
                     value={`faq-${index}`}
                     className="border-line"
                   >
-                    <AccordionTrigger className="text-left font-semibold text-fg hover:text-brand-700 text-sm sm:text-base py-3">
+                    <AccordionTrigger className="text-fg hover:text-brand-700 py-3 text-left text-sm font-semibold sm:text-base">
                       {faq.question}
                     </AccordionTrigger>
-                    <AccordionContent className="text-fg-muted text-xs sm:text-sm leading-relaxed pb-3">
+                    <AccordionContent className="text-fg-muted pb-3 text-xs leading-relaxed sm:text-sm">
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>

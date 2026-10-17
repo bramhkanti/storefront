@@ -25,11 +25,13 @@ export interface ProductContentGridProps {
   storyNarrative?: string | undefined;
   ingredients?: Array<{ name: string; detail: string; icon: string }> | undefined;
   storageInstructions?: Array<{ icon: string; text: string }> | undefined;
-  shippingHighlights?: {
-    dispatchTime: string;
-    packagingStandard: string;
-    transitAssurance: string;
-  } | undefined;
+  shippingHighlights?:
+    | {
+        dispatchTime: string;
+        packagingStandard: string;
+        transitAssurance: string;
+      }
+    | undefined;
   className?: string | undefined;
 }
 
@@ -56,8 +58,10 @@ export function ProductContentGrid({
     { icon: 'clock', text: 'Best before 12 months from the date of packaging.' },
   ],
   shippingHighlights = {
-    dispatchTime: 'Dispatched within 24 hours directly from our Varanasi kitchen facility.',
-    packagingStandard: 'Triple-cushioned shockproof transit box engineered for fragile glass.',
+    dispatchTime:
+      'Dispatched within 24 hours directly from our Varanasi kitchen facility.',
+    packagingStandard:
+      'Triple-cushioned shockproof transit box engineered for fragile glass.',
     transitAssurance: 'Insured Pan-India express air and surface delivery.',
   },
   className,
@@ -79,41 +83,41 @@ export function ProductContentGrid({
   const renderIngredientIcon = (icon: string) => {
     switch (icon) {
       case 'oil':
-        return <Droplets className="h-5 w-5 text-accent-text" />;
+        return <Droplets className="text-accent-text h-5 w-5" />;
       case 'spices':
       case 'chilli':
-        return <Flame className="h-5 w-5 text-primary" />;
+        return <Flame className="text-primary h-5 w-5" />;
       default:
-        return <Leaf className="h-5 w-5 text-success" />;
+        return <Leaf className="text-success h-5 w-5" />;
     }
   };
 
   const renderStorageIcon = (icon: string) => {
     switch (icon) {
       case 'sun':
-        return <Sun className="h-4 w-4 text-accent-text" />;
+        return <Sun className="text-accent-text h-4 w-4" />;
       case 'spoon':
-        return <Utensils className="h-4 w-4 text-primary" />;
+        return <Utensils className="text-primary h-4 w-4" />;
       default:
-        return <Clock className="h-4 w-4 text-fg-muted" />;
+        return <Clock className="text-fg-muted h-4 w-4" />;
     }
   };
 
   return (
-    <div className={cn('w-full space-y-6 text-fg', className)}>
+    <div className={cn('text-fg w-full space-y-6', className)}>
       {/* =========================================================================
           DESKTOP VIEW: Clean 4-Tab Bar + 2-Row Multi-Card Dashboard
          ========================================================================= */}
-      <div className="hidden lg:block space-y-6">
+      <div className="hidden space-y-6 lg:block">
         {/* Desktop Tab Bar */}
-        <div className="flex items-center gap-8 border-b border-line text-sm font-semibold text-fg-muted">
+        <div className="border-line text-fg-muted flex items-center gap-8 border-b text-sm font-semibold">
           <button
             type="button"
             onClick={() => setActiveTab('about')}
             className={cn(
-              'pb-3 transition-colors relative',
+              'relative pb-3 transition-colors',
               activeTab === 'about'
-                ? 'text-primary font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary'
+                ? 'text-primary after:bg-primary font-bold after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5'
                 : 'hover:text-fg',
             )}
           >
@@ -123,9 +127,9 @@ export function ProductContentGrid({
             type="button"
             onClick={() => setActiveTab('ingredients')}
             className={cn(
-              'pb-3 transition-colors relative',
+              'relative pb-3 transition-colors',
               activeTab === 'ingredients'
-                ? 'text-primary font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary'
+                ? 'text-primary after:bg-primary font-bold after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5'
                 : 'hover:text-fg',
             )}
           >
@@ -135,9 +139,9 @@ export function ProductContentGrid({
             type="button"
             onClick={() => setActiveTab('storage')}
             className={cn(
-              'pb-3 transition-colors relative',
+              'relative pb-3 transition-colors',
               activeTab === 'storage'
-                ? 'text-primary font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary'
+                ? 'text-primary after:bg-primary font-bold after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5'
                 : 'hover:text-fg',
             )}
           >
@@ -147,9 +151,9 @@ export function ProductContentGrid({
             type="button"
             onClick={() => setActiveTab('shipping')}
             className={cn(
-              'pb-3 transition-colors relative',
+              'relative pb-3 transition-colors',
               activeTab === 'shipping'
-                ? 'text-primary font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary'
+                ? 'text-primary after:bg-primary font-bold after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5'
                 : 'hover:text-fg',
             )}
           >
@@ -161,16 +165,14 @@ export function ProductContentGrid({
         <div className="space-y-6">
           {/* Tab 1: About Product */}
           {activeTab === 'about' && (
-            <div className="grid grid-cols-12 gap-6 items-stretch animate-in fade-in duration-200">
+            <div className="animate-in fade-in grid grid-cols-12 items-stretch gap-6 duration-200">
               {/* Left Box: Key Highlights */}
-              <div className="col-span-4 rounded-2xl border border-line bg-surface p-6 space-y-4">
-                <h3 className="text-base font-bold text-fg">
-                  Key Highlights
-                </h3>
+              <div className="border-line bg-surface col-span-4 space-y-4 rounded-2xl border p-6">
+                <h3 className="text-fg text-base font-bold">Key Highlights</h3>
                 <ul className="space-y-3">
                   {keyHighlights.map((highlight, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 text-sm text-fg">
-                      <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary-tint text-primary">
+                    <li key={idx} className="text-fg flex items-start gap-2.5 text-sm">
+                      <div className="bg-primary-tint text-primary mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full">
                         <Check className="h-3 w-3 stroke-[2.5]" />
                       </div>
                       <span>{highlight}</span>
@@ -180,7 +182,7 @@ export function ProductContentGrid({
               </div>
 
               {/* Center Box: Artisanal Photography */}
-              <div className="col-span-3 relative rounded-2xl overflow-hidden border border-line min-h-[220px]">
+              <div className="border-line relative col-span-3 min-h-[220px] overflow-hidden rounded-2xl border">
                 <Image
                   src="/images/home/story-spices.jpg"
                   alt="Raw Mangoes & Mortar Spices"
@@ -191,19 +193,17 @@ export function ProductContentGrid({
               </div>
 
               {/* Right Box: Our Story */}
-              <div className="col-span-5 rounded-2xl border border-line bg-surface p-6 flex flex-col justify-between space-y-3">
+              <div className="border-line bg-surface col-span-5 flex flex-col justify-between space-y-3 rounded-2xl border p-6">
                 <div>
-                  <h3 className="text-base font-bold text-fg">
-                    Our Story
-                  </h3>
-                  <p className="text-sm text-fg-muted leading-relaxed mt-2">
+                  <h3 className="text-fg text-base font-bold">Our Story</h3>
+                  <p className="text-fg-muted mt-2 text-sm leading-relaxed">
                     {storyNarrative}
                   </p>
                 </div>
                 <div>
                   <Link
                     href="/about"
-                    className="inline-flex items-center text-sm font-bold text-primary hover:underline"
+                    className="text-primary inline-flex items-center text-sm font-bold hover:underline"
                   >
                     <span>Know More</span>
                     <span className="ml-1">→</span>
@@ -215,27 +215,28 @@ export function ProductContentGrid({
 
           {/* Tab 2: Ingredients */}
           {activeTab === 'ingredients' && (
-            <div className="grid grid-cols-12 gap-6 items-stretch animate-in fade-in duration-200">
+            <div className="animate-in fade-in grid grid-cols-12 items-stretch gap-6 duration-200">
               {/* Left Box: 6 Circular Badges */}
-              <div className="col-span-8 rounded-2xl border border-line bg-surface p-6 space-y-5">
+              <div className="border-line bg-surface col-span-8 space-y-5 rounded-2xl border p-6">
                 <div>
-                  <h3 className="text-base font-bold text-fg">
+                  <h3 className="text-fg text-base font-bold">
                     Pure, Farm-Sourced Ingredients
                   </h3>
-                  <p className="text-xs text-fg-muted mt-1">
-                    Every raw ingredient is ethically sourced from local Indian farms and hand-processed without chemicals.
+                  <p className="text-fg-muted mt-1 text-xs">
+                    Every raw ingredient is ethically sourced from local Indian farms and
+                    hand-processed without chemicals.
                   </p>
                 </div>
-                <div className="grid grid-cols-6 gap-3 text-center pt-2">
+                <div className="grid grid-cols-6 gap-3 pt-2 text-center">
                   {ingredients.map((ing, idx) => (
                     <div key={idx} className="flex flex-col items-center">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-line bg-surface-soft mb-2 shadow-none">
+                      <div className="border-line bg-surface-soft mb-2 flex h-14 w-14 items-center justify-center rounded-full border shadow-none">
                         {renderIngredientIcon(ing.icon)}
                       </div>
-                      <span className="text-xs font-bold text-fg leading-tight">
+                      <span className="text-fg text-xs leading-tight font-bold">
                         {ing.name}
                       </span>
-                      <span className="text-[11px] text-fg-muted mt-0.5">
+                      <span className="text-fg-muted mt-0.5 text-[11px]">
                         {ing.detail}
                       </span>
                     </div>
@@ -244,17 +245,19 @@ export function ProductContentGrid({
               </div>
 
               {/* Right Box: Purity Pledge */}
-              <div className="col-span-4 rounded-2xl border border-line bg-surface-soft p-6 space-y-3 flex flex-col justify-between">
+              <div className="border-line bg-surface-soft col-span-4 flex flex-col justify-between space-y-3 rounded-2xl border p-6">
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-primary">
+                  <div className="text-primary flex items-center gap-2">
                     <Leaf className="h-5 w-5" />
                     <h4 className="text-sm font-bold">100% Purity Pledge</h4>
                   </div>
-                  <p className="text-xs text-fg-muted leading-relaxed">
-                    We never use synthetic vinegar, artificial preservatives, or chemical coloring agents. All preservation occurs naturally via virgin cold-pressed mustard oil and rock salt.
+                  <p className="text-fg-muted text-xs leading-relaxed">
+                    We never use synthetic vinegar, artificial preservatives, or chemical
+                    coloring agents. All preservation occurs naturally via virgin
+                    cold-pressed mustard oil and rock salt.
                   </p>
                 </div>
-                <div className="pt-2 border-t border-line text-xs font-semibold text-primary">
+                <div className="border-line text-primary border-t pt-2 text-xs font-semibold">
                   ✓ Certified Food Safety & Quality Assured
                 </div>
               </div>
@@ -263,40 +266,41 @@ export function ProductContentGrid({
 
           {/* Tab 3: Storage & Shelf Life */}
           {activeTab === 'storage' && (
-            <div className="grid grid-cols-12 gap-6 items-stretch animate-in fade-in duration-200">
+            <div className="animate-in fade-in grid grid-cols-12 items-stretch gap-6 duration-200">
               {/* Left Box: Storage Guidelines */}
-              <div className="col-span-7 rounded-2xl border border-line bg-surface p-6 space-y-4">
+              <div className="border-line bg-surface col-span-7 space-y-4 rounded-2xl border p-6">
                 <div>
-                  <h3 className="text-base font-bold text-fg">
+                  <h3 className="text-fg text-base font-bold">
                     Storage & Shelf Life Instructions
                   </h3>
-                  <p className="text-xs text-fg-muted mt-1">
-                    To maintain pristine crunch and flavor, follow these traditional storage practices:
+                  <p className="text-fg-muted mt-1 text-xs">
+                    To maintain pristine crunch and flavor, follow these traditional
+                    storage practices:
                   </p>
                 </div>
                 <div className="space-y-3 pt-1">
                   {storageInstructions.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-sm text-fg">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line bg-surface-soft">
+                    <div key={idx} className="text-fg flex items-start gap-3 text-sm">
+                      <div className="border-line bg-surface-soft flex h-8 w-8 shrink-0 items-center justify-center rounded-full border">
                         {renderStorageIcon(item.icon)}
                       </div>
-                      <span className="leading-snug mt-1.5">{item.text}</span>
+                      <span className="mt-1.5 leading-snug">{item.text}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Right Box: Natural Preservation Science */}
-              <div className="col-span-5 rounded-2xl border border-line bg-surface p-6 space-y-3 flex flex-col justify-between">
+              <div className="border-line bg-surface col-span-5 flex flex-col justify-between space-y-3 rounded-2xl border p-6">
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-fg">
-                    Why It Stays Fresh
-                  </h3>
-                  <p className="text-xs text-fg-muted leading-relaxed">
-                    Traditional mustard oil acts as a natural seal against airborne microbes. When kept submersed, our pickles mature and improve in richness over time without synthetic preservatives.
+                  <h3 className="text-fg text-base font-bold">Why It Stays Fresh</h3>
+                  <p className="text-fg-muted text-xs leading-relaxed">
+                    Traditional mustard oil acts as a natural seal against airborne
+                    microbes. When kept submersed, our pickles mature and improve in
+                    richness over time without synthetic preservatives.
                   </p>
                 </div>
-                <div className="rounded-xl border border-line bg-accent-tint/30 p-3 text-xs text-accent-text font-medium flex items-center gap-2">
+                <div className="border-line bg-accent-tint/30 text-accent-text flex items-center gap-2 rounded-xl border p-3 text-xs font-medium">
                   <Clock className="h-4 w-4 shrink-0" />
                   <span>Shelf Life: 12 Months from Manufacturing</span>
                 </div>
@@ -306,43 +310,42 @@ export function ProductContentGrid({
 
           {/* Tab 4: Shipping & Returns */}
           {activeTab === 'shipping' && (
-            <div className="grid grid-cols-3 gap-6 items-stretch animate-in fade-in duration-200">
+            <div className="animate-in fade-in grid grid-cols-3 items-stretch gap-6 duration-200">
               {/* Box 1: Dispatch */}
-              <div className="rounded-2xl border border-line bg-surface p-6 space-y-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-tint text-primary">
+              <div className="border-line bg-surface space-y-3 rounded-2xl border p-6">
+                <div className="bg-primary-tint text-primary flex h-10 w-10 items-center justify-center rounded-xl">
                   <Truck className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-fg">
+                <h3 className="text-fg text-base font-bold">
                   Pan-India Express Dispatch
                 </h3>
-                <p className="text-xs text-fg-muted leading-relaxed">
-                  {shippingHighlights.dispatchTime} Tracking link is sent via WhatsApp and SMS immediately upon shipment.
+                <p className="text-fg-muted text-xs leading-relaxed">
+                  {shippingHighlights.dispatchTime} Tracking link is sent via WhatsApp and
+                  SMS immediately upon shipment.
                 </p>
               </div>
 
               {/* Box 2: Packaging */}
-              <div className="rounded-2xl border border-line bg-surface p-6 space-y-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-tint text-primary">
+              <div className="border-line bg-surface space-y-3 rounded-2xl border p-6">
+                <div className="bg-primary-tint text-primary flex h-10 w-10 items-center justify-center rounded-xl">
                   <Package className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-fg">
-                  Fragile Glass Packaging
-                </h3>
-                <p className="text-xs text-fg-muted leading-relaxed">
-                  {shippingHighlights.packagingStandard} Designed to withstand long-distance courier transit with zero leakage.
+                <h3 className="text-fg text-base font-bold">Fragile Glass Packaging</h3>
+                <p className="text-fg-muted text-xs leading-relaxed">
+                  {shippingHighlights.packagingStandard} Designed to withstand
+                  long-distance courier transit with zero leakage.
                 </p>
               </div>
 
               {/* Box 3: Replacement Guarantee */}
-              <div className="rounded-2xl border border-line bg-surface p-6 space-y-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-tint text-primary">
+              <div className="border-line bg-surface space-y-3 rounded-2xl border p-6">
+                <div className="bg-primary-tint text-primary flex h-10 w-10 items-center justify-center rounded-xl">
                   <Check className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-fg">
-                  Transit Damage Guarantee
-                </h3>
-                <p className="text-xs text-fg-muted leading-relaxed">
-                  In the rare event of transit damage, share a photo with our WhatsApp support within 48 hours for an instant, no-questions-asked replacement.
+                <h3 className="text-fg text-base font-bold">Transit Damage Guarantee</h3>
+                <p className="text-fg-muted text-xs leading-relaxed">
+                  In the rare event of transit damage, share a photo with our WhatsApp
+                  support within 48 hours for an instant, no-questions-asked replacement.
                 </p>
               </div>
             </div>
@@ -353,31 +356,31 @@ export function ProductContentGrid({
       {/* =========================================================================
           MOBILE VIEW: 5 Interactive Accordion / Chevron Menu Rows
          ========================================================================= */}
-      <div className="block lg:hidden space-y-2.5">
+      <div className="block space-y-2.5 lg:hidden">
         {/* 1. Product Highlights */}
-        <div className="rounded-xl border border-line bg-surface overflow-hidden transition-all">
+        <div className="border-line bg-surface overflow-hidden rounded-xl border transition-all">
           <button
             type="button"
             onClick={() => toggleMobileSection('highlights')}
-            className="w-full flex items-center justify-between p-3 text-left font-bold text-sm text-fg"
+            className="text-fg flex w-full items-center justify-between p-3 text-left text-sm font-bold"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-tint text-primary">
+              <div className="bg-primary-tint text-primary flex h-8 w-8 items-center justify-center rounded-lg">
                 <FileText className="h-4 w-4" />
               </div>
-              <span className="text-sm font-bold text-fg">Product Highlights</span>
+              <span className="text-fg text-sm font-bold">Product Highlights</span>
             </div>
             {mobileOpenSection === 'highlights' ? (
-              <ChevronDown className="h-4 w-4 text-fg-muted" />
+              <ChevronDown className="text-fg-muted h-4 w-4" />
             ) : (
-              <ChevronRight className="h-4 w-4 text-fg-muted" />
+              <ChevronRight className="text-fg-muted h-4 w-4" />
             )}
           </button>
           {mobileOpenSection === 'highlights' && (
-            <div className="p-3 pt-3 border-t border-line text-sm text-fg space-y-2.5 animate-in fade-in duration-150">
+            <div className="border-line text-fg animate-in fade-in space-y-2.5 border-t p-3 pt-3 text-sm duration-150">
               {keyHighlights.map((hl, idx) => (
-                <div key={idx} className="flex items-center gap-2.5 text-sm text-fg">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
+                <div key={idx} className="text-fg flex items-center gap-2.5 text-sm">
+                  <Check className="text-primary h-4 w-4 shrink-0" />
                   <span className="text-sm leading-snug">{hl}</span>
                 </div>
               ))}
@@ -386,30 +389,30 @@ export function ProductContentGrid({
         </div>
 
         {/* 2. Our Story */}
-        <div className="rounded-xl border border-line bg-surface overflow-hidden transition-all">
+        <div className="border-line bg-surface overflow-hidden rounded-xl border transition-all">
           <button
             type="button"
             onClick={() => toggleMobileSection('story')}
-            className="w-full flex items-center justify-between p-3 text-left font-bold text-sm text-fg"
+            className="text-fg flex w-full items-center justify-between p-3 text-left text-sm font-bold"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-tint text-primary">
+              <div className="bg-primary-tint text-primary flex h-8 w-8 items-center justify-center rounded-lg">
                 <BookOpen className="h-4 w-4" />
               </div>
-              <span className="text-sm font-bold text-fg">Our Story</span>
+              <span className="text-fg text-sm font-bold">Our Story</span>
             </div>
             {mobileOpenSection === 'story' ? (
-              <ChevronDown className="h-4 w-4 text-fg-muted" />
+              <ChevronDown className="text-fg-muted h-4 w-4" />
             ) : (
-              <ChevronRight className="h-4 w-4 text-fg-muted" />
+              <ChevronRight className="text-fg-muted h-4 w-4" />
             )}
           </button>
           {mobileOpenSection === 'story' && (
-            <div className="p-3 pt-3 border-t border-line text-sm text-fg space-y-3 animate-in fade-in duration-150">
-              <p className="text-sm leading-relaxed text-fg">{storyNarrative}</p>
+            <div className="border-line text-fg animate-in fade-in space-y-3 border-t p-3 pt-3 text-sm duration-150">
+              <p className="text-fg text-sm leading-relaxed">{storyNarrative}</p>
               <Link
                 href="/about"
-                className="inline-flex items-center text-sm font-bold text-primary underline"
+                className="text-primary inline-flex items-center text-sm font-bold underline"
               >
                 Know More →
               </Link>
@@ -418,33 +421,36 @@ export function ProductContentGrid({
         </div>
 
         {/* 3. Ingredients */}
-        <div className="rounded-xl border border-line bg-surface overflow-hidden transition-all">
+        <div className="border-line bg-surface overflow-hidden rounded-xl border transition-all">
           <button
             type="button"
             onClick={() => toggleMobileSection('ingredients')}
-            className="w-full flex items-center justify-between p-3 text-left font-bold text-sm text-fg"
+            className="text-fg flex w-full items-center justify-between p-3 text-left text-sm font-bold"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-tint text-primary">
+              <div className="bg-primary-tint text-primary flex h-8 w-8 items-center justify-center rounded-lg">
                 <Leaf className="h-4 w-4" />
               </div>
-              <span className="text-sm font-bold text-fg">Ingredients</span>
+              <span className="text-fg text-sm font-bold">Ingredients</span>
             </div>
             {mobileOpenSection === 'ingredients' ? (
-              <ChevronDown className="h-4 w-4 text-fg-muted" />
+              <ChevronDown className="text-fg-muted h-4 w-4" />
             ) : (
-              <ChevronRight className="h-4 w-4 text-fg-muted" />
+              <ChevronRight className="text-fg-muted h-4 w-4" />
             )}
           </button>
           {mobileOpenSection === 'ingredients' && (
-            <div className="p-3 pt-3 border-t border-line grid grid-cols-3 gap-2.5 text-center animate-in fade-in duration-150">
+            <div className="border-line animate-in fade-in grid grid-cols-3 gap-2.5 border-t p-3 pt-3 text-center duration-150">
               {ingredients.map((ing, idx) => (
-                <div key={idx} className="flex flex-col items-center p-2 rounded-xl bg-surface-soft border border-line">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-line mb-1">
+                <div
+                  key={idx}
+                  className="bg-surface-soft border-line flex flex-col items-center rounded-xl border p-2"
+                >
+                  <div className="bg-surface border-line mb-1 flex h-9 w-9 items-center justify-center rounded-full border">
                     {renderIngredientIcon(ing.icon)}
                   </div>
-                  <span className="text-sm font-bold text-fg">{ing.name}</span>
-                  <span className="text-xs text-fg-muted">{ing.detail}</span>
+                  <span className="text-fg text-sm font-bold">{ing.name}</span>
+                  <span className="text-fg-muted text-xs">{ing.detail}</span>
                 </div>
               ))}
             </div>
@@ -452,28 +458,28 @@ export function ProductContentGrid({
         </div>
 
         {/* 4. Storage & Shelf Life */}
-        <div className="rounded-xl border border-line bg-surface overflow-hidden transition-all">
+        <div className="border-line bg-surface overflow-hidden rounded-xl border transition-all">
           <button
             type="button"
             onClick={() => toggleMobileSection('storage')}
-            className="w-full flex items-center justify-between p-3 text-left font-bold text-sm text-fg"
+            className="text-fg flex w-full items-center justify-between p-3 text-left text-sm font-bold"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-tint text-primary">
+              <div className="bg-primary-tint text-primary flex h-8 w-8 items-center justify-center rounded-lg">
                 <Clock className="h-4 w-4" />
               </div>
-              <span className="text-sm font-bold text-fg">Storage & Shelf Life</span>
+              <span className="text-fg text-sm font-bold">Storage & Shelf Life</span>
             </div>
             {mobileOpenSection === 'storage' ? (
-              <ChevronDown className="h-4 w-4 text-fg-muted" />
+              <ChevronDown className="text-fg-muted h-4 w-4" />
             ) : (
-              <ChevronRight className="h-4 w-4 text-fg-muted" />
+              <ChevronRight className="text-fg-muted h-4 w-4" />
             )}
           </button>
           {mobileOpenSection === 'storage' && (
-            <div className="p-3 pt-3 border-t border-line space-y-2.5 text-sm text-fg animate-in fade-in duration-150">
+            <div className="border-line text-fg animate-in fade-in space-y-2.5 border-t p-3 pt-3 text-sm duration-150">
               {storageInstructions.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2.5 text-sm text-fg">
+                <div key={idx} className="text-fg flex items-center gap-2.5 text-sm">
                   {renderStorageIcon(item.icon)}
                   <span className="text-sm leading-snug">{item.text}</span>
                 </div>
@@ -483,33 +489,37 @@ export function ProductContentGrid({
         </div>
 
         {/* 5. Shipping & Returns */}
-        <div className="rounded-xl border border-line bg-surface overflow-hidden transition-all">
+        <div className="border-line bg-surface overflow-hidden rounded-xl border transition-all">
           <button
             type="button"
             onClick={() => toggleMobileSection('shipping')}
-            className="w-full flex items-center justify-between p-3 text-left font-bold text-sm text-fg"
+            className="text-fg flex w-full items-center justify-between p-3 text-left text-sm font-bold"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-tint text-primary">
+              <div className="bg-primary-tint text-primary flex h-8 w-8 items-center justify-center rounded-lg">
                 <Truck className="h-4 w-4" />
               </div>
-              <span className="text-sm font-bold text-fg">Shipping & Returns</span>
+              <span className="text-fg text-sm font-bold">Shipping & Returns</span>
             </div>
             {mobileOpenSection === 'shipping' ? (
-              <ChevronDown className="h-4 w-4 text-fg-muted" />
+              <ChevronDown className="text-fg-muted h-4 w-4" />
             ) : (
-              <ChevronRight className="h-4 w-4 text-fg-muted" />
+              <ChevronRight className="text-fg-muted h-4 w-4" />
             )}
           </button>
           {mobileOpenSection === 'shipping' && (
-            <div className="p-3 pt-3 border-t border-line space-y-2.5 text-sm text-fg animate-in fade-in duration-150">
-              <div className="flex items-start gap-2.5 text-sm text-fg">
-                <Truck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm leading-snug">{shippingHighlights.dispatchTime}</span>
+            <div className="border-line text-fg animate-in fade-in space-y-2.5 border-t p-3 pt-3 text-sm duration-150">
+              <div className="text-fg flex items-start gap-2.5 text-sm">
+                <Truck className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                <span className="text-sm leading-snug">
+                  {shippingHighlights.dispatchTime}
+                </span>
               </div>
-              <div className="flex items-start gap-2.5 text-sm text-fg">
-                <Package className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm leading-snug">{shippingHighlights.packagingStandard}</span>
+              <div className="text-fg flex items-start gap-2.5 text-sm">
+                <Package className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                <span className="text-sm leading-snug">
+                  {shippingHighlights.packagingStandard}
+                </span>
               </div>
             </div>
           )}

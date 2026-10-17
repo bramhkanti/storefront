@@ -43,7 +43,7 @@ export function CollectionCraftPillars({
     <div
       aria-label="Hamper Craft Standards"
       className={cn(
-        'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4',
+        'grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4',
         className,
       )}
     >
@@ -52,16 +52,14 @@ export function CollectionCraftPillars({
         return (
           <div
             key={idx}
-            className="rounded-2xl border border-line bg-surface p-4 flex items-start gap-3.5 transition-colors hover:border-line-strong"
+            className="border-line bg-surface hover:border-line-strong flex items-start gap-3.5 rounded-2xl border p-4 transition-colors"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+            <div className="bg-brand-50 text-brand-700 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
               <Icon className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-fg leading-tight">
-                {item.title}
-              </h3>
-              <p className="text-xs text-fg-muted mt-1 leading-relaxed">
+              <h3 className="text-fg text-sm leading-tight font-bold">{item.title}</h3>
+              <p className="text-fg-muted mt-1 text-xs leading-relaxed">
                 {item.description}
               </p>
             </div>

@@ -21,9 +21,7 @@ export function generateStaticParams(): Array<{ locale: Locale }> {
   return SUPPORTED_LOCALES.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-  params,
-}: AccountPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: AccountPageProps): Promise<Metadata> {
   const { locale } = await params;
   const safeLocale = (isSupportedLocale(locale) ? locale : DEFAULT_LOCALE) as Locale;
 

@@ -1,671 +1,993 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Check,
   Clock,
   Droplets,
   Flame,
+  Leaf,
+  Lock,
   Minus,
   Plus,
+  Share2,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Star,
+  Truck,
+  Zap,
 } from 'lucide-react';
+
 import type { Product, ProductVariant } from '@/lib/api/contracts/domain';
-import { formatPrice } from '@/lib/utils/money';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/Accordion';
+import { Button } from '@/components/ui/Button';
+import { SITE_CONFIG } from '@/content/site';
 import { useCart } from '@/lib/cart';
 import { useCartUi, useToast } from '@/lib/store';
+import { calculateDiscountPercent, formatPrice } from '@/lib/utils/money';
 import { cn } from '@/lib/utils/cn';
+import { WishlistButton } from './WishlistButton';
 
 import type { SnapshotHighlight } from '../data/productContent';
 
 export interface ProductDetailsProps {
   product: Product;
   categoryName?: string | undefined;
+  categoryHref?: string | undefined;
   highlights?: SnapshotHighlight[] | undefined;
   className?: string | undefined;
 }
 
+const LOW_STOCK = 5;
+const MAX_QUANTITY = 20;
+
+/** Convert values such as "spice_level" into "Spice level". */
+function humanize(key: string): string {
+  const spaced = key.replace(/[_-]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1).toLowerCase();
+}
+
+function formatValue(value: unknown): string | null {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No';
+  }
+
+  if (Array.isArray(value)) {
+    return value.length ? value.join(', ') : null;
+  }
+
+  if (typeof value === 'object') {
+    return null;
+  }
+
+  return String(value);
+}
+
+/** Estimate the pack weight in grams for the per-100g comparison. */
+function parseGrams(variant?: ProductVariant): number {
+  if (!variant) return 250;
+
+  const value = `${variant.packSize || ''} ${variant.title || ''}`.toLowerCase();
+  const kgMatch = value.match(/(\d+(?:\.\d+)?)\s*kg/);
+
+  if (kgMatch?.[1]) {
+    return Number.parseFloat(kgMatch[1]) * 1000;
+  }
+
+  const gramMatch = value.match(/(\d+(?:\.\d+)?)\s*g(?:rams?)?\b/);
+
+  if (gramMatch?.[1]) {
+    return Number.parseFloat(gramMatch[1]);
+  }
+
+  return 250;
+}
+
+/** Match the existing money representation used by the product UI. */
+function getRupeeAmount(amount: number): number {
+  return amount > 1000 ? amount / 100 : amount;
+}
+
 export function ProductDetails({
   product,
+  categoryName,
+  categoryHref,
   className,
 }: ProductDetailsProps): React.JSX.Element {
+  const router = useRouter();
+
   const { cart, optimisticCart, addItem, updateItem, removeItem, isPending } = useCart();
+
   const { openCart } = useCartUi();
   const { addToast } = useToast();
+
   const activeCart = optimisticCart ?? cart;
 
-  // Local user overrides: null when deriving directly from activeCart, or object when user modifies
-  const [userOverrides, setUserOverrides] = React.useState<Record<string, number> | null>(null);
+  const [userOverrides, setUserOverrides] = React.useState<Record<string, number> | null>(
+    null,
+  );
+  const [isAdding, setIsAdding] = React.useState(false);
+  const [buying, setBuying] = React.useState(false);
+  const [showStickyBar, setShowStickyBar] = React.useState(false);
+  const [isAdded, setIsAdded] = React.useState(false);
 
-  // Derive quantities: uses userOverrides if modified by user, otherwise mirrors active cart
+  const ctaRef = React.useRef<HTMLDivElement | null>(null);
+
+  const variants = product.variants ?? [];
+  const firstAvailable = variants.find((variant) => variant.inStock) ?? variants[0];
+
+  const unpriced =
+    variants.length === 0 || variants.every((variant) => variant.price.amount === 0);
+
   const quantities = React.useMemo<Record<string, number>>(() => {
     if (userOverrides !== null) {
       return userOverrides;
     }
 
-    const itemsInCart = activeCart?.items.filter((item) =>
-      product.variants.some((v) => v.id === item.variantId && item.quantity > 0),
-    ) ?? [];
+    const cartItems =
+      activeCart?.items.filter(
+        (item) =>
+          variants.some((variant) => variant.id === item.variantId) && item.quantity > 0,
+      ) ?? [];
 
     const computed: Record<string, number> = {};
-    if (itemsInCart.length > 0) {
-      product.variants.forEach((v) => {
-        const found = itemsInCart.find((i) => i.variantId === v.id);
-        computed[v.id] = found ? found.quantity : 0;
-      });
-    } else {
-      product.variants.forEach((v, index) => {
-        computed[v.id] = index === 0 ? 1 : 0;
-      });
-    }
+
+    variants.forEach((variant, index) => {
+      const cartItem = cartItems.find((item) => item.variantId === variant.id);
+
+      if (cartItems.length > 0) {
+        computed[variant.id] = cartItem?.quantity ?? 0;
+      } else {
+        computed[variant.id] = index === 0 ? 1 : 0;
+      }
+    });
+
     return computed;
-  }, [userOverrides, activeCart, product.variants]);
+  }, [userOverrides, activeCart, variants]);
 
-  const [isAdding, setIsAdding] = React.useState(false);
+  // Display the mobile purchase bar after the main CTA scrolls out of view.
+  React.useEffect(() => {
+    let frame = 0;
 
-  // Gram parser for per-unit calculations & savings
-  const parseGrams = (v?: ProductVariant) => {
-    if (!v) return 250;
-    const s = `${v.packSize || ''} ${v.title || ''}`.toLowerCase();
-    const kgMatch = s.match(/(\d+(?:\.\d+)?)\s*kg/);
-    if (kgMatch && kgMatch[1]) return parseFloat(kgMatch[1]) * 1000;
-    const gMatch = s.match(/(\d+)\s*g/);
-    if (gMatch && gMatch[1]) return parseInt(gMatch[1], 10);
-    return 250;
+    const checkPosition = () => {
+      frame = 0;
+
+      const node = ctaRef.current;
+      setShowStickyBar(node ? node.getBoundingClientRect().bottom < 120 : false);
+    };
+
+    const onScroll = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(checkPosition);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    checkPosition();
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
+  }, []);
+
+  const handleUpdateQuantity = (variant: ProductVariant, delta: number) => {
+    if (!variant.inStock) return;
+
+    setUserOverrides((previous) => {
+      const current = previous ?? quantities;
+      const currentQuantity = current[variant.id] ?? 0;
+      const stockLimit = Math.min(variant.stockQuantity ?? MAX_QUANTITY, MAX_QUANTITY);
+
+      const nextQuantity = Math.max(0, Math.min(stockLimit, currentQuantity + delta));
+
+      return {
+        ...current,
+        [variant.id]: nextQuantity,
+      };
+    });
   };
 
-  const baseVariant = product.variants[0];
-  const baseGrams = parseGrams(baseVariant);
-  const baseRupees = baseVariant
-    ? baseVariant.price.amount > 1000
-      ? baseVariant.price.amount / 100
-      : baseVariant.price.amount
-    : 249;
-  const basePricePer100g = (baseRupees / baseGrams) * 100;
+  const parseVariantWeight = (variant: ProductVariant) => {
+    const grams = parseGrams(variant);
+    const rupees = getRupeeAmount(variant.price.amount);
+    const pricePer100g = (rupees / grams) * 100;
 
-  const getVariantWeightDetails = (v: ProductVariant) => {
-    const grams = parseGrams(v);
-    const rupeeAmount = v.price.amount > 1000 ? v.price.amount / 100 : v.price.amount;
-    const per100g = (rupeeAmount / grams) * 100;
-    let savingsPercent: number | null = null;
-    if (basePricePer100g > per100g + 0.5) {
-      savingsPercent = Math.round(((basePricePer100g - per100g) / basePricePer100g) * 100);
-    }
+    const baseVariant = variants[0];
+    const baseGrams = parseGrams(baseVariant);
+    const baseRupees = baseVariant ? getRupeeAmount(baseVariant.price.amount) : rupees;
+
+    const basePricePer100g = (baseRupees / baseGrams) * 100;
+
+    const savingsPercent =
+      basePricePer100g > pricePer100g + 0.5
+        ? Math.round(((basePricePer100g - pricePer100g) / basePricePer100g) * 100)
+        : null;
+
     return {
-      pricePer100g: per100g.toFixed(1),
+      pricePer100g: pricePer100g.toFixed(1),
       savingsPercent,
     };
   };
 
-  // Variant badges based on pack size or index
-  const getVariantBadge = (v: ProductVariant, index: number) => {
-    const title = `${v.packSize || ''} ${v.title || ''}`.toLowerCase();
-    if (title.includes('250') || index === 0) return 'Best for trying';
-    if (title.includes('500') || index === 1) return 'Family pack';
-    if (title.includes('1') || title.includes('1000') || index === 2) return 'Best value';
+  const getVariantBadge = (variant: ProductVariant, index: number): string | null => {
+    const title = `${variant.packSize || ''} ${variant.title || ''}`.toLowerCase();
+
+    if (title.includes('250') || index === 0) {
+      return 'Best for trying';
+    }
+
+    if (title.includes('500') || index === 1) {
+      return 'Family pack';
+    }
+
+    if (
+      title.includes('1000') ||
+      title.includes('1 kg') ||
+      title.includes('1kg') ||
+      index === 2
+    ) {
+      return 'Best value';
+    }
+
     return null;
   };
 
-  const handleUpdateQuantity = (variantId: string, delta: number) => {
-    setUserOverrides((prev) => {
-      const base = prev ?? quantities;
-      const current = base[variantId] ?? 0;
-      const next = Math.max(0, current + delta);
-      return { ...base, [variantId]: next };
-    });
-  };
+  const { totalItems, totalPriceAmount, selectedWeightLabels, currencyCode } =
+    React.useMemo(() => {
+      let itemCount = 0;
+      let priceTotal = 0;
+      let currency = firstAvailable?.price.currencyCode ?? 'INR';
+      const labels: string[] = [];
 
-  // Calculate selected items & total pricing
-  const { totalItems, totalPriceAmount, selectedWeightLabels, currencyCode } = React.useMemo(() => {
-    let items = 0;
-    let priceSum = 0;
-    const weights: string[] = [];
-    let curr = 'INR';
+      variants.forEach((variant) => {
+        const quantity = quantities[variant.id] ?? 0;
 
-    product.variants.forEach((v) => {
-      const q = quantities[v.id] ?? 0;
-      if (q > 0) {
-        items += q;
-        priceSum += v.price.amount * q;
-        curr = v.price.currencyCode;
-        weights.push(`${v.packSize || v.title}${q > 1 ? ` x${q}` : ''}`);
-      }
-    });
+        if (quantity > 0) {
+          itemCount += quantity;
+          priceTotal += variant.price.amount * quantity;
+          currency = variant.price.currencyCode;
 
-    return {
-      totalItems: items,
-      totalPriceAmount: priceSum,
-      selectedWeightLabels: weights.join(', '),
-      currencyCode: curr,
-    };
-  }, [product.variants, quantities]);
+          labels.push(
+            `${variant.packSize || variant.title}${quantity > 1 ? ` ×${quantity}` : ''}`,
+          );
+        }
+      });
 
-  // Check if current page quantities exactly match what is in the cart
+      return {
+        totalItems: itemCount,
+        totalPriceAmount: priceTotal,
+        selectedWeightLabels: labels.join(', '),
+        currencyCode: currency,
+      };
+    }, [variants, quantities, firstAvailable]);
+
   const isAlreadyInCart = React.useMemo(() => {
-    if (!activeCart) return false;
-    const itemsInCart = activeCart.items.filter((item) =>
-      product.variants.some((v) => v.id === item.variantId && item.quantity > 0),
+    if (!activeCart || totalItems === 0) {
+      return false;
+    }
+
+    const cartItems = activeCart.items.filter((item) =>
+      variants.some((variant) => variant.id === item.variantId),
     );
-    if (itemsInCart.length === 0 || totalItems === 0) return false;
 
-    return product.variants.every((v) => {
-      const inCart = itemsInCart.find((i) => i.variantId === v.id);
-      const cartQty = inCart ? inCart.quantity : 0;
-      const pageQty = quantities[v.id] ?? 0;
-      return cartQty === pageQty;
+    if (cartItems.length === 0) {
+      return false;
+    }
+
+    return variants.every((variant) => {
+      const cartItem = cartItems.find((item) => item.variantId === variant.id);
+
+      return (cartItem?.quantity ?? 0) === (quantities[variant.id] ?? 0);
     });
-  }, [product.variants, quantities, activeCart, totalItems]);
+  }, [activeCart, variants, quantities, totalItems]);
 
-  // Main displayed variant (first selected, or fallback to first)
-  const primaryVariant = product.variants[0]!;
-  const compareAtPrice = primaryVariant.compareAtPrice;
-  const regularPrice = primaryVariant.price;
-  const discountPercent = React.useMemo(() => {
-    if (!regularPrice || !compareAtPrice || compareAtPrice.amount <= regularPrice.amount) return 17;
-    const diff = compareAtPrice.amount - regularPrice.amount;
-    return Math.round((diff / compareAtPrice.amount) * 100);
-  }, [regularPrice, compareAtPrice]);
+  const primaryVariant = firstAvailable;
+  const discountPercent =
+    primaryVariant?.compareAtPrice &&
+    primaryVariant.compareAtPrice.amount > primaryVariant.price.amount
+      ? calculateDiscountPercent(
+          primaryVariant.compareAtPrice.amount,
+          primaryVariant.price.amount,
+        )
+      : 0;
 
-  // Dynamic Product Specifications (replaces duplicate trust badges)
   const productInfo = React.useMemo(() => {
-    const isVeg = product.foodAttributes?.isVegetarian ?? true;
-    const shelfLife = product.foodAttributes?.shelfLife || '12 Months';
+    const attributes = product.attributes ?? {};
+    const food = product.foodAttributes;
 
-    // Oil or cooking medium / base fat
+    const isVeg = food?.isVegetarian ?? true;
+    const shelfLife = food?.shelfLife || '12 Months';
+
     const rawOil =
-      (product.attributes?.oilType as string | undefined) ??
-      (product.attributes?.gheeType as string | undefined);
-    let oilDisplay = 'Oil: Mustard Oil';
+      (attributes.oilType as string | undefined) ??
+      (attributes.gheeType as string | undefined);
+
+    let oilOrBase = 'Oil: Mustard Oil';
+
     if (rawOil) {
-      if (rawOil.toLowerCase().includes('oil free') || rawOil.toLowerCase().includes('oil-free')) {
-        oilDisplay = 'Sun-Dried / Oil-Free';
-      } else if (rawOil.toLowerCase().includes('ghee')) {
-        oilDisplay = `Base: ${rawOil}`;
-      } else if (rawOil.toLowerCase().includes('oil')) {
-        oilDisplay = `Oil: ${rawOil}`;
+      if (/oil[\s-]*free/i.test(rawOil)) {
+        oilOrBase = 'Sun-Dried / Oil-Free';
+      } else if (/ghee/i.test(rawOil)) {
+        oilOrBase = `Base: ${rawOil}`;
       } else {
-        oilDisplay = `Oil: ${rawOil}`;
+        oilOrBase = `Oil: ${rawOil}`;
       }
     } else if (
       product.categoryIds?.includes('cat_sweets') ||
       product.primaryCategoryId === 'cat_sweets'
     ) {
-      oilDisplay = 'Base: Pure Desi Ghee';
+      oilOrBase = 'Base: Pure Desi Ghee';
     }
 
-    // Spice or culinary character
-    const rawSpice = product.attributes?.spiceLevel as string | undefined;
-    const hasSpice = Boolean(rawSpice);
-    const spiceDisplay = rawSpice
-      ? `Spice Level: ${rawSpice}`
-      : product.categoryIds?.includes('cat_sweets') ||
-        product.primaryCategoryId === 'cat_sweets'
-      ? 'Traditional Sweet'
-      : 'Artisanal Batch';
+    const rawSpice = attributes.spiceLevel as string | undefined;
+    const isSweet =
+      product.categoryIds?.includes('cat_sweets') ||
+      product.primaryCategoryId === 'cat_sweets';
 
     return {
       isVeg,
       shelfLife: `Shelf Life: ${shelfLife}`,
-      oilOrBase: oilDisplay,
-      spiceOrStyle: spiceDisplay,
-      hasSpice,
+      oilOrBase,
+      spiceOrStyle: rawSpice
+        ? `Spice Level: ${rawSpice}`
+        : isSweet
+          ? 'Traditional Sweet'
+          : 'Artisanal Batch',
+      hasSpice: Boolean(rawSpice),
     };
   }, [product]);
 
-  const handleAddToCart = async () => {
-    if (totalItems === 0 || isPending || isAdding) return;
+  const handleAddToCart = async (): Promise<boolean> => {
+    if (totalItems === 0 || isPending || isAdding) {
+      return false;
+    }
 
-    // If already in cart with exact quantities, open cart drawer directly
     if (isAlreadyInCart) {
       openCart();
-      return;
+      return true;
     }
 
     setIsAdding(true);
 
     try {
       const currentCart = optimisticCart ?? cart;
-      let hasChanges = false;
 
-      // Reconcile each variant with line items in cart
-      for (const v of product.variants) {
-        const targetQty = quantities[v.id] ?? 0;
-        const existingLineItem = currentCart?.items.find((item) => item.variantId === v.id);
-        const currentQtyInCart = existingLineItem ? existingLineItem.quantity : 0;
+      for (const variant of variants) {
+        const targetQuantity = quantities[variant.id] ?? 0;
 
-        if (existingLineItem) {
-          if (targetQty === 0) {
-            await removeItem(existingLineItem.id);
-            hasChanges = true;
-          } else if (targetQty !== currentQtyInCart) {
-            await updateItem(existingLineItem.id, targetQty);
-            hasChanges = true;
+        const existingItem = currentCart?.items.find(
+          (item) => item.variantId === variant.id,
+        );
+
+        const currentQuantity = existingItem?.quantity ?? 0;
+
+        if (existingItem && targetQuantity === 0) {
+          await removeItem(existingItem.id);
+        } else if (existingItem && targetQuantity !== currentQuantity) {
+          await updateItem(existingItem.id, targetQuantity);
+        } else if (!existingItem && targetQuantity > 0) {
+          const result = await addItem(variant.id, targetQuantity);
+
+          if (result === false) {
+            throw new Error('Could not add item to cart');
           }
-        } else if (targetQty > 0) {
-          await addItem(v.id, targetQty);
-          hasChanges = true;
         }
       }
 
       setUserOverrides(null);
+      setIsAdded(true);
 
       addToast({
         type: 'success',
-        message: hasChanges
-          ? `Updated your bag with ${totalItems} item${totalItems > 1 ? 's' : ''}`
-          : `Items are in your bag`,
+        message: `Updated your bag with ${totalItems} item${totalItems === 1 ? '' : 's'}`,
       });
+
       openCart();
+
+      window.setTimeout(() => {
+        setIsAdded(false);
+      }, 2000);
+
+      return true;
     } catch {
       addToast({
         type: 'error',
         message: 'Could not update your bag. Please try again.',
       });
+
+      return false;
     } finally {
       setIsAdding(false);
     }
   };
 
+  const handleBuyNow = async () => {
+    setBuying(true);
+
+    try {
+      const success = await handleAddToCart();
+
+      if (success) {
+        router.push('/checkout');
+      }
+    } finally {
+      setBuying(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: product.title,
+          url,
+        });
+        return;
+      }
+
+      await navigator.clipboard.writeText(url);
+
+      addToast({
+        type: 'success',
+        message: 'Link copied',
+      });
+    } catch {
+      // The user may dismiss the native share sheet.
+    }
+  };
+
+  const food = product.foodAttributes;
+  const ingredients = food?.ingredients ?? [];
+  const allergens = food?.allergens ?? [];
+
+  const details = [
+    ...Object.entries(product.attributes ?? {}).map(
+      ([key, value]) => [humanize(key), formatValue(value)] as const,
+    ),
+    ['Net weight', food?.netWeight || null] as const,
+    ['Country of origin', food?.countryOfOrigin || null] as const,
+  ].filter((row): row is readonly [string, string] => Boolean(row[1]));
+
+  const hasIngredients = ingredients.length > 0 || allergens.length > 0;
+
+  const hasStorage = Boolean(food?.storage || food?.shelfLife);
+
+  if (variants.length === 0 || !firstAvailable) {
+    return (
+      <div className={cn('text-fg space-y-4', className)}>
+        <h1 className="font-serif text-2xl font-bold">{product.title}</h1>
+        <p className="text-fg-muted">This product isn&apos;t available right now.</p>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        'w-full space-y-5 px-3 sm:px-0 pt-2 lg:pt-0 pb-6 text-fg',
-        className,
-      )}
-    >
-      {/* 1. Product Title */}
-      <div className="space-y-1.5">
-        <h1 className="text-fg font-sans text-2xl sm:text-3xl font-bold tracking-tight leading-snug">
+    <div className={cn('text-fg w-full space-y-6 pt-2 pb-24 sm:pb-8 lg:pt-0', className)}>
+      {/* Product heading, category, sharing and wishlist */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          {categoryName ? (
+            categoryHref ? (
+              <Link
+                href={categoryHref}
+                className="text-primary text-xs font-semibold tracking-[0.15em] uppercase hover:underline"
+              >
+                {categoryName}
+              </Link>
+            ) : (
+              <span className="text-primary text-xs font-semibold tracking-[0.15em] uppercase">
+                {categoryName}
+              </span>
+            )
+          ) : (
+            <span />
+          )}
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleShare}
+              aria-label="Share this product"
+              className="border-line text-fg-muted hover:border-brand-600 hover:text-primary flex h-9 w-9 items-center justify-center rounded-full border transition-colors"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
+            <WishlistButton product={product} size="md" className="shrink-0" />
+          </div>
+        </div>
+
+        <h1 className="text-fg font-serif text-2xl leading-snug font-bold tracking-tight sm:text-3xl">
           {product.title}
         </h1>
 
-        {/* Rating */}
-        <div className="flex items-center gap-2 flex-wrap pt-0.5">
-          <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
+        {product.subtitle && (
+          <p className="text-fg-muted text-sm leading-relaxed sm:text-base">
+            {product.subtitle}
+          </p>
+        )}
+
+        {/* Rating display retained from the redesign. */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-0.5" aria-label="Rated 4.9 out of 5">
+            {Array.from({ length: 5 }).map((_, index) => (
               <Star
-                key={i}
-                className="h-4 w-4 fill-star text-star"
+                key={index}
+                className="fill-star text-star h-4 w-4"
                 aria-hidden="true"
               />
             ))}
           </div>
-          <span className="font-bold text-sm text-fg">4.9</span>
-          <span className="text-xs text-fg-muted font-normal">(1,240 reviews)</span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-success-tint px-2.5 py-0.5 text-[11px] font-semibold text-success-text">
+          <span className="text-sm font-bold">4.9</span>
+          <span className="text-fg-muted text-xs">(1,240 reviews)</span>
+          <span className="bg-success-tint text-success-text inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold">
             <Check className="h-3 w-3 stroke-[3]" />
             Verified Buyers
           </span>
         </div>
       </div>
 
-      {/* 2. Artisanal Subtitle Narrative */}
-      <p className="text-fg-muted text-sm leading-relaxed">
-        Authentic North Indian recipe with hand-crushed spices and cold-pressed mustard oil. A perfect blend of tradition and taste.
-      </p>
+      {/* Price information uses the actual product variant prices. */}
+      {unpriced ? (
+        <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          Coming soon. This product will be available to order shortly.
+        </p>
+      ) : (
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="text-primary font-serif text-3xl font-bold tracking-tight sm:text-4xl">
+              {formatPrice(
+                firstAvailable.price.amount,
+                firstAvailable.price.currencyCode,
+              )}
+            </span>
 
-      {/* 3. Pricing Display Row */}
-      <div className="flex items-center gap-3 pt-0.5">
-        <span className="text-primary text-3xl font-bold tracking-tight">
-          ₹249
-        </span>
-        <span className="text-fg-muted/60 text-base line-through font-normal">
-          ₹299
-        </span>
-        <span className="rounded-md bg-accent-tint px-2 py-0.5 text-xs font-bold text-accent-text">
-          {discountPercent}% OFF
-        </span>
-      </div>
+            {firstAvailable.compareAtPrice &&
+              firstAvailable.compareAtPrice.amount > firstAvailable.price.amount && (
+                <span className="text-fg-muted text-base line-through">
+                  {formatPrice(
+                    firstAvailable.compareAtPrice.amount,
+                    firstAvailable.compareAtPrice.currencyCode,
+                  )}
+                </span>
+              )}
 
-      {/* 4. Product Info Specifications (replaces duplicate trust badges) */}
-      <div className="grid grid-cols-2 gap-y-2.5 gap-x-4 border-y border-line py-3 text-xs text-fg">
-        <div className="flex items-center gap-2">
-          {/* Vegetarian Green Dot Indicator */}
-          <div
-            className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] border border-emerald-600 p-[1.5px]"
-            title="100% Pure Vegetarian"
-            aria-label="100% Pure Vegetarian"
-          >
-            <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+            {discountPercent > 0 && (
+              <span className="bg-accent-tint text-accent-text rounded-md px-2 py-1 text-xs font-bold">
+                Save {discountPercent}%
+              </span>
+            )}
           </div>
-          <span className="font-medium text-fg">100% Pure Vegetarian</span>
+
+          <p className="text-fg-muted text-xs">
+            Inclusive of all taxes · {firstAvailable.title}
+          </p>
+        </div>
+      )}
+
+      {/* Product specifications */}
+      <div className="border-line grid grid-cols-2 gap-x-4 gap-y-3 border-y py-4 text-xs">
+        <div className="flex items-center gap-2">
+          <span
+            className={cn(
+              'flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] border p-[2px]',
+              productInfo.isVeg ? 'border-emerald-600' : 'border-red-600',
+            )}
+            aria-label={productInfo.isVeg ? 'Vegetarian' : 'Non-vegetarian'}
+          >
+            <span
+              className={cn(
+                'h-2 w-2 rounded-full',
+                productInfo.isVeg ? 'bg-emerald-600' : 'bg-red-600',
+              )}
+            />
+          </span>
+          <span className="font-medium">
+            {productInfo.isVeg ? '100% Pure Vegetarian' : 'Non-vegetarian'}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
           {productInfo.hasSpice ? (
-            <Flame className="h-4 w-4 text-primary shrink-0" />
+            <Flame className="text-primary h-4 w-4 shrink-0" />
           ) : (
-            <Sparkles className="h-4 w-4 text-primary shrink-0" />
+            <Sparkles className="text-primary h-4 w-4 shrink-0" />
           )}
-          <span className="font-medium text-fg">{productInfo.spiceOrStyle}</span>
+          <span className="font-medium">{productInfo.spiceOrStyle}</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <Droplets className="h-4 w-4 text-primary shrink-0" />
-          <span className="font-medium text-fg">{productInfo.oilOrBase}</span>
+          <Droplets className="text-primary h-4 w-4 shrink-0" />
+          <span className="font-medium">{productInfo.oilOrBase}</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-primary shrink-0" />
-          <span className="font-medium text-fg">{productInfo.shelfLife}</span>
+          <Clock className="text-primary h-4 w-4 shrink-0" />
+          <span className="font-medium">{productInfo.shelfLife}</span>
         </div>
       </div>
 
-      {/* 5. Choose Pack Size Section */}
-      <div className="space-y-3 pt-1">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-fg">Choose your pack sizes</h2>
-          <p className="text-sm text-fg-muted mt-1">
-            Mix & match: select one or more sizes. Each size is packed separately.
-          </p>
-        </div>
-
-        {/* Stacked Variant Cards */}
+      {/* Multi-pack selector */}
+      {!unpriced && (
         <div className="space-y-3">
-          {product.variants.map((variant, index) => {
-            const qty = quantities[variant.id] ?? 0;
-            const isSelected = qty > 0;
-            const badge = getVariantBadge(variant, index);
-            const weightDetails = getVariantWeightDetails(variant);
+          <div>
+            <h2 className="text-fg text-lg font-bold sm:text-xl">
+              Choose your pack sizes
+            </h2>
+            <p className="text-fg-muted mt-1 text-sm">
+              Mix and match pack sizes. Each size is packed separately.
+            </p>
+          </div>
 
-            return (
-              <div
-                key={variant.id}
-                onClick={() => {
-                  if (!isSelected) {
-                    handleUpdateQuantity(variant.id, 1);
-                  }
-                }}
-                className={cn(
-                  'relative rounded-2xl transition-all cursor-pointer',
-                  'p-3 sm:p-4',
-                  isSelected
-                    ? 'border border-brand-600 bg-brand-50 text-fg'
-                    : 'border border-line bg-surface hover:border-line-strong text-fg',
-                )}
-              >
-                {/* =========================================================
-                    DESKTOP VIEW (sm+): Horizontal 1-Row Layout (matches media_1792140706907.png)
-                   ========================================================= */}
-                <div className="hidden sm:flex items-center justify-between w-full gap-4">
-                  {/* Left: Checkbox + Weight/Badge + Unit rate */}
-                  <div className="flex items-center gap-3.5">
-                    {/* Checkbox */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (isSelected) {
-                          handleUpdateQuantity(variant.id, -qty);
-                        } else {
-                          handleUpdateQuantity(variant.id, 1);
+          <div className="space-y-3">
+            {variants.map((variant, index) => {
+              const quantity = quantities[variant.id] ?? 0;
+              const isSelected = quantity > 0;
+              const badge = getVariantBadge(variant, index);
+              const weightDetails = parseVariantWeight(variant);
+              const stockLimit = Math.min(
+                variant.stockQuantity ?? MAX_QUANTITY,
+                MAX_QUANTITY,
+              );
+
+              return (
+                <div
+                  key={variant.id}
+                  className={cn(
+                    'rounded-2xl border p-3 transition-colors sm:p-4',
+                    isSelected
+                      ? 'border-brand-600 bg-brand-50 text-fg'
+                      : 'border-line bg-surface hover:border-brand-600',
+                    !variant.inStock && 'opacity-70',
+                  )}
+                >
+                  {/* Pack size and selection */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <button
+                        type="button"
+                        disabled={!variant.inStock}
+                        onClick={() =>
+                          handleUpdateQuantity(variant, isSelected ? -quantity : 1)
                         }
-                      }}
-                      role="checkbox"
-                      aria-checked={isSelected}
-                      className={cn(
-                        'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-all focus:outline-none',
-                        isSelected
-                          ? 'bg-brand-600 text-white'
-                          : 'border-2 border-line-strong bg-surface hover:border-brand-600',
-                      )}
-                      aria-label={`Select ${variant.packSize || variant.title}`}
-                    >
-                      {isSelected && <Check className="h-4 w-4 stroke-[3]" />}
-                    </button>
-
-                    <div className="flex flex-col justify-center">
-                      <div className="flex items-center">
-                        <span className="text-lg font-extrabold text-fg leading-none tracking-tight">
-                          {variant.packSize || variant.title}
-                        </span>
-                        {badge && (
-                          <span className="ml-2.5 rounded-full bg-accent-tint/50 px-2.5 py-0.5 text-xs font-medium text-fg-muted">
-                            {badge}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-xs text-fg-muted mt-1 font-normal leading-none">
-                        ₹{weightDetails.pricePer100g} per 100g
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right: Price + Savings & Action (Stepper or + Add) */}
-                  <div className="flex items-center gap-4 shrink-0">
-                    <div className="flex flex-col items-end text-right justify-center">
-                      <span className="text-lg font-extrabold text-fg leading-none tracking-tight">
-                        {formatPrice(variant.price.amount, variant.price.currencyCode)}
-                      </span>
-                      {weightDetails.savingsPercent && weightDetails.savingsPercent > 0 && (
-                        <span className="text-xs font-bold text-leaf-600 mt-1 leading-none">
-                          Save {weightDetails.savingsPercent}%
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Stepper or + Add Button */}
-                    {isSelected ? (
-                      <div
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center justify-between rounded-full border border-neutral-300 bg-surface px-2.5 py-1 min-w-[104px]"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateQuantity(variant.id, -1)}
-                          className="flex h-6 w-6 items-center justify-center text-fg hover:text-brand-600 active:scale-90 transition-transform"
-                          aria-label={`Decrease ${variant.packSize || variant.title} quantity`}
-                        >
-                          <Minus className="h-3.5 w-3.5 stroke-[2.5]" />
-                        </button>
-                        <span className="min-w-5 text-center text-sm font-bold text-fg select-none">
-                          {qty}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateQuantity(variant.id, 1)}
-                          className="flex h-6 w-6 items-center justify-center text-fg hover:text-brand-600 active:scale-90 transition-transform"
-                          aria-label={`Increase ${variant.packSize || variant.title} quantity`}
-                        >
-                          <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUpdateQuantity(variant.id, 1);
-                        }}
-                        className="flex items-center justify-center gap-1 rounded-full border border-brand-600 text-brand-600 hover:bg-brand-50 px-4 py-1.5 text-sm font-bold min-w-[104px] transition-all active:scale-95"
-                        aria-label={`Add ${variant.packSize || variant.title}`}
-                      >
-                        <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                        <span>Add</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* =========================================================
-                    MOBILE VIEW (<sm): 2-Row Stacked Layout (matches media_1792141292144.png)
-                   ========================================================= */}
-                <div className="flex sm:hidden flex-col justify-between w-full gap-2">
-                  {/* Row 1: Checkbox + Weight/Badge on Left | Price on Right */}
-                  <div className="flex items-center justify-between gap-2 w-full">
-                    <div className="flex items-center gap-2.5">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (isSelected) {
-                            handleUpdateQuantity(variant.id, -qty);
-                          } else {
-                            handleUpdateQuantity(variant.id, 1);
-                          }
-                        }}
                         role="checkbox"
                         aria-checked={isSelected}
+                        aria-label={`Select ${variant.packSize || variant.title}`}
                         className={cn(
-                          'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-all focus:outline-none',
+                          'flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed',
                           isSelected
                             ? 'bg-brand-600 text-white'
-                            : 'border-2 border-line-strong bg-surface hover:border-brand-600',
+                            : 'border-line-strong bg-surface hover:border-brand-600 border-2',
                         )}
-                        aria-label={`Select ${variant.packSize || variant.title}`}
                       >
                         {isSelected && <Check className="h-4 w-4 stroke-[3]" />}
                       </button>
 
-                      <div className="flex items-center gap-2">
-                        <span className="text-base font-extrabold text-fg leading-none tracking-tight">
-                          {variant.packSize || variant.title}
-                        </span>
-                        {badge && (
-                          <span className="rounded-full bg-accent-tint/50 px-2.5 py-0.5 text-[11px] font-medium text-fg-muted">
-                            {badge}
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="leading-tight font-bold">
+                            {variant.packSize || variant.title}
                           </span>
+
+                          {badge && (
+                            <span className="bg-accent-tint/60 text-fg-muted rounded-full px-2 py-0.5 text-[10px] font-medium">
+                              {badge}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-fg-muted mt-1 text-xs">
+                          ₹{weightDetails.pricePer100g} per 100g
+                        </p>
+
+                        {weightDetails.savingsPercent !== null &&
+                          weightDetails.savingsPercent > 0 && (
+                            <p className="text-leaf-600 mt-0.5 text-xs font-bold">
+                              Save {weightDetails.savingsPercent}% per 100g
+                            </p>
+                          )}
+
+                        {!variant.inStock && (
+                          <p className="mt-1 text-xs font-medium text-red-600">
+                            Sold out
+                          </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-base font-extrabold text-fg leading-none tracking-tight">
+                    {/* Price and quantity controls */}
+                    <div className="flex shrink-0 flex-col items-end gap-2">
+                      <span className="font-bold tabular-nums">
                         {formatPrice(variant.price.amount, variant.price.currencyCode)}
                       </span>
-                    </div>
-                  </div>
 
-                  {/* Row 2: Rate & Savings on Left (indented under weight) | Stepper or + Add on Right */}
-                  <div className="flex items-end justify-between gap-2 w-full pl-[34px]">
-                    <div className="flex flex-col justify-end">
-                      <span className="text-xs text-fg-muted font-normal leading-tight">
-                        ₹{weightDetails.pricePer100g} per 100g
-                      </span>
-                      {weightDetails.savingsPercent && weightDetails.savingsPercent > 0 && (
-                        <span className="text-xs font-bold text-leaf-600 mt-0.5 leading-tight">
-                          Save {weightDetails.savingsPercent}%
-                        </span>
-                      )}
-                    </div>
+                      {variant.inStock ? (
+                        isSelected ? (
+                          <div className="border-line bg-surface flex items-center gap-2 rounded-full border px-2 py-1">
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateQuantity(variant, -1)}
+                              aria-label={`Decrease ${variant.title} quantity`}
+                              className="text-fg hover:text-primary flex h-6 w-6 items-center justify-center"
+                            >
+                              <Minus className="h-3.5 w-3.5" />
+                            </button>
 
-                    <div className="shrink-0">
-                      {isSelected ? (
-                        <div
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex items-center justify-between rounded-full border border-neutral-300 bg-surface px-2.5 py-1 min-w-[96px]"
-                        >
+                            <span
+                              className="min-w-4 text-center text-sm font-bold tabular-nums"
+                              aria-live="polite"
+                            >
+                              {quantity}
+                            </span>
+
+                            <button
+                              type="button"
+                              disabled={quantity >= stockLimit}
+                              onClick={() => handleUpdateQuantity(variant, 1)}
+                              aria-label={`Increase ${variant.title} quantity`}
+                              className="text-fg hover:text-primary flex h-6 w-6 items-center justify-center disabled:opacity-30"
+                            >
+                              <Plus className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ) : (
                           <button
                             type="button"
-                            onClick={() => handleUpdateQuantity(variant.id, -1)}
-                            className="flex h-6 w-6 items-center justify-center text-fg hover:text-brand-600 active:scale-90 transition-transform"
-                            aria-label={`Decrease ${variant.packSize || variant.title} quantity`}
+                            onClick={() => handleUpdateQuantity(variant, 1)}
+                            className="border-brand-600 text-brand-600 hover:bg-brand-50 inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors"
                           >
-                            <Minus className="h-3.5 w-3.5 stroke-[2.5]" />
+                            <Plus className="h-3.5 w-3.5" />
+                            Add
                           </button>
-                          <span className="min-w-5 text-center text-sm font-bold text-fg select-none">
-                            {qty}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleUpdateQuantity(variant.id, 1)}
-                            className="flex h-6 w-6 items-center justify-center text-fg hover:text-brand-600 active:scale-90 transition-transform"
-                            aria-label={`Increase ${variant.packSize || variant.title} quantity`}
-                          >
-                            <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                          </button>
-                        </div>
+                        )
                       ) : (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateQuantity(variant.id, 1);
-                          }}
-                          className="flex items-center justify-center gap-1 rounded-full border border-brand-600 text-brand-600 hover:bg-brand-50 px-4 py-1.5 text-sm font-bold min-w-[96px] transition-all active:scale-95"
-                          aria-label={`Add ${variant.packSize || variant.title}`}
-                        >
-                          <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-                          <span>Add</span>
-                        </button>
+                        <span className="text-fg-muted text-xs">Unavailable</span>
                       )}
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 6. Total Selected Summary Bar & CTA Button (Desktop Only) */}
-      <div className="hidden lg:block space-y-3 pt-2">
-        <div className="flex items-baseline justify-between border-t border-line pt-3">
-          <div>
-            <span className="text-xs font-medium text-fg-muted">
-              Total Selected ({totalItems} {totalItems === 1 ? 'item' : 'items'})
+      {/* Desktop cart summary and actions */}
+      {!unpriced && (
+        <div ref={ctaRef} className="space-y-4">
+          <div className="border-line flex items-baseline justify-between gap-3 border-t pt-4">
+            <div className="min-w-0">
+              <p className="text-fg-muted text-xs font-medium">
+                Total selected ({totalItems} {totalItems === 1 ? 'item' : 'items'})
+              </p>
+              <p className="mt-1 text-sm font-bold break-words">
+                {totalItems > 0 ? selectedWeightLabels : 'No packs selected'}
+              </p>
+            </div>
+
+            <p className="text-primary shrink-0 text-xl font-bold">
+              {formatPrice(totalPriceAmount, currencyCode)}
+            </p>
+          </div>
+
+          <div className="hidden space-y-3 lg:block">
+            <Button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={totalItems === 0 || isPending || isAdding}
+              className="w-full rounded-full"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              {isAdding
+                ? 'Updating bag...'
+                : isAdded
+                  ? 'Added to bag'
+                  : isAlreadyInCart
+                    ? 'Added to cart'
+                    : 'Add to bag'}
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleBuyNow}
+              disabled={totalItems === 0 || isPending || isAdding || buying}
+              className="w-full rounded-full"
+            >
+              {!buying && <Zap className="h-4 w-4" />}
+              {buying ? 'Processing...' : 'Buy now'}
+            </Button>
+          </div>
+
+          {/* Compact sticky mobile purchase bar */}
+          <div
+            aria-hidden={!showStickyBar}
+            className={cn(
+              'border-line bg-surface/95 text-fg fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] backdrop-blur-md transition-transform duration-300 lg:hidden',
+              showStickyBar ? 'translate-y-0' : 'pointer-events-none translate-y-full',
+            )}
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold">
+                {totalItems} {totalItems === 1 ? 'item' : 'items'} ·{' '}
+                <span className="text-primary">
+                  {formatPrice(totalPriceAmount, currencyCode)}
+                </span>
+              </p>
+
+              {totalItems > 0 && (
+                <p className="text-fg-muted truncate text-[11px]">
+                  {selectedWeightLabels}
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={totalItems === 0 || isPending || isAdding}
+              className="shrink-0 rounded-full"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              {isAdding ? 'Updating...' : isAdded ? 'Added' : 'Add to bag'}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Delivery and checkout promises */}
+      <ul className="border-line bg-line grid grid-cols-2 gap-px overflow-hidden rounded-2xl border text-sm">
+        {[
+          {
+            icon: Leaf,
+            title: 'Vegetarian options',
+            text: 'Product details show ingredients',
+          },
+          {
+            icon: ShieldCheck,
+            title: 'FSSAI licensed',
+            text: `Lic. ${SITE_CONFIG.brand.fssaiLicenseNumber}`,
+          },
+          {
+            icon: Truck,
+            title: 'Ships across India',
+            text: 'Charges shown at checkout',
+          },
+          {
+            icon: Lock,
+            title: 'Secure checkout',
+            text: 'Verified checkout and payments',
+          },
+        ].map(({ icon: Icon, title, text }) => (
+          <li key={title} className="bg-surface flex items-start gap-3 p-3 sm:p-4">
+            <Icon className="text-primary mt-0.5 h-5 w-5 shrink-0" />
+            <span>
+              <span className="block font-semibold">{title}</span>
+              <span className="text-fg-muted mt-0.5 block text-xs">{text}</span>
             </span>
-            <div className="text-sm font-bold text-fg">
-              {totalItems > 0 ? selectedWeightLabels : 'None selected'}
-            </div>
-          </div>
+          </li>
+        ))}
+      </ul>
 
-          <div className="text-xl font-bold text-primary">
-            {formatPrice(totalPriceAmount, currencyCode)}
-          </div>
-        </div>
+      {/* Product information accordions */}
+      <Accordion
+        type="multiple"
+        defaultValue={['description']}
+        className="divide-line border-line divide-y border-y"
+      >
+        {product.description && (
+          <AccordionItem value="description">
+            <AccordionTrigger className="text-base font-semibold">
+              Description
+            </AccordionTrigger>
+            <AccordionContent className="text-sm leading-relaxed whitespace-pre-line">
+              {product.description}
+            </AccordionContent>
+          </AccordionItem>
+        )}
 
-        {/* In-Page Add to Cart Button (matches mockup) */}
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={totalItems === 0 || isPending || isAdding}
-          className="w-full flex items-center justify-center gap-2 rounded-full bg-primary hover:bg-primary-hover text-on-primary py-3.5 px-6 font-bold text-xs sm:text-sm tracking-wider uppercase transition-all shadow-sm active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <ShoppingBag className="h-4 w-4" />
-          <span>
-            {isAdding
-              ? 'Updating Cart...'
-              : isAlreadyInCart
-              ? 'ADDED TO CART'
-              : 'ADD TO CART'}
-          </span>
-        </button>
-      </div>
+        {hasIngredients && (
+          <AccordionItem value="ingredients">
+            <AccordionTrigger className="text-base font-semibold">
+              Ingredients &amp; allergens
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm">
+              {ingredients.length > 0 && <p>{ingredients.join(', ')}</p>}
 
-      {/* Mobile Fixed Sticky Bottom Bar (Single mobile Add to Cart, synced with pack selector) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-line bg-surface/95 backdrop-blur-md px-4 py-3 lg:hidden flex items-center justify-between shadow-[0_-4px_16px_rgba(0,0,0,0.06)] text-fg">
-        <div>
-          <div className="flex items-center text-sm font-bold text-fg">
-            <span>{totalItems} {totalItems === 1 ? 'item' : 'items'}</span>
-            <span className="mx-1.5">•</span>
-            <span className="text-primary">{formatPrice(totalPriceAmount, currencyCode)}</span>
-          </div>
-          {totalItems > 0 && (
-            <div className="text-[11px] text-fg-muted font-medium truncate max-w-[190px]">
-              {selectedWeightLabels}
-            </div>
-          )}
-        </div>
+              {allergens.length > 0 && (
+                <p>
+                  <span className="font-semibold">Contains:</span> {allergens.join(', ')}
+                </p>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        )}
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={totalItems === 0 || isPending || isAdding}
-          className="flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover text-on-primary px-6 py-2.5 text-xs font-bold tracking-wider uppercase transition-colors shadow-sm active:scale-[0.99] disabled:opacity-50"
-        >
-          <ShoppingBag className="h-3.5 w-3.5" />
-          <span>
-            {isAdding
-              ? 'Updating...'
-              : isAlreadyInCart
-              ? 'ADDED TO CART'
-              : 'ADD TO CART'}
-          </span>
-        </button>
-      </div>
+        {hasStorage && (
+          <AccordionItem value="storage">
+            <AccordionTrigger className="text-base font-semibold">
+              Storage &amp; shelf life
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm">
+              {food?.shelfLife && (
+                <p>
+                  <span className="font-semibold">Shelf life:</span> {food.shelfLife}
+                </p>
+              )}
+
+              {food?.storage && <p>{food.storage}</p>}
+            </AccordionContent>
+          </AccordionItem>
+        )}
+
+        {details.length > 0 && (
+          <AccordionItem value="details">
+            <AccordionTrigger className="text-base font-semibold">
+              Product details
+            </AccordionTrigger>
+            <AccordionContent>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
+                {details.map(([label, value]) => (
+                  <React.Fragment key={label}>
+                    <dt className="text-fg-muted">{label}</dt>
+                    <dd className="text-fg break-words">{value}</dd>
+                  </React.Fragment>
+                ))}
+              </dl>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+
+        <AccordionItem value="shipping">
+          <AccordionTrigger className="text-base font-semibold">
+            Shipping &amp; returns
+          </AccordionTrigger>
+          <AccordionContent className="space-y-2 text-sm leading-relaxed">
+            <p>
+              We deliver across India. Delivery options and charges for your PIN code are
+              shown at checkout.
+            </p>
+
+            <p>
+              Read our{' '}
+              <Link
+                href="/policies/shipping"
+                className="text-primary font-medium hover:underline"
+              >
+                shipping policy
+              </Link>{' '}
+              and{' '}
+              <Link
+                href="/policies/refund"
+                className="text-primary font-medium hover:underline"
+              >
+                refund &amp; replacement policy
+              </Link>
+              .
+            </p>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }

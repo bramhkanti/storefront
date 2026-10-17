@@ -1,11 +1,6 @@
 import * as React from 'react';
 import type { Category } from '@/lib/api/contracts/domain';
-import {
-  PRICE_RANGES,
-  SPICE_LEVELS,
-  OIL_BASES,
-  type FilterState,
-} from '../types';
+import { PRICE_RANGES, SPICE_LEVELS, OIL_BASES, type FilterState } from '../types';
 import { cn } from '@/lib/utils/cn';
 
 export interface FilterContentProps {
@@ -48,23 +43,21 @@ export function FilterContent({
     <div className={cn('space-y-6', className)}>
       {/* 1. Category Filter */}
       <div className="space-y-2.5">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-fg">
-          Category
-        </h4>
+        <h4 className="text-fg text-xs font-bold tracking-wider uppercase">Category</h4>
         <div className="space-y-1.5">
           <button
             type="button"
             onClick={() => handleCategoryChange('all')}
             className={cn(
-              'w-full text-left text-xs sm:text-sm px-3 py-2 rounded-xl transition-all border flex items-center justify-between',
+              'flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-xs transition-all sm:text-sm',
               filters.category === 'all'
                 ? 'border-brand-600 bg-brand-50 text-brand-700 font-semibold'
-                : 'border-transparent text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft',
+                : 'text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft border-transparent',
             )}
           >
             <span>All Categories</span>
             {filters.category === 'all' && (
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
+              <span className="bg-brand-600 h-1.5 w-1.5 rounded-full" />
             )}
           </button>
 
@@ -76,27 +69,25 @@ export function FilterContent({
                 type="button"
                 onClick={() => handleCategoryChange(cat.handle)}
                 className={cn(
-                  'w-full text-left text-xs sm:text-sm px-3 py-2 rounded-xl transition-all border flex items-center justify-between',
+                  'flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-xs transition-all sm:text-sm',
                   isSelected
                     ? 'border-brand-600 bg-brand-50 text-brand-700 font-semibold'
-                    : 'border-transparent text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft',
+                    : 'text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft border-transparent',
                 )}
               >
                 <span>{cat.name}</span>
-                {isSelected && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-                )}
+                {isSelected && <span className="bg-brand-600 h-1.5 w-1.5 rounded-full" />}
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="h-px bg-line/60" />
+      <div className="bg-line/60 h-px" />
 
       {/* 2. Price Range Filter */}
       <div className="space-y-2.5">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-fg">
+        <h4 className="text-fg text-xs font-bold tracking-wider uppercase">
           Price Range
         </h4>
         <div className="space-y-1.5">
@@ -108,27 +99,25 @@ export function FilterContent({
                 type="button"
                 onClick={() => handlePriceChange(range.value)}
                 className={cn(
-                  'w-full text-left text-xs sm:text-sm px-3 py-2 rounded-xl transition-all border flex items-center justify-between',
+                  'flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-xs transition-all sm:text-sm',
                   isSelected
                     ? 'border-brand-600 bg-brand-50 text-brand-700 font-semibold'
-                    : 'border-transparent text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft',
+                    : 'text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft border-transparent',
                 )}
               >
                 <span>{range.label}</span>
-                {isSelected && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-                )}
+                {isSelected && <span className="bg-brand-600 h-1.5 w-1.5 rounded-full" />}
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="h-px bg-line/60" />
+      <div className="bg-line/60 h-px" />
 
       {/* 3. Spice Level Filter */}
       <div className="space-y-2.5">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-fg">
+        <h4 className="text-fg text-xs font-bold tracking-wider uppercase">
           Spice Level
         </h4>
         <div className="space-y-1.5">
@@ -140,27 +129,25 @@ export function FilterContent({
                 type="button"
                 onClick={() => handleSpiceChange(spice.value)}
                 className={cn(
-                  'w-full text-left text-xs sm:text-sm px-3 py-2 rounded-xl transition-all border flex items-center justify-between',
+                  'flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-xs transition-all sm:text-sm',
                   isSelected
                     ? 'border-brand-600 bg-brand-50 text-brand-700 font-semibold'
-                    : 'border-transparent text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft',
+                    : 'text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft border-transparent',
                 )}
               >
                 <span>{spice.label}</span>
-                {isSelected && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-                )}
+                {isSelected && <span className="bg-brand-600 h-1.5 w-1.5 rounded-full" />}
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="h-px bg-line/60" />
+      <div className="bg-line/60 h-px" />
 
       {/* 4. Base / Cooking Medium */}
       <div className="space-y-2.5">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-fg">
+        <h4 className="text-fg text-xs font-bold tracking-wider uppercase">
           Cooking Base & Fat
         </h4>
         <div className="space-y-1.5">
@@ -172,35 +159,33 @@ export function FilterContent({
                 type="button"
                 onClick={() => handleOilChange(oil.value)}
                 className={cn(
-                  'w-full text-left text-xs sm:text-sm px-3 py-2 rounded-xl transition-all border flex items-center justify-between',
+                  'flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-xs transition-all sm:text-sm',
                   isSelected
                     ? 'border-brand-600 bg-brand-50 text-brand-700 font-semibold'
-                    : 'border-transparent text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft',
+                    : 'text-fg-muted hover:border-line hover:text-fg hover:bg-surface-soft border-transparent',
                 )}
               >
                 <span>{oil.label}</span>
-                {isSelected && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />
-                )}
+                {isSelected && <span className="bg-brand-600 h-1.5 w-1.5 rounded-full" />}
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="h-px bg-line/60" />
+      <div className="bg-line/60 h-px" />
 
       {/* 5. In-Stock Availability Toggle */}
       <div className="pt-1">
         <label
           htmlFor="in-stock-only-toggle"
-          className="flex items-center justify-between cursor-pointer py-1 select-none"
+          className="flex cursor-pointer items-center justify-between py-1 select-none"
         >
           <div className="space-y-0.5">
-            <span className="text-xs sm:text-sm font-semibold text-fg block">
+            <span className="text-fg block text-xs font-semibold sm:text-sm">
               In Stock Only
             </span>
-            <span className="text-[11px] text-fg-muted block">
+            <span className="text-fg-muted block text-[11px]">
               Hide currently curing or sold-out batches
             </span>
           </div>

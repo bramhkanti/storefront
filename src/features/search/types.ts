@@ -1,9 +1,4 @@
-export type SortOption =
-  | 'featured'
-  | 'price-asc'
-  | 'price-desc'
-  | 'rating'
-  | 'name-asc';
+export type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'rating' | 'name-asc';
 
 export interface FilterState {
   category: string;
@@ -29,7 +24,12 @@ export const SORT_OPTIONS: Array<{ value: SortOption; label: string }> = [
   { value: 'name-asc', label: 'Alphabetical: A to Z' },
 ];
 
-export const PRICE_RANGES: Array<{ value: string; label: string; min?: number; max?: number }> = [
+export const PRICE_RANGES: Array<{
+  value: string;
+  label: string;
+  min?: number;
+  max?: number;
+}> = [
   { value: 'all', label: 'All Prices' },
   { value: 'under-300', label: 'Under ₹300', min: 0, max: 300 },
   { value: '300-500', label: '₹300 - ₹500', min: 300, max: 500 },

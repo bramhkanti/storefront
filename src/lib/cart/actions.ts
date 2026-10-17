@@ -3,6 +3,8 @@
 import { cookies } from 'next/headers';
 import { updateTag } from 'next/cache';
 import { getCartService } from '@/lib/api/container';
+import { UserFacingError } from '@/lib/api/errors';
+import { getCustomerToken } from '@/lib/auth/session';
 import { CACHE_TAGS } from '@/lib/cache/tags';
 import { serverEnv } from '@/lib/env';
 import { CART_COOKIE_NAME, COOKIE_MAX_AGE_SECONDS } from './constants';
@@ -61,31 +63,32 @@ export async function addToCartAction(
     let cartId = await getCartIdFromCookie();
     const cartService = getCartService();
 
+    const token = await getCustomerToken();
+    // A cart that was completed (became an order) or expired can't take items.
+    if (cartId && !(await cartService.getCart(cartId))) {
+      cartId = undefined;
+    }
     if (!cartId) {
-      const newCart = await cartService.createCart();
+      const newCart = await cartService.createCart(token);
       cartId = newCart.id;
       await setCartIdCookie(cartId);
     }
 
-    let cart: Cart;
-    try {
-      cart = await cartService.addItem(cartId, { variantId, quantity });
-    } catch {
-      // If the cart session expired or was deleted upstream, recreate and retry
-      const freshCart = await cartService.createCart();
-      cartId = freshCart.id;
-      await setCartIdCookie(cartId);
-      cart = await cartService.addItem(cartId, { variantId, quantity });
-    }
+    const cart: Cart = await cartService.addItem(cartId, { variantId, quantity });
 
     // Invalidate cached cart reads immediately in Server Action
     updateTag(CACHE_TAGS.cart(cart.id));
 
     return { success: true, cart };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to add item to bag';
-    console.error('addToCartAction error:', message);
-    return { success: false, error: message };
+    console.error('addToCartAction error:', error);
+    return {
+      success: false,
+      error:
+        error instanceof UserFacingError
+          ? error.message
+          : 'Could not add this item. Please try again.',
+    };
   }
 }
 
@@ -109,10 +112,14 @@ export async function updateCartItemAction(
 
     return { success: true, cart };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Failed to update item quantity';
-    console.error('updateCartItemAction error:', message);
-    return { success: false, error: message };
+    console.error('updateCartItemAction error:', error);
+    return {
+      success: false,
+      error:
+        error instanceof UserFacingError
+          ? error.message
+          : 'Could not update the quantity.',
+    };
   }
 }
 
@@ -135,9 +142,8 @@ export async function removeCartItemAction(
 
     return { success: true, cart };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to remove item';
-    console.error('removeCartItemAction error:', message);
-    return { success: false, error: message };
+    console.error('removeCartItemAction error:', error);
+    return { success: false, error: 'Could not remove the item.' };
   }
 }
 
@@ -150,5 +156,29 @@ export async function clearCartAction(): Promise<void> {
   cookieStore.delete(CART_COOKIE_NAME);
   if (cartId) {
     updateTag(CACHE_TAGS.cart(cartId));
+  }
+}
+
+/** Apply or remove a promotion code on the current cart. */
+export async function updatePromoCodeAction(
+  code: string,
+  mode: 'apply' | 'remove',
+): Promise<CartActionResult> {
+  const cartId = await getCartIdFromCookie();
+  const clean = code.trim();
+  if (!cartId) return { success: false, error: 'Your bag is empty' };
+  if (!clean) return { success: false, error: 'Enter a code' };
+  try {
+    const cartService = getCartService();
+    const cart =
+      mode === 'apply'
+        ? await cartService.applyPromoCode(cartId, clean)
+        : await cartService.removePromoCode(cartId, clean);
+    updateTag(CACHE_TAGS.cart(cart.id));
+    return { success: true, cart };
+  } catch (error) {
+    if (error instanceof UserFacingError) return { success: false, error: error.message };
+    console.error('updatePromoCodeAction error:', error);
+    return { success: false, error: 'Could not update the code. Please try again.' };
   }
 }

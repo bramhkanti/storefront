@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
+
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import { Container } from '@/components/layout/Container';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { ProductHeader } from '@/features/product/components/ProductHeader';
@@ -12,13 +16,16 @@ import { ProductContentGrid } from '@/features/product/components/ProductContent
 import { ProductReviewsSection } from '@/features/product/components/ProductReviewsSection';
 import { ProductFaq } from '@/features/product/components/ProductFaq';
 import { ProductGrid } from '@/features/product/components/ProductGrid';
+
 import { getEnrichedProductContent } from '@/features/product/data/productContent';
 import {
+  getFeaturedProducts,
   getProductByHandle,
   getProductsByCategory,
   getTopProductHandles,
 } from '@/features/product/queries';
 import { getCategoryByHandle } from '@/features/catalog/queries';
+
 import { buildProductJsonLd } from '@/lib/seo/json-ld';
 import { buildMetadata } from '@/lib/seo/metadata';
 import { isSupportedLocale } from '@/lib/i18n';
@@ -32,7 +39,11 @@ interface ProductPageProps {
 
 export async function generateStaticParams(): Promise<Array<{ handle: string }>> {
   const products = await getTopProductHandles(50);
-  return products.map(({ handle }) => ({ handle }));
+
+  return atLeastOne(
+    products.map(({ handle }) => ({ handle })),
+    { handle: PLACEHOLDER_SLUG },
+  );
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
@@ -65,20 +76,36 @@ export default async function ProductPage({
     notFound();
   }
 
-  const [category, relatedProducts] = await Promise.all([
-    getCategoryByHandle(product.primaryCategoryId),
-    getProductsByCategory(product.primaryCategoryId, 4),
+  // Medusa products carry the category handle; mock fixtures use the ID as handle.
+  const categoryHandle = product.primaryCategoryHandle ?? product.primaryCategoryId;
+
+  const [category, relatedProducts, featured] = await Promise.all([
+    categoryHandle ? getCategoryByHandle(categoryHandle) : Promise.resolve(null),
+    categoryHandle ? getProductsByCategory(categoryHandle, 8) : Promise.resolve([]),
+    getFeaturedProducts(8),
   ]);
 
-  const filteredRelated = relatedProducts.filter((p) => p.id !== product.id).slice(0, 3);
+  // Show same-category products first, then popular products to fill the row.
+  const seen = new Set([product.id]);
 
-  // Generate enriched storytelling, snapshot points, tasting notes, and comprehensive FAQs
+  const filteredRelated = [...relatedProducts, ...featured]
+    .filter((item) => {
+      if (seen.has(item.id)) {
+        return false;
+      }
+
+      seen.add(item.id);
+      return true;
+    })
+    .slice(0, 4);
+
+  // Enriched product storytelling, attributes, tasting notes, reviews and FAQs.
   const enrichedContent = getEnrichedProductContent(product, category?.name);
 
-  // Product JSON-LD structured data for Google Search rich results
+  // Product structured data for search engines.
   const productJsonLd = buildProductJsonLd(product);
 
-  // FAQPage JSON-LD structured data for Google Search rich snippets
+  // FAQPage structured data.
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -99,7 +126,7 @@ export default async function ProductPage({
     { name: product.title },
   ];
 
-  // BreadcrumbList JSON-LD structured data
+  // BreadcrumbList structured data.
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -112,34 +139,36 @@ export default async function ProductPage({
   };
 
   return (
-    <article className="w-full bg-page text-fg pb-16">
-      {/* Schema.org Structured Data (Product, FAQ, BreadcrumbList) */}
+    <article className="bg-page text-fg w-full pb-16">
+      {/* Product, FAQ and breadcrumb structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Dedicated Sticky Product Header (pure white background, separated and sticky) */}
+      {/* 1. Sticky product header */}
       <ProductHeader product={product} categoryName={category?.name} />
 
-      {/* Top Product Hero Section: seamless flush under sticky header */}
+      {/* 2. Product hero and gallery */}
       <div className="w-full">
         <div className="mx-auto max-w-7xl lg:px-8">
-          {/* Desktop Breadcrumb Trail */}
-          <div className="hidden lg:block pt-1 pb-4">
+          {/* Desktop breadcrumbs */}
+          <div className="hidden pt-1 pb-4 lg:block">
             <Breadcrumbs items={breadcrumbs} singleLine />
           </div>
 
-          {/* Mobile Single-Line Breadcrumb (At Top of Product Image) */}
-          <div className="block lg:hidden px-3 sm:px-4 pt-2.5 pb-2">
+          {/* Mobile breadcrumbs */}
+          <div className="block px-3 pt-2.5 pb-2 sm:px-4 lg:hidden">
             <Breadcrumbs items={breadcrumbs} singleLine />
           </div>
 
@@ -151,6 +180,7 @@ export default async function ProductPage({
                 product={product}
               />
             </div>
+
             <ProductDetails
               product={product}
               categoryName={category?.name}
@@ -160,7 +190,7 @@ export default async function ProductPage({
         </div>
       </div>
 
-      {/* 2. Brand & Craft Attributes Bar */}
+      {/* 3. Brand and craft attributes */}
       <Container className="pt-6 sm:pt-8">
         <ProductAttributeBar
           desktopItems={enrichedContent.desktopAttributeBar}
@@ -168,7 +198,7 @@ export default async function ProductPage({
         />
       </Container>
 
-      {/* 3. Story Banner & Artisanal Video / Highlights */}
+      {/* 4. Product story banner */}
       <Container className="pt-6 sm:pt-8">
         <ProductStoryBanner
           title="The Perfect Blend of Tradition & Taste"
@@ -177,7 +207,7 @@ export default async function ProductPage({
         />
       </Container>
 
-      {/* 4. Tabbed Content (Desktop) & Chevron Accordions (Mobile) */}
+      {/* 5. Product details, ingredients and storage information */}
       <Container className="pt-8 sm:pt-10">
         <ProductContentGrid
           keyHighlights={enrichedContent.keyHighlights}
@@ -188,7 +218,7 @@ export default async function ProductPage({
         />
       </Container>
 
-      {/* 5. Customer Reviews & Ratings */}
+      {/* 6. Customer reviews and ratings */}
       <Container className="pt-8 sm:pt-10">
         <div id="section-reviews" className="scroll-mt-36">
           <ProductReviewsSection
@@ -199,30 +229,44 @@ export default async function ProductPage({
         </div>
       </Container>
 
-      {/* 6. Frequently Asked Questions (FAQ) */}
+      {/* 7. Frequently asked questions */}
       <Container className="pt-8 sm:pt-10">
         <div id="section-faqs" className="scroll-mt-36">
           <ProductFaq faqs={enrichedContent.faqs} />
         </div>
       </Container>
 
-      {/* 7. Related Products from the same Kitchen */}
+      {/* 8. Related products */}
       {filteredRelated.length > 0 && (
-        <Container className="pt-10 sm:pt-14 pb-8 sm:pb-12">
+        <Container className="pt-10 pb-8 sm:pt-14 sm:pb-12">
           <section
             id="section-related"
             aria-labelledby="related-heading"
-            className="space-y-6 scroll-mt-36"
+            className="scroll-mt-36 space-y-6"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <span className="text-fg-muted text-xs font-bold tracking-wider uppercase">
                   Handcrafted from the same Kitchen
                 </span>
-                <h2 id="related-heading" className="text-[20px] font-semibold text-fg leading-snug mt-1 font-serif">
+
+                <h2
+                  id="related-heading"
+                  className="text-fg mt-1 font-serif text-[20px] leading-snug font-semibold"
+                >
                   You May Also Relish
                 </h2>
               </div>
+
+              {category && (
+                <Link
+                  href={`/${category.handle}`}
+                  className="text-heritage-maroon hidden items-center gap-1 text-sm font-semibold hover:underline sm:inline-flex"
+                >
+                  Shop all {category.name}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
 
             <ProductGrid products={filteredRelated} />

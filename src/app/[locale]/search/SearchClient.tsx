@@ -2,12 +2,7 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import {
-  SlidersHorizontal,
-  ArrowUpDown,
-  SearchX,
-  RotateCcw,
-} from 'lucide-react';
+import { SlidersHorizontal, ArrowUpDown, SearchX, RotateCcw } from 'lucide-react';
 import type { Category, Product } from '@/lib/api/contracts/domain';
 import { ProductGrid } from '@/features/product/components/ProductGrid';
 import { ActiveFilterChips } from '@/features/search/components/ActiveFilterChips';
@@ -39,9 +34,7 @@ export function SearchClient({
   const searchParams = useSearchParams();
 
   // 1. Initialize State from URL query params
-  const [query, setQuery] = React.useState<string>(
-    searchParams.get('q') ?? initialQuery,
-  );
+  const [query, setQuery] = React.useState<string>(searchParams.get('q') ?? initialQuery);
   const [filters, setFilters] = React.useState<FilterState>({
     category: searchParams.get('category') ?? DEFAULT_FILTERS.category,
     priceRange: searchParams.get('price') ?? DEFAULT_FILTERS.priceRange,
@@ -247,11 +240,7 @@ export function SearchClient({
   return (
     <div className="space-y-8">
       {/* 1. Sleek Search Input Banner */}
-      <SearchInput
-        query={query}
-        onChange={handleQueryChange}
-        autoFocus={!initialQuery}
-      />
+      <SearchInput query={query} onChange={handleQueryChange} autoFocus={!initialQuery} />
 
       {/* 2. Mobile Interactive Control Bar (Filters Drawer & Sort Drawer triggers) */}
       <div className="flex items-center gap-2.5 lg:hidden">
@@ -259,12 +248,12 @@ export function SearchClient({
         <button
           type="button"
           onClick={() => setIsMobileFilterOpen(true)}
-          className="flex-1 rounded-2xl border border-line bg-surface py-3 px-4 flex items-center justify-center gap-2 text-xs font-bold text-fg hover:border-brand-600 transition-colors shadow-xs"
+          className="border-line bg-surface text-fg hover:border-brand-600 flex flex-1 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-xs font-bold shadow-xs transition-colors"
         >
-          <SlidersHorizontal className="h-4 w-4 text-brand-600" />
+          <SlidersHorizontal className="text-brand-600 h-4 w-4" />
           <span>Filters</span>
           {activeFilterCount > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-50 text-[10px] font-bold text-brand-700 border border-brand-600/30">
+            <span className="bg-brand-50 text-brand-700 border-brand-600/30 flex h-5 w-5 items-center justify-center rounded-full border text-[10px] font-bold">
               {activeFilterCount}
             </span>
           )}
@@ -274,9 +263,9 @@ export function SearchClient({
         <button
           type="button"
           onClick={() => setIsMobileSortOpen(true)}
-          className="flex-1 rounded-2xl border border-line bg-surface py-3 px-4 flex items-center justify-center gap-2 text-xs font-bold text-fg hover:border-brand-600 transition-colors shadow-xs truncate"
+          className="border-line bg-surface text-fg hover:border-brand-600 flex flex-1 items-center justify-center gap-2 truncate rounded-2xl border px-4 py-3 text-xs font-bold shadow-xs transition-colors"
         >
-          <ArrowUpDown className="h-4 w-4 text-brand-600 shrink-0" />
+          <ArrowUpDown className="text-brand-600 h-4 w-4 shrink-0" />
           <span className="truncate">Sort: {currentSortLabel.split(':')[0]}</span>
         </button>
       </div>
@@ -294,30 +283,29 @@ export function SearchClient({
         />
 
         {/* Right-Side Products Showcase */}
-        <main className="flex-1 min-w-0 space-y-5">
+        <main className="min-w-0 flex-1 space-y-5">
           {/* Top Control & Results Summary Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-3.5">
+          <div className="border-line flex flex-col justify-between gap-3 border-b pb-3.5 sm:flex-row sm:items-center">
             <div>
-              <h2 className="text-base sm:text-lg font-bold font-sans text-fg">
+              <h2 className="text-fg font-sans text-base font-bold sm:text-lg">
                 {query ? (
                   <>
                     Showing {filteredAndSortedProducts.length}{' '}
-                    {filteredAndSortedProducts.length === 1 ? 'result' : 'results'} for &ldquo;{query}&rdquo;
+                    {filteredAndSortedProducts.length === 1 ? 'result' : 'results'} for
+                    &ldquo;{query}&rdquo;
                   </>
                 ) : (
-                  <>
-                    Catalog Items ({filteredAndSortedProducts.length})
-                  </>
+                  <>Catalog Items ({filteredAndSortedProducts.length})</>
                 )}
               </h2>
-              <p className="text-xs text-fg-muted mt-0.5">
+              <p className="text-fg-muted mt-0.5 text-xs">
                 Authentic handcrafted Indian delicacies dispatched fresh from Varanasi
               </p>
             </div>
 
             {/* Desktop Sort Dropdown */}
-            <div className="hidden sm:flex items-center gap-2 self-start sm:self-auto">
-              <span className="text-xs font-semibold text-fg-muted whitespace-nowrap">
+            <div className="hidden items-center gap-2 self-start sm:flex sm:self-auto">
+              <span className="text-fg-muted text-xs font-semibold whitespace-nowrap">
                 Sort By:
               </span>
               <div className="relative">
@@ -325,7 +313,7 @@ export function SearchClient({
                   value={sort}
                   onChange={(e) => handleSortChange(e.target.value as SortOption)}
                   aria-label="Sort products by"
-                  className="rounded-xl border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-fg transition-colors hover:border-brand-600 focus:border-brand-600 focus:outline-hidden cursor-pointer"
+                  className="border-line bg-surface text-fg hover:border-brand-600 focus:border-brand-600 cursor-pointer rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-hidden"
                 >
                   {SORT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -353,17 +341,18 @@ export function SearchClient({
           {filteredAndSortedProducts.length > 0 ? (
             <ProductGrid products={filteredAndSortedProducts} />
           ) : (
-            <div className="rounded-3xl border border-line bg-surface p-8 sm:p-12 text-center space-y-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-soft text-fg-muted mx-auto">
+            <div className="border-line bg-surface space-y-4 rounded-3xl border p-8 text-center sm:p-12">
+              <div className="bg-surface-soft text-fg-muted mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
                 <SearchX className="h-7 w-7 opacity-60" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-bold text-fg">
+                <h3 className="text-fg text-base font-bold sm:text-lg">
                   No delicacies match your search criteria
                 </h3>
-                <p className="text-xs sm:text-sm text-fg-muted max-w-md mx-auto leading-relaxed">
-                  We couldn&apos;t find any products matching your specific combination of keywords and filters.
-                  Try clearing some filters or searching for our most loved staples.
+                <p className="text-fg-muted mx-auto max-w-md text-xs leading-relaxed sm:text-sm">
+                  We couldn&apos;t find any products matching your specific combination of
+                  keywords and filters. Try clearing some filters or searching for our
+                  most loved staples.
                 </p>
               </div>
 
@@ -371,7 +360,7 @@ export function SearchClient({
                 <button
                   type="button"
                   onClick={handleResetAll}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-primary-hover transition-colors"
+                  className="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-colors"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   <span>Reset All Filters & Search</span>

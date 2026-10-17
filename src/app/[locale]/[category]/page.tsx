@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -33,7 +34,10 @@ interface PageProps {
 
 export async function generateStaticParams(): Promise<Array<{ category: string }>> {
   const handles = await getAllCategoryHandles();
-  return handles.filter((h) => !isReservedSlug(h)).map((category) => ({ category }));
+  return atLeastOne(
+    handles.filter((h) => !isReservedSlug(h)).map((category) => ({ category })),
+    { category: PLACEHOLDER_SLUG },
+  );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -55,9 +59,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export default async function CategoryPage({
-  params,
-}: PageProps): Promise<ReactNode> {
+export default async function CategoryPage({ params }: PageProps): Promise<ReactNode> {
   const { category: categorySlug } = await params;
 
   // Guard against collision with system/static routes
@@ -107,7 +109,7 @@ export default async function CategoryPage({
   };
 
   return (
-    <div className="space-y-10 py-8 sm:space-y-14 sm:py-12 bg-page text-fg">
+    <div className="bg-page text-fg space-y-10 py-8 sm:space-y-14 sm:py-12">
       {/* Schema.org Structured Data */}
       <script
         type="application/ld+json"
@@ -143,25 +145,29 @@ export default async function CategoryPage({
 
         {/* 4. Subcategories Exploration (Strictly 4 in a row on desktop) */}
         {category.children && category.children.length > 0 && (
-          <section aria-labelledby="subcategories-heading" className="space-y-4 pt-4 border-t border-line">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-1 border-b border-line pb-3">
+          <section
+            aria-labelledby="subcategories-heading"
+            className="border-line space-y-4 border-t pt-4"
+          >
+            <div className="border-line flex flex-col justify-between gap-1 border-b pb-3 sm:flex-row sm:items-end">
               <div>
                 <h2
                   id="subcategories-heading"
-                  className="text-fg font-sans text-xl sm:text-2xl font-bold tracking-tight"
+                  className="text-fg font-sans text-xl font-bold tracking-tight sm:text-2xl"
                 >
                   Explore {category.name} Varieties
                 </h2>
-                <p className="text-fg-muted text-xs sm:text-sm mt-0.5">
-                  Handcrafted specialty variations prepared following ancient traditional recipes
+                <p className="text-fg-muted mt-0.5 text-xs sm:text-sm">
+                  Handcrafted specialty variations prepared following ancient traditional
+                  recipes
                 </p>
               </div>
-              <span className="text-fg-muted bg-surface-soft border border-line rounded-full px-3 py-1 text-xs font-semibold self-start sm:self-auto">
+              <span className="text-fg-muted bg-surface-soft border-line self-start rounded-full border px-3 py-1 text-xs font-semibold sm:self-auto">
                 {category.children.length} Varieties
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {category.children.map((sub) => {
                 const imageUrl =
                   sub.image?.url ||
@@ -172,10 +178,10 @@ export default async function CategoryPage({
                   <Link
                     key={sub.id}
                     href={`/${category.handle}/${sub.handle}`}
-                    className="group border border-line hover:border-brand-600 bg-surface flex flex-row overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-xs"
+                    className="group border-line hover:border-brand-600 bg-surface flex flex-row overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-xs"
                   >
                     {/* Left Side: Image Container */}
-                    <div className="relative w-28 sm:w-36 shrink-0 overflow-hidden bg-surface-soft">
+                    <div className="bg-surface-soft relative w-28 shrink-0 overflow-hidden sm:w-36">
                       <Image
                         src={imageUrl}
                         alt={altText}
@@ -186,9 +192,9 @@ export default async function CategoryPage({
                     </div>
 
                     {/* Right Side: Content */}
-                    <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-4 min-w-0">
+                    <div className="flex min-w-0 flex-1 flex-col justify-between p-3.5 sm:p-4">
                       <div className="space-y-1">
-                        <h3 className="text-fg group-hover:text-primary font-sans text-sm sm:text-base font-bold transition-colors truncate">
+                        <h3 className="text-fg group-hover:text-primary truncate font-sans text-sm font-bold transition-colors sm:text-base">
                           {sub.name}
                         </h3>
                         {sub.description && (
@@ -198,7 +204,7 @@ export default async function CategoryPage({
                         )}
                       </div>
 
-                      <div className="text-primary mt-2 flex items-center gap-1 text-xs font-semibold pt-1 border-t border-line/40">
+                      <div className="text-primary border-line/40 mt-2 flex items-center gap-1 border-t pt-1 text-xs font-semibold">
                         <span>Browse Collection</span>
                         <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                       </div>
@@ -211,17 +217,21 @@ export default async function CategoryPage({
         )}
 
         {/* 5. Complete All Products Catalog Grid */}
-        <section aria-labelledby="category-products-heading" className="space-y-5 pt-4 border-t border-line">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-1 border-b border-line pb-3">
+        <section
+          aria-labelledby="category-products-heading"
+          className="border-line space-y-5 border-t pt-4"
+        >
+          <div className="border-line flex flex-col justify-between gap-1 border-b pb-3 sm:flex-row sm:items-end">
             <div>
               <h2
                 id="category-products-heading"
-                className="text-fg font-sans text-xl sm:text-2xl font-bold tracking-tight"
+                className="text-fg font-sans text-xl font-bold tracking-tight sm:text-2xl"
               >
                 All {category.name} Catalog
               </h2>
-              <p className="text-fg-muted text-xs sm:text-sm mt-0.5">
-                Browse our complete selection of {products.length} pure, handcrafted specialties
+              <p className="text-fg-muted mt-0.5 text-xs sm:text-sm">
+                Browse our complete selection of {products.length} pure, handcrafted
+                specialties
               </p>
             </div>
             <span className="text-fg-muted text-xs font-medium">

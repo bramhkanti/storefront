@@ -83,9 +83,9 @@ export function WishlistButton({
         }
         aria-pressed={isFavorited}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-lg border font-semibold transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-heritage-maroon',
+          'focus-visible:outline-heritage-maroon inline-flex items-center justify-center gap-2 rounded-lg border font-semibold transition-all focus-visible:outline-2 active:scale-95',
           isFavorited
-            ? 'border-red-300 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-400 dark:bg-red-950/40 dark:border-red-900 dark:text-red-400'
+            ? 'border-red-300 bg-red-50 text-red-600 hover:border-red-400 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'
             : 'border-heritage-border bg-heritage-cream text-heritage-charcoal hover:bg-heritage-cream-dark hover:border-heritage-maroon/40',
           buttonSizeClasses[size],
           className,
@@ -97,7 +97,7 @@ export function WishlistButton({
           className={cn(
             iconSizes[size],
             'transition-transform duration-200',
-            isFavorited ? 'fill-red-600 text-red-600 scale-110' : 'text-heritage-muted',
+            isFavorited ? 'scale-110 fill-red-600 text-red-600' : 'text-heritage-muted',
           )}
           aria-hidden="true"
         />
@@ -124,10 +124,10 @@ export function WishlistButton({
       aria-pressed={isFavorited}
       title={isFavorited ? 'In Wishlist' : 'Add to Wishlist'}
       className={cn(
-        'group/wish relative inline-flex items-center justify-center rounded-full transition-all active:scale-90 focus-visible:outline-2 focus-visible:outline-heritage-maroon',
+        'group/wish focus-visible:outline-heritage-maroon relative inline-flex items-center justify-center rounded-full transition-all focus-visible:outline-2 active:scale-90',
         isFavorited
-          ? 'bg-red-50 text-red-600 border border-red-200 dark:bg-red-950/50 dark:border-red-800 hover:bg-red-100 shadow-none'
-          : 'bg-white/90 text-heritage-muted hover:bg-heritage-cream-dark hover:text-red-600 border border-heritage-border shadow-none',
+          ? 'border border-red-200 bg-red-50 text-red-600 shadow-none hover:bg-red-100 dark:border-red-800 dark:bg-red-950/50'
+          : 'text-heritage-muted hover:bg-heritage-cream-dark border-heritage-border border bg-white/90 shadow-none hover:text-red-600',
         iconDimensions[size],
         className,
       )}
@@ -143,9 +143,7 @@ export function WishlistButton({
         aria-hidden="true"
       />
       {showText && (
-        <span className="sr-only">
-          {isFavorited ? 'In Wishlist' : 'Add to Wishlist'}
-        </span>
+        <span className="sr-only">{isFavorited ? 'In Wishlist' : 'Add to Wishlist'}</span>
       )}
     </button>
   );

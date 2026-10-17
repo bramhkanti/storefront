@@ -16,12 +16,7 @@ export interface CategoryBestSellersProps {
   className?: string | undefined;
 }
 
-const BADGES = [
-  '#1 Bestseller',
-  'Customer Favorite',
-  'Most Loved',
-  'Kitchen Special',
-];
+const BADGES = ['#1 Bestseller', 'Customer Favorite', 'Most Loved', 'Kitchen Special'];
 
 function BestSellerWishlistBtn({ product }: { product: Product }) {
   const { isAuthenticated, openAuthModal } = useAuth();
@@ -66,13 +61,15 @@ function BestSellerWishlistBtn({ product }: { product: Product }) {
     <button
       type="button"
       onClick={handleToggle}
-      className="p-1 rounded-full text-fg-muted hover:text-red-500 transition-colors focus:outline-none"
+      className="text-fg-muted rounded-full p-1 transition-colors hover:text-red-500 focus:outline-none"
       aria-label={isFavorited ? 'Remove from Wishlist' : 'Add to Wishlist'}
     >
       <Heart
         className={cn(
           'h-4 w-4 transition-colors',
-          isFavorited ? 'fill-red-500 text-red-500' : 'text-neutral-500 hover:text-red-500',
+          isFavorited
+            ? 'fill-red-500 text-red-500'
+            : 'text-neutral-500 hover:text-red-500',
         )}
       />
     </button>
@@ -97,28 +94,27 @@ export function CategoryBestSellers({
       className={cn('space-y-5 pt-2', className)}
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-line pb-3.5">
+      <div className="border-line flex flex-col justify-between gap-2 border-b pb-3.5 sm:flex-row sm:items-end">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 border border-brand-600/30 px-2.5 py-0.5 text-[11px] font-bold text-brand-700">
-              <Flame className="h-3 w-3 fill-primary text-primary" />
+          <div className="mb-1 flex items-center gap-2">
+            <span className="bg-brand-50 border-brand-600/30 text-brand-700 inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-bold">
+              <Flame className="fill-primary text-primary h-3 w-3" />
               <span>Bramhkanti Classics</span>
             </span>
-            <span className="text-fg-muted text-xs font-medium">
-              Top Ranked Recipes
-            </span>
+            <span className="text-fg-muted text-xs font-medium">Top Ranked Recipes</span>
           </div>
           <h2
             id="category-bestsellers-heading"
-            className="text-fg font-sans text-xl sm:text-2xl font-bold tracking-tight"
+            className="text-fg font-sans text-xl font-bold tracking-tight sm:text-2xl"
           >
             Best Sellers in {categoryName}
           </h2>
-          <p className="text-fg-muted text-xs sm:text-sm mt-0.5">
-            Our most cherished {categoryName.toLowerCase()} recipes, trusted and ordered repeatedly by 15,000+ homes
+          <p className="text-fg-muted mt-0.5 text-xs sm:text-sm">
+            Our most cherished {categoryName.toLowerCase()} recipes, trusted and ordered
+            repeatedly by 15,000+ homes
           </p>
         </div>
-        <div className="text-xs font-semibold text-fg-muted shrink-0">
+        <div className="text-fg-muted shrink-0 text-xs font-semibold">
           Showing {bestSellers.length} Top Favorites
         </div>
       </div>
@@ -138,12 +134,15 @@ export function CategoryBestSellers({
           return (
             <article
               key={product.id}
-              className="group rounded-2xl border border-line bg-surface hover:border-brand-600 transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md"
+              className="group border-line bg-surface hover:border-brand-600 flex flex-col justify-between overflow-hidden rounded-2xl border shadow-xs transition-all duration-300 hover:shadow-md"
             >
               <div>
                 {/* Image Banner */}
-                <div className="relative aspect-4/3 w-full overflow-hidden bg-surface-soft">
-                  <Link href={`/products/${product.handle}`} className="block h-full w-full">
+                <div className="bg-surface-soft relative aspect-4/3 w-full overflow-hidden">
+                  <Link
+                    href={`/products/${product.handle}`}
+                    className="block h-full w-full"
+                  >
                     <Image
                       src={imageUrl}
                       alt={altText}
@@ -155,20 +154,20 @@ export function CategoryBestSellers({
 
                   {/* Bestseller Badge */}
                   <div className="absolute top-2.5 left-2.5 z-10">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 text-white px-2.5 py-0.5 text-[11px] font-bold shadow-xs">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-0.5 text-[11px] font-bold text-white shadow-xs">
                       <Star className="h-3 w-3 fill-white text-white" />
                       <span>{badgeLabel}</span>
                     </span>
                   </div>
 
                   {/* Wishlist Button */}
-                  <div className="absolute top-2.5 right-2.5 z-10 bg-surface/90 backdrop-blur-xs rounded-full p-1 border border-line/60 shadow-xs">
+                  <div className="bg-surface/90 border-line/60 absolute top-2.5 right-2.5 z-10 rounded-full border p-1 shadow-xs backdrop-blur-xs">
                     <BestSellerWishlistBtn product={product} />
                   </div>
                 </div>
 
                 {/* Card Content */}
-                <div className="p-4 space-y-2.5">
+                <div className="space-y-2.5 p-4">
                   {/* Dietary & Rating Row */}
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-1.5">
@@ -178,7 +177,7 @@ export function CategoryBestSellers({
                       >
                         <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                       </div>
-                      <span className="text-[11px] font-semibold text-fg-muted">
+                      <span className="text-fg-muted text-[11px] font-semibold">
                         {shelfLife}
                       </span>
                     </div>
@@ -186,43 +185,40 @@ export function CategoryBestSellers({
                     <div className="flex items-center gap-1">
                       <div className="flex items-center">
                         {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className="h-3 w-3 fill-star text-star"
-                          />
+                          <Star key={i} className="fill-star text-star h-3 w-3" />
                         ))}
                       </div>
-                      <span className="text-[11px] font-bold text-fg">4.9</span>
+                      <span className="text-fg text-[11px] font-bold">4.9</span>
                     </div>
                   </div>
 
                   {/* Title */}
                   <Link
                     href={`/products/${product.handle}`}
-                    className="block group-hover:text-primary transition-colors"
+                    className="group-hover:text-primary block transition-colors"
                   >
-                    <h3 className="font-sans text-base font-bold text-fg leading-snug line-clamp-2 min-h-[2.75rem]">
+                    <h3 className="text-fg line-clamp-2 min-h-[2.75rem] font-sans text-base leading-snug font-bold">
                       {product.title}
                     </h3>
                   </Link>
 
                   {/* Description Snippet */}
-                  <p className="text-xs text-fg-muted line-clamp-2 leading-relaxed min-h-[2rem]">
+                  <p className="text-fg-muted line-clamp-2 min-h-[2rem] text-xs leading-relaxed">
                     {product.description}
                   </p>
                 </div>
               </div>
 
               {/* Pricing & CTA Footer */}
-              <div className="px-4 pb-4 pt-2.5 border-t border-line/60 flex items-center justify-between gap-2 mt-auto">
+              <div className="border-line/60 mt-auto flex items-center justify-between gap-2 border-t px-4 pt-2.5 pb-4">
                 <div>
                   {price && (
-                    <div className="text-primary font-sans text-base font-extrabold tabular-nums leading-none">
+                    <div className="text-primary font-sans text-base leading-none font-extrabold tabular-nums">
                       {formatPrice(price.amount, price.currencyCode)}
                     </div>
                   )}
                   {primaryVariant?.title && (
-                    <div className="text-fg-muted text-[11px] mt-1 font-medium leading-none">
+                    <div className="text-fg-muted mt-1 text-[11px] leading-none font-medium">
                       {primaryVariant.packSize || primaryVariant.title}
                     </div>
                   )}
@@ -230,7 +226,7 @@ export function CategoryBestSellers({
 
                 <Link
                   href={`/products/${product.handle}`}
-                  className="inline-flex items-center justify-center rounded-full border border-primary text-primary hover:bg-brand-50 px-3.5 py-1.5 text-xs font-bold transition-all active:scale-95"
+                  className="border-primary text-primary hover:bg-brand-50 inline-flex items-center justify-center rounded-full border px-3.5 py-1.5 text-xs font-bold transition-all active:scale-95"
                 >
                   Select Pack
                 </Link>

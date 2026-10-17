@@ -26,19 +26,17 @@ export function DesktopFilterSidebar({
     <aside
       aria-label="Product Filters"
       className={cn(
-        'w-72 shrink-0 rounded-2xl border border-line bg-surface p-5 space-y-5 sticky top-24 self-start shadow-xs',
+        'border-line bg-surface sticky top-24 w-72 shrink-0 space-y-5 self-start rounded-2xl border p-5 shadow-xs',
         className,
       )}
     >
       {/* Sidebar Header */}
-      <div className="flex items-center justify-between border-b border-line pb-4">
+      <div className="border-line flex items-center justify-between border-b pb-4">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-brand-600" />
-          <h3 className="text-sm font-bold uppercase tracking-wider text-fg">
-            Filters
-          </h3>
+          <SlidersHorizontal className="text-brand-600 h-4 w-4" />
+          <h3 className="text-fg text-sm font-bold tracking-wider uppercase">Filters</h3>
           {activeFilterCount > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-50 text-[11px] font-bold text-brand-700 border border-brand-600/30">
+            <span className="bg-brand-50 text-brand-700 border-brand-600/30 flex h-5 w-5 items-center justify-center rounded-full border text-[11px] font-bold">
               {activeFilterCount}
             </span>
           )}
@@ -48,7 +46,7 @@ export function DesktopFilterSidebar({
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:underline"
+            className="text-brand-700 inline-flex items-center gap-1 text-xs font-semibold hover:underline"
           >
             <RotateCcw className="h-3 w-3" />
             <span>Clear all</span>
@@ -57,11 +55,7 @@ export function DesktopFilterSidebar({
       </div>
 
       {/* Filter Sections */}
-      <FilterContent
-        filters={filters}
-        onChange={onChange}
-        categories={categories}
-      />
+      <FilterContent filters={filters} onChange={onChange} categories={categories} />
     </aside>
   );
 }

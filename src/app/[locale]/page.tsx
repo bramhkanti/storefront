@@ -7,8 +7,16 @@ import {
   HeritageStory,
   Testimonials,
   PromoBanner,
+  CollectionSpotlight,
+  BRAND_HERO_SLIDE,
   SIGNATURE_RANGE_ITEMS,
+  resolveSignatureRange,
+  type HeroSlide,
 } from '@/features/home';
+import { getCategoryTree } from '@/features/catalog/queries';
+import { listCollections } from '@/features/collection/queries';
+import { ProductShowcase } from '@/features/product/components/ProductShowcase';
+import { getFeaturedProducts } from '@/features/product/queries';
 import {
   buildOrganizationJsonLd,
   buildWebSiteJsonLd,
@@ -44,12 +52,56 @@ export async function generateMetadata({
 }
 
 export default async function HomePage(): Promise<ReactNode> {
+  const [categories, collections, featured] = await Promise.all([
+    getCategoryTree(),
+    listCollections(),
+    getFeaturedProducts(8),
+  ]);
+  const signatureItems = resolveSignatureRange(
+    SIGNATURE_RANGE_ITEMS,
+    categories,
+    collections,
+  );
+  const primaryCategory = categories[0];
+
+  // Brand slide first, then one slide per collection with a banner (set in the admin).
+  const heroSlides: HeroSlide[] = [
+    {
+      ...BRAND_HERO_SLIDE,
+      ...(primaryCategory
+        ? {
+            ctaHref: `/${primaryCategory.handle}`,
+            ctaLabel: `Shop ${primaryCategory.name}`,
+          }
+        : {}),
+    },
+    ...collections.flatMap((c): HeroSlide[] =>
+      c.image
+        ? [
+            {
+              id: `hero_${c.handle}`,
+              eyebrow: c.badge ?? c.subtitle,
+              title: c.title,
+              description: c.description || undefined,
+              imageUrl: c.image.url,
+              mobileImageUrl: c.mobileImage?.url,
+              imageAlt: c.image.altText ?? c.title,
+              ctaLabel: `Shop ${c.title}`,
+              ctaHref: `/collections/${c.handle}`,
+              secondaryLabel: 'All collections',
+              secondaryHref: '/collections',
+            },
+          ]
+        : [],
+    ),
+  ];
+
   const organizationJsonLd = buildOrganizationJsonLd();
   const webSiteJsonLd = buildWebSiteJsonLd();
 
   // ItemList structured data dynamically mapped from single source of truth
   const categoryItemListJsonLd = buildItemListJsonLd(
-    SIGNATURE_RANGE_ITEMS.map((item) => ({
+    signatureItems.map((item) => ({
       name: `${item.name} (${item.tagline})`,
       href: item.href,
     })),
@@ -59,7 +111,7 @@ export default async function HomePage(): Promise<ReactNode> {
   );
 
   return (
-    <div className="space-y-4 sm:space-y-8">
+    <div className="pb-8">
       {/* Schema.org WebSite, Organization & ItemList Structured Data */}
       <script
         type="application/ld+json"
@@ -74,22 +126,37 @@ export default async function HomePage(): Promise<ReactNode> {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryItemListJsonLd) }}
       />
 
-      {/* 1. Hero Banner with Focal Barnie Jar & Calligraphy Badge */}
-      <HomeHero />
+      {/* 1. Banner slider: brand story + collection banners */}
+      <HomeHero slides={heroSlides} />
 
-      {/* 2. Signature Range: 4 Category Cards (Achar, Makhana, Sweets, Gifting) */}
-      <SignatureRange />
-
-      {/* 3. Value Proposition Strip: 5 Guarantees and Trust Pillars */}
+      {/* 2. Promises strip */}
       <TrustBar />
 
-      {/* 4. Heritage Story: Atmospheric Spices Imagery & Legacy Storytelling */}
+      {/* 3. Shop by category */}
+      <SignatureRange items={signatureItems} />
+
+      {/* 4. Live products from the store */}
+      <ProductShowcase
+        eyebrow="Fresh from our kitchen"
+        title="Bestsellers"
+        products={featured}
+        viewAllHref={
+          collections.some((c) => c.handle === 'best-sellers')
+            ? '/collections/best-sellers'
+            : '/categories'
+        }
+      />
+
+      {/* 5. Collection banners */}
+      <CollectionSpotlight collections={collections} />
+
+      {/* 6. Brand story */}
       <HeritageStory />
 
-      {/* 5. Social Proof: 5-Star Reviews with Schema.org Aggregate Rating */}
+      {/* 7. Reviews */}
       <Testimonials />
 
-      {/* 6. Promotional Banner: Deep Crimson Gradient CTA & Trust Tags */}
+      {/* 8. Closing call to action */}
       <PromoBanner />
     </div>
   );

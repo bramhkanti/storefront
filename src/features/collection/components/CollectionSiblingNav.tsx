@@ -23,26 +23,26 @@ export function CollectionSiblingNav({
   return (
     <section
       aria-labelledby="sibling-collections-heading"
-      className={cn('space-y-4 pt-4 border-t border-line', className)}
+      className={cn('border-line space-y-4 border-t pt-4', className)}
     >
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-1 border-b border-line pb-3">
+      <div className="border-line flex flex-col justify-between gap-1 border-b pb-3 sm:flex-row sm:items-end">
         <div>
           <h2
             id="sibling-collections-heading"
-            className="text-fg font-sans text-xl sm:text-2xl font-bold tracking-tight"
+            className="text-fg font-sans text-xl font-bold tracking-tight sm:text-2xl"
           >
             Explore Other Curated Collections
           </h2>
-          <p className="text-fg-muted text-xs sm:text-sm mt-0.5">
+          <p className="text-fg-muted mt-0.5 text-xs sm:text-sm">
             Discover artisanal gift hampers, customer favorites, and festive assortments
           </p>
         </div>
-        <span className="text-fg-muted bg-surface-soft border border-line rounded-full px-3 py-1 text-xs font-semibold self-start sm:self-auto">
+        <span className="text-fg-muted bg-surface-soft border-line self-start rounded-full border px-3 py-1 text-xs font-semibold sm:self-auto">
           {siblings.length} {siblings.length === 1 ? 'Collection' : 'Collections'}
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {siblings.map((coll) => {
           const imageUrl =
             coll.image?.url ||
@@ -53,10 +53,10 @@ export function CollectionSiblingNav({
             <Link
               key={coll.id}
               href={`/collections/${coll.handle}`}
-              className="group border border-line hover:border-brand-600 bg-surface flex flex-row overflow-hidden rounded-2xl transition-all duration-300 hover:shadow-xs"
+              className="group border-line hover:border-brand-600 bg-surface flex flex-row overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-xs"
             >
               {/* Left Side: Image Container */}
-              <div className="relative w-28 sm:w-36 shrink-0 overflow-hidden bg-surface-soft">
+              <div className="bg-surface-soft relative w-28 shrink-0 overflow-hidden sm:w-36">
                 <Image
                   src={imageUrl}
                   alt={altText}
@@ -67,9 +67,9 @@ export function CollectionSiblingNav({
               </div>
 
               {/* Right Side: Content */}
-              <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-4 min-w-0">
+              <div className="flex min-w-0 flex-1 flex-col justify-between p-3.5 sm:p-4">
                 <div className="space-y-1">
-                  <h3 className="text-fg group-hover:text-primary font-sans text-sm sm:text-base font-bold transition-colors truncate">
+                  <h3 className="text-fg group-hover:text-primary truncate font-sans text-sm font-bold transition-colors sm:text-base">
                     {coll.title}
                   </h3>
                   {coll.description && (
@@ -79,7 +79,7 @@ export function CollectionSiblingNav({
                   )}
                 </div>
 
-                <div className="text-primary mt-2 flex items-center gap-1 text-xs font-semibold pt-1 border-t border-line/40">
+                <div className="text-primary border-line/40 mt-2 flex items-center gap-1 border-t pt-1 text-xs font-semibold">
                   <span>Browse Collection</span>
                   <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                 </div>

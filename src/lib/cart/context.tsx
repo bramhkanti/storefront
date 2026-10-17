@@ -14,6 +14,22 @@ type OptimisticAction =
   | { type: 'update'; lineItemId: string; quantity: number }
   | { type: 'remove'; lineItemId: string };
 
+/** Recomputes item-derived totals; shipping/discount stay as the server last sent. */
+function withItems(current: Cart, items: Cart['items']): Cart {
+  const subtotalAmount = items.reduce((sum, i) => sum + i.totalPrice.amount, 0);
+  const delta = subtotalAmount - current.subtotal.amount;
+  return {
+    ...current,
+    items,
+    itemCount: items.reduce((sum, i) => sum + i.quantity, 0),
+    subtotal: { amount: subtotalAmount, currencyCode: current.currencyCode },
+    total: {
+      amount: Math.max(0, current.total.amount + delta),
+      currencyCode: current.currencyCode,
+    },
+  };
+}
+
 function optimisticReducer(current: Cart | null, action: OptimisticAction): Cart | null {
   if (action.type === 'set') {
     return action.cart;
@@ -21,58 +37,28 @@ function optimisticReducer(current: Cart | null, action: OptimisticAction): Cart
   if (!current) return current;
 
   if (action.type === 'update') {
-    const items = current.items.map((item) =>
-      item.id === action.lineItemId
-        ? {
-            ...item,
-            quantity: action.quantity,
-            totalPrice: {
-              amount: item.unitPrice.amount * action.quantity,
-              currencyCode: item.unitPrice.currencyCode,
-            },
-          }
-        : item,
+    return withItems(
+      current,
+      current.items.map((item) =>
+        item.id === action.lineItemId
+          ? {
+              ...item,
+              quantity: action.quantity,
+              totalPrice: {
+                amount: item.unitPrice.amount * action.quantity,
+                currencyCode: item.unitPrice.currencyCode,
+              },
+            }
+          : item,
+      ),
     );
-    const subtotalAmount = items.reduce((sum, i) => sum + i.totalPrice.amount, 0);
-    const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-    const shippingAmount = subtotalAmount === 0 ? 0 : subtotalAmount >= 49900 ? 0 : 7000;
-
-    return {
-      ...current,
-      items,
-      itemCount,
-      subtotal: { amount: subtotalAmount, currencyCode: current.currencyCode },
-      shippingEstimate: {
-        amount: shippingAmount,
-        currencyCode: current.currencyCode,
-      },
-      total: {
-        amount: subtotalAmount + shippingAmount,
-        currencyCode: current.currencyCode,
-      },
-    };
   }
 
   if (action.type === 'remove') {
-    const items = current.items.filter((item) => item.id !== action.lineItemId);
-    const subtotalAmount = items.reduce((sum, i) => sum + i.totalPrice.amount, 0);
-    const itemCount = items.reduce((sum, i) => sum + i.quantity, 0);
-    const shippingAmount = subtotalAmount === 0 ? 0 : subtotalAmount >= 49900 ? 0 : 7000;
-
-    return {
-      ...current,
-      items,
-      itemCount,
-      subtotal: { amount: subtotalAmount, currencyCode: current.currencyCode },
-      shippingEstimate: {
-        amount: shippingAmount,
-        currencyCode: current.currencyCode,
-      },
-      total: {
-        amount: subtotalAmount + shippingAmount,
-        currencyCode: current.currencyCode,
-      },
-    };
+    return withItems(
+      current,
+      current.items.filter((item) => item.id !== action.lineItemId),
+    );
   }
 
   return current;
@@ -86,6 +72,10 @@ export interface CartContextValue {
   updateItem: (lineItemId: string, quantity: number) => Promise<boolean>;
   removeItem: (lineItemId: string) => Promise<boolean>;
   refreshCart: () => Promise<void>;
+  /** Replace the cart with a fresh server copy (e.g. after a promo code). */
+  setCart: (cart: Cart | null) => void;
+  /** Last add-to-cart error message, for toasts. */
+  lastError: string | null;
 }
 
 const CartContext = React.createContext<CartContextValue | null>(null);
@@ -101,6 +91,7 @@ export function CartProvider({
 }: CartProviderProps): React.JSX.Element {
   const [cart, setCart] = React.useState<Cart | null>(initialCart);
   const [isPending, startTransition] = React.useTransition();
+  const [lastError, setLastError] = React.useState<string | null>(null);
 
   const [optimisticCart, setOptimistic] = React.useOptimistic(cart, optimisticReducer);
 
@@ -126,7 +117,10 @@ export function CartProvider({
           const res = await addToCartAction(variantId, quantity);
           if (res.success && res.cart) {
             setCart(res.cart);
+            setLastError(null);
             success = true;
+          } else {
+            setLastError(res.error ?? null);
           }
           resolve();
         });
@@ -187,8 +181,19 @@ export function CartProvider({
       updateItem,
       removeItem,
       refreshCart,
+      setCart,
+      lastError,
     }),
-    [cart, optimisticCart, isPending, addItem, updateItem, removeItem, refreshCart],
+    [
+      cart,
+      optimisticCart,
+      isPending,
+      addItem,
+      updateItem,
+      removeItem,
+      refreshCart,
+      lastError,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

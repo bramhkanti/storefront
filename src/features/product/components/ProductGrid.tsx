@@ -11,7 +11,7 @@ export interface ProductGridProps {
 
 export function ProductGrid({
   products,
-  emptyMessage = 'No authentic heritage products match the selected filters.',
+  emptyMessage = 'No products match these filters yet.',
   className,
 }: ProductGridProps) {
   if (products.length === 0) {
@@ -24,10 +24,13 @@ export function ProductGrid({
 
   return (
     <div
-      className={cn('grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3', className)}
+      className={cn(
+        'grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 lg:grid-cols-3 xl:grid-cols-4',
+        className,
+      )}
     >
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {products.map((product, index) => (
+        <ProductCard key={product.id} product={product} priority={index < 4} />
       ))}
     </div>
   );

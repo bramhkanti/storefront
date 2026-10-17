@@ -50,7 +50,7 @@ export function Breadcrumbs({
         className={cn(
           'flex items-center gap-1.5 sm:gap-2',
           singleLine
-            ? 'flex-nowrap overflow-x-auto no-scrollbar whitespace-nowrap'
+            ? 'no-scrollbar flex-nowrap overflow-x-auto whitespace-nowrap'
             : 'flex-wrap',
         )}
       >
@@ -60,17 +60,17 @@ export function Breadcrumbs({
           return (
             <li
               key={`${item.name}-${index}`}
-              className="inline-flex items-center gap-1.5 sm:gap-2 shrink-0"
+              className="inline-flex shrink-0 items-center gap-1.5 sm:gap-2"
             >
               {index > 0 && (
                 <ChevronRight
-                  className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-fg-muted/50 stroke-[2.2]"
+                  className="text-fg-muted/50 h-3 w-3 shrink-0 stroke-[2.2] sm:h-3.5 sm:w-3.5"
                   aria-hidden="true"
                 />
               )}
               {isLast ? (
                 <span
-                  className="text-fg font-semibold truncate max-w-[190px] sm:max-w-none"
+                  className="text-fg max-w-[190px] truncate font-semibold sm:max-w-none"
                   aria-current="page"
                 >
                   {item.name}
@@ -81,7 +81,10 @@ export function Breadcrumbs({
                   className="hover:text-primary text-fg-muted inline-flex items-center gap-1 transition-colors"
                 >
                   {index === 0 && (
-                    <Home className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-fg-muted" aria-hidden="true" />
+                    <Home
+                      className="text-fg-muted h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5"
+                      aria-hidden="true"
+                    />
                   )}
                   <span>{item.name}</span>
                 </Link>

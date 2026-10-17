@@ -20,16 +20,14 @@ export function CollectionHero({
     <div className={cn('space-y-4', className)}>
       <div className="space-y-3">
         {/* Badges */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge variant="vegetarian">100% Pure Veg</Badge>
           {badgeLabel && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 border border-brand-600/30 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
+            <span className="bg-brand-50 border-brand-600/30 text-brand-700 inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold">
               {badgeLabel}
             </span>
           )}
-          <span className="text-fg-muted text-xs font-medium">
-            Curated Gift Hamper
-          </span>
+          <span className="text-fg-muted text-xs font-medium">Curated Gift Hamper</span>
           <span className="text-fg-muted text-xs font-medium">•</span>
           <span className="text-fg-muted text-xs font-medium">
             Handcrafted in Varanasi

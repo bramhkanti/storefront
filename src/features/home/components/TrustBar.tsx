@@ -18,33 +18,29 @@ export interface TrustBarProps {
 
 export function TrustBar({ pillars = TRUST_PILLARS }: TrustBarProps): React.JSX.Element {
   return (
-    <section
-      className="border-heritage-border/70 bg-heritage-cream-dark/35 border-y py-8 sm:py-10"
-      aria-label="Quality Guarantees and Trust Pillars"
-    >
+    <section className="pt-6 sm:pt-8" aria-label="Our promises">
       <Container>
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+        <ul className="-mx-4 flex snap-x scroll-px-4 [scrollbar-width:none] gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-5 [&::-webkit-scrollbar]:hidden">
           {pillars.map((pillar) => {
             const Icon = ICON_MAP[pillar.iconName] ?? ShieldCheck;
-
             return (
-              <div
+              <li
                 key={pillar.id}
-                className="flex flex-col items-center justify-center text-center transition-transform hover:-translate-y-0.5"
+                className="flex shrink-0 snap-start items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-4 py-3.5 dark:border-neutral-800 dark:bg-[#1c1917]"
               >
-                <div
-                  className="border-heritage-border bg-heritage-cream text-heritage-maroon hover:border-heritage-maroon/30 flex h-12 w-12 items-center justify-center rounded-full border shadow-2xs transition-colors"
+                <span
+                  className="bg-heritage-maroon-light text-heritage-maroon flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
                   aria-hidden="true"
                 >
                   <Icon className="h-5 w-5" />
-                </div>
-                <p className="text-heritage-charcoal mt-2.5 max-w-[150px] text-xs leading-snug font-semibold sm:text-sm">
+                </span>
+                <span className="text-sm leading-snug font-semibold whitespace-nowrap sm:whitespace-normal">
                   {pillar.title}
-                </p>
-              </div>
+                </span>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </Container>
     </section>
   );

@@ -19,7 +19,10 @@ export function ProductStorySection({
   return (
     <section aria-labelledby="story-heading" className={cn('space-y-6', className)}>
       <div>
-        <h2 id="story-heading" className="text-[20px] font-semibold text-neutral-900 leading-snug">
+        <h2
+          id="story-heading"
+          className="text-[20px] leading-snug font-semibold text-neutral-900"
+        >
           Heritage Story & Artisanal Craft
         </h2>
       </div>
@@ -37,12 +40,15 @@ export function ProductStorySection({
         </div>
 
         {content.heritageStory.artisanQuote && (
-          <div className="relative rounded-2xl border border-neutral-200 bg-neutral-50/50 p-4 sm:p-5 mt-2">
-            <Quote className="h-6 w-6 text-neutral-300 absolute top-3.5 right-3.5" aria-hidden="true" />
-            <p className="font-serif italic text-neutral-800 text-sm sm:text-base leading-relaxed pr-6">
+          <div className="relative mt-2 rounded-2xl border border-neutral-200 bg-neutral-50/50 p-4 sm:p-5">
+            <Quote
+              className="absolute top-3.5 right-3.5 h-6 w-6 text-neutral-300"
+              aria-hidden="true"
+            />
+            <p className="pr-6 font-serif text-sm leading-relaxed text-neutral-800 italic sm:text-base">
               “{content.heritageStory.artisanQuote.replace(/^["']|["']$/g, '')}”
             </p>
-            <div className="mt-2 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+            <div className="mt-2 text-xs font-semibold tracking-wider text-neutral-500 uppercase">
               — Master Artisan, Bramhkanti Kitchens
             </div>
           </div>
@@ -51,22 +57,22 @@ export function ProductStorySection({
 
       {/* Flavor Profile & Tasting Notes */}
       <div className="space-y-3 pt-2">
-        <h3 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900">
           <Sparkles className="h-4 w-4 text-neutral-700" />
           <span>Flavor Profile & Tasting Notes</span>
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
           {content.tastingAndPairings.flavorProfile.map((note, idx) => {
             const label = profileLabels[idx] ?? `Note 0${idx + 1}`;
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-neutral-200 bg-white p-3.5 transition-colors hover:border-neutral-300 space-y-1"
+                className="space-y-1 rounded-2xl border border-neutral-200 bg-white p-3.5 transition-colors hover:border-neutral-300"
               >
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">
+                <span className="text-[11px] font-bold tracking-wider text-neutral-500 uppercase">
                   {label}
                 </span>
-                <p className="text-sm font-medium text-neutral-800 leading-snug">
+                <p className="text-sm leading-snug font-medium text-neutral-800">
                   {note}
                 </p>
               </div>
@@ -77,11 +83,11 @@ export function ProductStorySection({
 
       {/* Best Relished With (Culinary Pairing Grid) */}
       <div className="space-y-3 pt-1">
-        <h3 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900">
           <UtensilsCrossed className="h-4 w-4 text-neutral-700" />
           <span>Best Relished With</span>
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {content.tastingAndPairings.bestEnjoyedWith.map((dish, idx) => (
             <div
               key={idx}
@@ -90,7 +96,7 @@ export function ProductStorySection({
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
                 <UtensilsCrossed className="h-3.5 w-3.5" />
               </div>
-              <span className="text-sm font-medium text-neutral-800 leading-snug">
+              <span className="text-sm leading-snug font-medium text-neutral-800">
                 {dish}
               </span>
             </div>
@@ -101,11 +107,13 @@ export function ProductStorySection({
       {/* Artisan Kitchen Secret Tip */}
       {content.tastingAndPairings.chefTip && (
         <div className="rounded-2xl border border-neutral-200 bg-neutral-50/60 p-4 transition-colors">
-          <div className="flex items-center gap-2 mb-1.5">
+          <div className="mb-1.5 flex items-center gap-2">
             <ChefHat className="h-4 w-4 text-neutral-900" />
-            <span className="text-sm font-bold text-neutral-900">Artisan Kitchen Tip</span>
+            <span className="text-sm font-bold text-neutral-900">
+              Artisan Kitchen Tip
+            </span>
           </div>
-          <p className="text-sm text-neutral-700 leading-relaxed">
+          <p className="text-sm leading-relaxed text-neutral-700">
             {content.tastingAndPairings.chefTip}
           </p>
         </div>

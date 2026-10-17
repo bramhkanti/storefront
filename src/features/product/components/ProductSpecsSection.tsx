@@ -46,19 +46,22 @@ export function ProductSpecsSection({
   return (
     <section aria-labelledby="specs-heading" className={cn('space-y-4', className)}>
       <div>
-        <h2 id="specs-heading" className="text-[20px] font-semibold text-neutral-900 leading-snug">
+        <h2
+          id="specs-heading"
+          className="text-[20px] leading-snug font-semibold text-neutral-900"
+        >
           Ingredients & Product Transparency
         </h2>
       </div>
 
       {/* 4 Trust Certification Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
         {certifications.map((item, idx) => {
           const Icon = item.icon;
           return (
             <div
               key={idx}
-              className="rounded-2xl border border-neutral-200 bg-white p-3.5 transition-colors hover:border-neutral-300 space-y-2"
+              className="space-y-2 rounded-2xl border border-neutral-200 bg-white p-3.5 transition-colors hover:border-neutral-300"
             >
               <div className="flex items-center gap-2.5">
                 {item.isVeg ? (
@@ -71,25 +74,23 @@ export function ProductSpecsSection({
                     <Icon className="h-4 w-4" />
                   </div>
                 )}
-                <span className="text-sm font-semibold text-neutral-900 leading-tight">
+                <span className="text-sm leading-tight font-semibold text-neutral-900">
                   {item.title}
                 </span>
               </div>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                {item.desc}
-              </p>
+              <p className="text-xs leading-relaxed text-neutral-600">{item.desc}</p>
             </div>
           );
         })}
       </div>
 
       {/* Ingredients Spotlight Card */}
-      <div className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-neutral-100 pb-2.5">
+      <div className="space-y-3 rounded-2xl border border-neutral-200 bg-white p-4 sm:p-5">
+        <div className="flex flex-col justify-between gap-1 border-b border-neutral-100 pb-2.5 sm:flex-row sm:items-center">
           <span className="text-sm font-semibold text-neutral-900">
             Handcrafted Real Ingredients
           </span>
-          <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full self-start sm:self-auto">
+          <span className="self-start rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 sm:self-auto">
             0% Synthetic Vinegar • 0% Chemicals
           </span>
         </div>
@@ -107,14 +108,14 @@ export function ProductSpecsSection({
         </div>
 
         {foodAttributes.allergens && foodAttributes.allergens.length > 0 && (
-          <p className="text-xs text-neutral-500 pt-1">
+          <p className="pt-1 text-xs text-neutral-500">
             <strong className="text-neutral-700">Allergen Advice: </strong>
             Contains {foodAttributes.allergens.join(', ')}.
           </p>
         )}
 
         {foodAttributes.storage && (
-          <div className="pt-2 text-xs text-neutral-600 leading-relaxed border-t border-neutral-100">
+          <div className="border-t border-neutral-100 pt-2 text-xs leading-relaxed text-neutral-600">
             <strong className="text-neutral-900">Storage & Care: </strong>
             {foodAttributes.storage}
           </div>

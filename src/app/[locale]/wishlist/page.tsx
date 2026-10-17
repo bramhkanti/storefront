@@ -10,7 +10,9 @@ import {
   ArrowRight,
   ShieldCheck,
   LogIn,
+  ChevronRight,
 } from 'lucide-react';
+
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -20,16 +22,18 @@ import { formatPrice } from '@/lib/utils/money';
 
 export default function WishlistPage(): React.JSX.Element {
   const { isAuthenticated, openAuthModal } = useAuth();
+
   const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
+
   const { addItem, isPending } = useCart();
   const { openCart } = useCartUi();
   const { addToast } = useToast();
+
   const [movingId, setMovingId] = React.useState<string | null>(null);
 
-  const handleMoveToBag = async (
-    product: (typeof wishlistItems)[0],
-  ) => {
+  const handleMoveToBag = async (product: (typeof wishlistItems)[0]) => {
     const primaryVariant = product.variants[0];
+
     if (!primaryVariant || !primaryVariant.inStock) {
       addToast({
         type: 'error',
@@ -39,26 +43,38 @@ export default function WishlistPage(): React.JSX.Element {
     }
 
     setMovingId(product.id);
-    const success = await addItem(primaryVariant.id, 1);
-    setMovingId(null);
 
-    if (success) {
-      removeFromWishlist(product.id);
-      addToast({
-        type: 'success',
-        message: `Moved "${product.title}" to your bag!`,
-      });
-      openCart();
-    } else {
+    try {
+      const success = await addItem(primaryVariant.id, 1);
+
+      if (success) {
+        removeFromWishlist(product.id);
+
+        addToast({
+          type: 'success',
+          message: `Moved "${product.title}" to your bag!`,
+        });
+
+        openCart();
+      } else {
+        addToast({
+          type: 'error',
+          message: 'Could not add item to bag. Please try again.',
+        });
+      }
+    } catch {
       addToast({
         type: 'error',
         message: 'Could not add item to bag. Please try again.',
       });
+    } finally {
+      setMovingId(null);
     }
   };
 
   const handleRemove = (product: (typeof wishlistItems)[0]) => {
     removeFromWishlist(product.id);
+
     addToast({
       type: 'info',
       message: `Removed "${product.title}" from your Wishlist.`,
@@ -69,21 +85,47 @@ export default function WishlistPage(): React.JSX.Element {
     <div className="py-8 sm:py-12">
       <Container>
         <div className="mx-auto max-w-6xl">
-          {/* Page Heading matching My Account styling */}
-          <div className="border-b border-line mb-8 flex flex-col gap-4 pb-6 sm:flex-row sm:items-center sm:justify-between">
+          {/* Breadcrumbs */}
+          <nav
+            aria-label="Breadcrumb"
+            className="text-heritage-muted mb-6 flex items-center gap-1.5 text-xs"
+          >
+            <Link href="/" className="hover:text-heritage-maroon transition-colors">
+              Home
+            </Link>
+
+            <ChevronRight className="h-3 w-3" aria-hidden="true" />
+
+            <span aria-current="page" className="text-heritage-charcoal font-medium">
+              Wishlist
+            </span>
+          </nav>
+
+          {/* Page Heading */}
+          <div className="border-line mb-8 flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40">
+                  <Heart
+                    className="h-5 w-5 fill-red-600 text-red-600"
+                    aria-hidden="true"
+                  />
+                </div>
+
                 <h1 className="text-[22px] font-semibold tracking-tight text-neutral-900 sm:text-3xl lg:text-4xl dark:text-neutral-50">
                   My Wishlist
                 </h1>
+
                 {wishlistItems.length > 0 && (
-                  <span className="rounded-full bg-brand-50 border border-brand-600/30 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
+                  <span className="border-brand-600/30 bg-brand-50 text-brand-700 rounded-full border px-2.5 py-0.5 text-xs font-semibold">
                     {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'}
                   </span>
                 )}
               </div>
+
               <p className="mt-1 text-[14px] leading-relaxed font-normal text-neutral-500 sm:text-base dark:text-neutral-400">
-                Browse your saved delicacies, check batch availability, and move handcrafted favorites directly to your shopping bag.
+                Browse your saved delicacies, check batch availability, and move
+                handcrafted favorites directly to your shopping bag.
               </p>
             </div>
 
@@ -92,30 +134,34 @@ export default function WishlistPage(): React.JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={clearWishlist}
-                className="text-neutral-500 hover:text-red-700 self-start text-xs font-semibold sm:self-auto shrink-0"
+                className="shrink-0 self-start text-xs font-semibold text-neutral-500 hover:text-red-700 sm:self-auto"
               >
-                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                <Trash2 className="mr-1.5 h-3.5 w-3.5" />
                 <span>Clear Wishlist</span>
               </Button>
             )}
           </div>
 
-          {/* Guest Sign-In Banner if not authenticated */}
+          {/* Guest Sign-In Banner */}
           {!isAuthenticated && (
             <div className="border-heritage-saffron-light bg-heritage-saffron-light/20 mb-8 flex flex-col items-start justify-between gap-4 rounded-xl border p-4 sm:flex-row sm:items-center">
               <div className="flex items-center gap-3">
                 <div className="bg-heritage-saffron-dark/20 text-heritage-saffron-dark flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
+
                 <div>
                   <h2 className="text-heritage-charcoal text-sm font-semibold">
                     Sign in to sync your wishlist
                   </h2>
+
                   <p className="text-heritage-muted text-xs">
-                    Verify your mobile number with OTP to access your saved delicacies across devices.
+                    Verify your mobile number with OTP to access your saved delicacies
+                    across devices.
                   </p>
                 </div>
               </div>
+
               <Button
                 variant="primary"
                 size="sm"
@@ -132,35 +178,22 @@ export default function WishlistPage(): React.JSX.Element {
           {wishlistItems.length === 0 ? (
             <div className="border-heritage-border bg-heritage-cream rounded-2xl border p-10 text-center shadow-xs sm:p-16">
               <div className="bg-heritage-cream-dark text-heritage-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                <Heart className="h-8 w-8 text-heritage-muted" />
+                <Heart className="h-8 w-8" />
               </div>
+
               <h2 className="text-heritage-charcoal mt-5 font-serif text-2xl font-bold">
                 Your Wishlist is Empty
               </h2>
+
               <p className="text-heritage-muted mx-auto mt-2.5 max-w-md text-sm leading-relaxed">
-                Explore our handcrafted Banarasi pickles sun-cured in mustard oil,
-                pure desi ghee sweets, and crunchy slow-roasted makhana.
+                Explore our handcrafted Banarasi pickles sun-cured in mustard oil, pure
+                desi ghee sweets, and crunchy slow-roasted makhana.
               </p>
 
               <div className="mt-8 flex flex-wrap justify-center gap-3">
-                <Link href="/achar">
-                  <Button variant="outline" size="sm" className="font-semibold">
-                    Traditional Pickles
-                  </Button>
-                </Link>
-                <Link href="/makhana">
-                  <Button variant="outline" size="sm" className="font-semibold">
-                    Roasted Makhana
-                  </Button>
-                </Link>
-                <Link href="/sweets">
-                  <Button variant="outline" size="sm" className="font-semibold">
-                    Desi Ghee Sweets
-                  </Button>
-                </Link>
-                <Link href="/collections/best-sellers">
+                <Link href="/categories">
                   <Button variant="primary" size="sm" className="font-semibold">
-                    Explore Bestsellers
+                    Start shopping
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -181,11 +214,13 @@ export default function WishlistPage(): React.JSX.Element {
                     className="group border-heritage-border bg-heritage-cream hover:border-heritage-maroon/30 flex flex-col justify-between rounded-xl border p-5 shadow-xs transition-all hover:shadow-md"
                   >
                     <div>
-                      {/* Top Bar: Veg badge + Remove button */}
-                      <div className="mb-3 flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-1.5">
+                      {/* Product Badges and Remove Button */}
+                      <div className="mb-3 flex items-center justify-between gap-2 text-xs">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <Badge variant="vegetarian">100% Veg</Badge>
+
                           {!inStock && <Badge variant="saffron">Sold Out</Badge>}
+
                           {inStock && product.foodAttributes.shelfLife && (
                             <span className="text-heritage-muted text-[11px]">
                               {product.foodAttributes.shelfLife}
@@ -198,17 +233,17 @@ export default function WishlistPage(): React.JSX.Element {
                           onClick={() => handleRemove(product)}
                           aria-label={`Remove ${product.title} from wishlist`}
                           title="Remove from wishlist"
-                          className="text-heritage-muted hover:text-red-600 rounded-full p-1.5 transition-colors"
+                          className="text-heritage-muted shrink-0 rounded-full p-1.5 transition-colors hover:text-red-600"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
 
-                      {/* Product Image preview if available */}
-                      {product.images && product.images[0] && (
+                      {/* Product Image */}
+                      {product.images?.[0] && (
                         <Link
                           href={`/products/${product.handle}`}
-                          className="relative mb-3 block aspect-square w-full overflow-hidden rounded-lg bg-heritage-cream-dark/50"
+                          className="bg-heritage-cream-dark/50 relative mb-3 block aspect-square w-full overflow-hidden rounded-lg"
                         >
                           <Image
                             src={product.images[0].url}
@@ -220,7 +255,7 @@ export default function WishlistPage(): React.JSX.Element {
                         </Link>
                       )}
 
-                      {/* Title */}
+                      {/* Product Title */}
                       <Link
                         href={`/products/${product.handle}`}
                         className="block group-hover:underline"
@@ -230,20 +265,21 @@ export default function WishlistPage(): React.JSX.Element {
                         </h2>
                       </Link>
 
-                      {/* Description */}
+                      {/* Product Description */}
                       <p className="text-heritage-muted mt-1.5 line-clamp-2 text-xs leading-relaxed">
                         {product.description}
                       </p>
                     </div>
 
-                    {/* Bottom: Price & Move to Bag CTA */}
+                    {/* Price and Actions */}
                     <div className="border-heritage-border/60 mt-6 border-t pt-4">
-                      <div className="mb-3 flex items-baseline justify-between">
+                      <div className="mb-3 flex items-baseline justify-between gap-2">
                         {price && (
                           <div className="text-heritage-maroon font-serif text-lg font-extrabold">
                             {formatPrice(price.amount, price.currencyCode)}
                           </div>
                         )}
+
                         {primaryVariant?.title && (
                           <div className="text-heritage-muted text-[11px]">
                             Pack: {primaryVariant.title}
@@ -260,6 +296,7 @@ export default function WishlistPage(): React.JSX.Element {
                           className="flex-1 text-xs font-semibold"
                         >
                           <ShoppingBag className="h-3.5 w-3.5" />
+
                           <span>
                             {isCurrentlyMoving
                               ? 'Moving...'

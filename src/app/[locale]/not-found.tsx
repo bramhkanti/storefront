@@ -32,15 +32,9 @@ export default function NotFound(): ReactNode {
               <span>Return Home</span>
             </Button>
           </Link>
-          <Link href="/achar">
+          <Link href="/categories">
             <Button variant="secondary" size="md" className="rounded-full">
-              <span>Explore Pickles</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href="/sweets">
-            <Button variant="secondary" size="md" className="rounded-full">
-              <span>Explore Mithai</span>
+              <span>Browse the shop</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>

@@ -40,9 +40,7 @@ export function ProductAttributeBar({
   className,
 }: ProductAttributeBarProps): React.JSX.Element {
   const renderIcon = (type: string, isMobile = false) => {
-    const iconClass = isMobile
-      ? 'h-5 w-5 text-primary'
-      : 'h-5 w-5 text-accent-text';
+    const iconClass = isMobile ? 'h-5 w-5 text-primary' : 'h-5 w-5 text-accent-text';
 
     switch (type) {
       case 'wheat':
@@ -73,13 +71,13 @@ export function ProductAttributeBar({
   return (
     <div className={cn('w-full', className)}>
       {/* Desktop Attribute Bar (Horizontal 4-column divided card) */}
-      <div className="hidden lg:grid grid-cols-4 divide-x divide-line rounded-2xl border border-line bg-surface py-4 px-6 text-center text-fg shadow-xs">
+      <div className="divide-line border-line bg-surface text-fg hidden grid-cols-4 divide-x rounded-2xl border px-6 py-4 text-center shadow-xs lg:grid">
         {desktopItems.map((item, idx) => (
           <div key={idx} className="flex items-center justify-center gap-3 px-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-tint/40 text-accent-text">
+            <div className="bg-accent-tint/40 text-accent-text flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
               {renderIcon(item.icon, false)}
             </div>
-            <span className="text-sm font-semibold text-fg text-left leading-snug">
+            <span className="text-fg text-left text-sm leading-snug font-semibold">
               {item.label.replace('\n', ' ')}
             </span>
           </div>
@@ -87,7 +85,7 @@ export function ProductAttributeBar({
       </div>
 
       {/* Mobile Trust Badges (4 circular icons in row) */}
-      <div className="grid lg:hidden grid-cols-4 gap-2 pt-1 pb-3 text-center">
+      <div className="grid grid-cols-4 gap-2 pt-1 pb-3 text-center lg:hidden">
         {mobileItems.map((item, idx) => {
           const isFssai = item.label.toLowerCase().includes('fssai');
           const lines = isFssai
@@ -98,10 +96,10 @@ export function ProductAttributeBar({
 
           return (
             <div key={idx} className="flex flex-col items-center">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-center shadow-2xs mb-1.5">
+              <div className="border-line bg-surface mb-1.5 flex h-11 w-11 items-center justify-center rounded-full border text-center shadow-2xs">
                 {renderIcon(item.icon, true)}
               </div>
-              <div className="text-[11px] font-medium text-fg-muted leading-tight text-center min-h-[2rem] flex flex-col items-center justify-start">
+              <div className="text-fg-muted flex min-h-[2rem] flex-col items-center justify-start text-center text-[11px] leading-tight font-medium">
                 {lines.map((line, lIdx) => (
                   <span key={lIdx} className="block whitespace-normal">
                     {line}

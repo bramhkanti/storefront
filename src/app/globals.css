@@ -4,24 +4,48 @@
 
 @theme {
   /* Primitives */
-  --color-brand-50: #fdefec;  --color-brand-100: #f8e6e2; --color-brand-200: #f1c4bd;
-  --color-brand-300: #e6978c; --color-brand-400: #d66a5c; --color-brand-500: #c14436;
-  --color-brand-600: #ad2f26; --color-brand-700: #8e261e; --color-brand-800: #6b1a17;
+  --color-brand-50: #fdefec;
+  --color-brand-100: #f8e6e2;
+  --color-brand-200: #f1c4bd;
+  --color-brand-300: #e6978c;
+  --color-brand-400: #d66a5c;
+  --color-brand-500: #c14436;
+  --color-brand-600: #ad2f26;
+  --color-brand-700: #8e261e;
+  --color-brand-800: #6b1a17;
   --color-brand-900: #4a1210;
 
-  --color-turmeric-50: #fff8e5;  --color-turmeric-100: #fdeec2; --color-turmeric-200: #f8dc8a;
-  --color-turmeric-300: #f0c255; --color-turmeric-400: #e3a62b; --color-turmeric-500: #c48a12;
-  --color-turmeric-600: #9a6808; --color-turmeric-700: #7a5009; --color-turmeric-800: #573807;
+  --color-turmeric-50: #fff8e5;
+  --color-turmeric-100: #fdeec2;
+  --color-turmeric-200: #f8dc8a;
+  --color-turmeric-300: #f0c255;
+  --color-turmeric-400: #e3a62b;
+  --color-turmeric-500: #c48a12;
+  --color-turmeric-600: #9a6808;
+  --color-turmeric-700: #7a5009;
+  --color-turmeric-800: #573807;
   --color-turmeric-900: #3a2605;
 
-  --color-leaf-50: #eaf4ee;  --color-leaf-100: #cfe6d7; --color-leaf-200: #a3cdb2;
-  --color-leaf-300: #6fae87; --color-leaf-400: #408a5f; --color-leaf-500: #2a7449;
-  --color-leaf-600: #1e6b3a; --color-leaf-700: #1a5e33; --color-leaf-800: #14532d;
+  --color-leaf-50: #eaf4ee;
+  --color-leaf-100: #cfe6d7;
+  --color-leaf-200: #a3cdb2;
+  --color-leaf-300: #6fae87;
+  --color-leaf-400: #408a5f;
+  --color-leaf-500: #2a7449;
+  --color-leaf-600: #1e6b3a;
+  --color-leaf-700: #1a5e33;
+  --color-leaf-800: #14532d;
   --color-leaf-900: #0c2a18;
 
-  --color-warm-50: #fcfaf7;  --color-warm-100: #f4ede4; --color-warm-200: #e7ded3;
-  --color-warm-300: #d3c6b8; --color-warm-400: #a99b8f; --color-warm-500: #85766c;
-  --color-warm-600: #685950; --color-warm-700: #4a3d36; --color-warm-800: #33271f;
+  --color-warm-50: #fcfaf7;
+  --color-warm-100: #f4ede4;
+  --color-warm-200: #e7ded3;
+  --color-warm-300: #d3c6b8;
+  --color-warm-400: #a99b8f;
+  --color-warm-500: #85766c;
+  --color-warm-600: #685950;
+  --color-warm-700: #4a3d36;
+  --color-warm-800: #33271f;
   --color-warm-900: #241814;
 
   --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
@@ -58,32 +82,60 @@
   --line-height-body: 1.5;
   --line-height-heading: 1.25;
 
-  --c-page: #fcfaf7; --c-surface: #ffffff; --c-surface-soft: #f4ede4;
-  --c-fg: #241814; --c-fg-muted: #685950;
-  --c-line: #e7ded3; --c-line-strong: #85766c;
-  --c-primary: #ad2f26; --c-primary-hover: #8e261e; --c-on-primary: #ffffff;
-  --c-primary-tint: #f8e6e2; --c-link: #ad2f26; --c-brand-deep: #6b1a17;
-  --c-accent: #e3a62b; --c-on-accent: #241814; --c-accent-tint: #fdeec2; --c-accent-text: #7a5009;
-  --c-success: #1e6b3a; --c-success-text: #14532d; --c-success-tint: #eaf4ee;
-  --c-danger: #b42318; --c-danger-tint: #fef0ee;
-  --c-info: #1d5f8a; --c-info-tint: #e8f1f7;
-  --c-focus: #ad2f26; --c-star: #e3a62b; --c-star-empty: #e7ded3;
+  --c-page: #fcfaf7;
+  --c-surface: #ffffff;
+  --c-surface-soft: #f4ede4;
+  --c-fg: #241814;
+  --c-fg-muted: #685950;
+  --c-line: #e7ded3;
+  --c-line-strong: #85766c;
+  --c-primary: #ad2f26;
+  --c-primary-hover: #8e261e;
+  --c-on-primary: #ffffff;
+  --c-primary-tint: #f8e6e2;
+  --c-link: #ad2f26;
+  --c-brand-deep: #6b1a17;
+  --c-accent: #e3a62b;
+  --c-on-accent: #241814;
+  --c-accent-tint: #fdeec2;
+  --c-accent-text: #7a5009;
+  --c-success: #1e6b3a;
+  --c-success-text: #14532d;
+  --c-success-tint: #eaf4ee;
+  --c-danger: #b42318;
+  --c-danger-tint: #fef0ee;
+  --c-info: #1d5f8a;
+  --c-info-tint: #e8f1f7;
+  --c-focus: #ad2f26;
+  --c-star: #e3a62b;
+  --c-star-empty: #e7ded3;
   --c-overlay: rgb(36 24 20 / 0.55);
 }
 
 html.dark {
   color-scheme: dark;
 
-  --c-page: #161412; --c-surface: #1f1b18; --c-surface-soft: #28231f;
-  --c-fg: #f5f0e8; --c-fg-muted: #b8ab9e;
-  --c-line: #3a332d; --c-line-strong: #8c7f73;
-  --c-primary: #c8392c; --c-primary-hover: #ad2f26;
-  --c-primary-tint: #3a1b18; --c-link: #f08a7c;
-  --c-accent-tint: #33270f; --c-accent-text: #f0c255;
-  --c-success-text: #6fcb8f; --c-success-tint: #16281d;
-  --c-danger: #f4857a; --c-danger-tint: #3a1815;
-  --c-info: #7fb6de; --c-info-tint: #14232d;
-  --c-focus: #f08a7c; --c-star-empty: #3a332d;
+  --c-page: #161412;
+  --c-surface: #1f1b18;
+  --c-surface-soft: #28231f;
+  --c-fg: #f5f0e8;
+  --c-fg-muted: #b8ab9e;
+  --c-line: #3a332d;
+  --c-line-strong: #8c7f73;
+  --c-primary: #c8392c;
+  --c-primary-hover: #ad2f26;
+  --c-primary-tint: #3a1b18;
+  --c-link: #f08a7c;
+  --c-accent-tint: #33270f;
+  --c-accent-text: #f0c255;
+  --c-success-text: #6fcb8f;
+  --c-success-tint: #16281d;
+  --c-danger: #f4857a;
+  --c-danger-tint: #3a1815;
+  --c-info: #7fb6de;
+  --c-info-tint: #14232d;
+  --c-focus: #f08a7c;
+  --c-star-empty: #3a332d;
 }
 
 @theme inline {
@@ -326,4 +378,18 @@ select:focus-visible {
 .sheet-animate-bottom[data-state='closed'] {
   animation: sheetSlideOutBottom 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform;
+}
+
+/* Home hero: progress bar of the active slide (duration set inline). */
+@keyframes hero-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+.animate-hero-progress {
+  width: 0%;
+  animation: hero-progress linear forwards;
 }

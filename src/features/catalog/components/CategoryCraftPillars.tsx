@@ -46,12 +46,14 @@ export function CategoryCraftPillars({
       {
         icon: ShieldCheck,
         title: 'Zero Synthetic Vinegar',
-        description: '100% free from synthetic acetic acid, artificial colors, and stabilizers.',
+        description:
+          '100% free from synthetic acetic acid, artificial colors, and stabilizers.',
       },
       {
         icon: PackageCheck,
         title: 'Aroma-Lock Glass Jar',
-        description: 'Food-grade glass packaging with 5-layer shockproof transit protection.',
+        description:
+          'Food-grade glass packaging with 5-layer shockproof transit protection.',
       },
     ];
   } else if (normHandle.includes('makhana')) {
@@ -59,7 +61,8 @@ export function CategoryCraftPillars({
       {
         icon: Award,
         title: 'GI-Tagged Mithila Origin',
-        description: 'Harvested sustainably from ancient freshwater ponds in Mithila, Bihar.',
+        description:
+          'Harvested sustainably from ancient freshwater ponds in Mithila, Bihar.',
       },
       {
         icon: Sparkles,
@@ -69,12 +72,14 @@ export function CategoryCraftPillars({
       {
         icon: Flame,
         title: 'Slow-Roasted in Pure Ghee',
-        description: 'Never deep-fried. Roasted in native cow ghee and cold-pressed olive oil.',
+        description:
+          'Never deep-fried. Roasted in native cow ghee and cold-pressed olive oil.',
       },
       {
         icon: Leaf,
         title: 'Pure Mineral Seasoning',
-        description: 'Lightly dusted with Himalayan pink salt and stone-ground natural spices.',
+        description:
+          'Lightly dusted with Himalayan pink salt and stone-ground natural spices.',
       },
     ];
   } else {
@@ -83,7 +88,8 @@ export function CategoryCraftPillars({
       {
         icon: Sparkles,
         title: '100% Pure Desi Cow Ghee',
-        description: 'Crafted exclusively in aromatic slow-clarified native cow milk ghee.',
+        description:
+          'Crafted exclusively in aromatic slow-clarified native cow milk ghee.',
       },
       {
         icon: Leaf,
@@ -107,7 +113,7 @@ export function CategoryCraftPillars({
     <div
       aria-label="Artisanal Standards"
       className={cn(
-        'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4',
+        'grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4',
         className,
       )}
     >
@@ -116,16 +122,14 @@ export function CategoryCraftPillars({
         return (
           <div
             key={idx}
-            className="rounded-2xl border border-line bg-surface p-4 flex items-start gap-3.5 transition-colors hover:border-line-strong"
+            className="border-line bg-surface hover:border-line-strong flex items-start gap-3.5 rounded-2xl border p-4 transition-colors"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
+            <div className="bg-brand-50 text-brand-700 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
               <Icon className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-sm font-bold text-fg leading-tight">
-                {item.title}
-              </h3>
-              <p className="text-xs text-fg-muted mt-1 leading-relaxed">
+              <h3 className="text-fg text-sm leading-tight font-bold">{item.title}</h3>
+              <p className="text-fg-muted mt-1 text-xs leading-relaxed">
                 {item.description}
               </p>
             </div>

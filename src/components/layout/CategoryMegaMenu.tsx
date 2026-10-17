@@ -21,128 +21,6 @@ interface SubcategoryData {
   badge?: string | undefined;
 }
 
-const DEFAULT_SUBCATEGORY_META: Record<
-  string,
-  { tagline: string; imageUrl: string; altText: string; badge?: string | undefined }
-> = {
-  // --- ACHAR SUBCATEGORIES (7) ---
-  'aam-ka-achar': {
-    tagline: 'Sun-cured Ramkela & Malihabadi',
-    imageUrl:
-      'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&auto=format&fit=crop&q=80',
-    altText: 'Traditional sun-dried mango pickle in ceramic barnie',
-    badge: 'Bestseller',
-  },
-  nimbu: {
-    tagline: 'Khatta-Meetha sun-cured Kagzi lemon, oil-free',
-    imageUrl:
-      'https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=300&auto=format&fit=crop&q=80',
-    altText: 'Ayurvedic digestive sweet and tangy lemon pickle',
-    badge: 'Digestive',
-  },
-  suran: {
-    tagline: 'Traditional Banarasi Oal/Yam spiced relish',
-    imageUrl:
-      'https://images.unsplash.com/photo-1628294895950-9805252327bc?w=300&auto=format&fit=crop&q=80',
-    altText: 'Traditional Banarasi Oal Suran Jimikand Achar',
-    badge: 'Heirloom',
-  },
-  gobhi: {
-    tagline: 'Crunchy winter spiced cauliflower',
-    imageUrl:
-      'https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=300&auto=format&fit=crop&q=80',
-    altText: 'Crisp winter spiced gobhi cauliflower pickle',
-    badge: 'Seasonal',
-  },
-  'bhara-marcha': {
-    tagline: 'Hand-stuffed Banarasi Lal Mirch in mustard oil',
-    imageUrl:
-      'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=300&auto=format&fit=crop&q=80',
-    altText: 'Banarasi stuffed red chilli bhara marcha achar',
-    badge: 'Signature',
-  },
-  kathal: {
-    tagline: 'Tender raw jackfruit steeped in cold-pressed oil',
-    imageUrl:
-      'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=300&auto=format&fit=crop&q=80',
-    altText: 'Tender raw kathal jackfruit pickle in mustard oil',
-    badge: 'Traditional',
-  },
-  'mix-achar': {
-    tagline: 'Pachranga blend with lotus stem, mango & lime',
-    imageUrl:
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&auto=format&fit=crop&q=80',
-    altText: 'Vintage Pachranga 5-vegetable mix pickle with lotus stem',
-    badge: 'Classic',
-  },
-
-  // --- MAKHANA SUBCATEGORIES (3) ---
-  'roasted-savory': {
-    tagline: 'Himalayan Pink Salt, Pudina & Peri Peri',
-    imageUrl:
-      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300&auto=format&fit=crop&q=80',
-    altText: 'Crispy slow-roasted savory makhana foxnuts',
-    badge: 'Crunchy',
-  },
-  'roasted-sweet': {
-    tagline: 'Caramelized in Organic Gur & Desi Ghee',
-    imageUrl:
-      'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=300&auto=format&fit=crop&q=80',
-    altText: 'Caramelized sweet jaggery coated makhana',
-    badge: 'No Sugar',
-  },
-  'raw-organic': {
-    tagline: 'Grade 6+ Hand-sorted from Mithila Ponds',
-    imageUrl:
-      'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300&auto=format&fit=crop&q=80',
-    altText: 'Raw organic jumbo grade phool makhana',
-    badge: 'GI Tagged',
-  },
-
-  // --- SWEETS SUBCATEGORIES (4) ---
-  thekua: {
-    tagline: 'Crisp wheat & organic jaggery Chhath delicacy',
-    imageUrl:
-      'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300&auto=format&fit=crop&q=80',
-    altText: 'Traditional khasta Bihari thekua in pure desi ghee',
-    badge: 'Heritage',
-  },
-  'besan-laddu': {
-    tagline: 'Danedar gram flour roasted in pure A2 cow ghee',
-    imageUrl:
-      'https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=300&auto=format&fit=crop&q=80',
-    altText: 'Pure A2 desi cow ghee besan laddu',
-    badge: 'Pure Ghee',
-  },
-  'geeli-barfi': {
-    tagline: 'Rich moist mawa malai barfi with cardamom',
-    imageUrl:
-      'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=300&auto=format&fit=crop&q=80',
-    altText: 'Rich moist traditional mawa malai geeli barfi',
-    badge: 'Artisanal',
-  },
-  'moti-chur-laddu': {
-    tagline: 'Fine pearl boondi with saffron & melon seeds',
-    imageUrl:
-      'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=300&auto=format&fit=crop&q=80',
-    altText: 'Shahi Kesar Motichoor Ladoo in pure desi cow ghee',
-    badge: 'Festive',
-  },
-  'ladoo-collection': {
-    tagline: 'Slow-roasted Danedar Besan & Motichoor',
-    imageUrl:
-      'https://images.unsplash.com/photo-1599785209707-a456fc1337bb?w=300&auto=format&fit=crop&q=80',
-    altText: 'Pure A2 desi cow ghee besan ladoo',
-    badge: 'Pure Ghee',
-  },
-  'regional-sweets': {
-    tagline: 'Traditional Thekua & Geeli Barfi',
-    imageUrl:
-      'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=300&auto=format&fit=crop&q=80',
-    altText: 'Festive regional Indian mithai',
-  },
-};
-
 export function CategoryMegaMenu({
   categories,
 }: CategoryMegaMenuProps): React.JSX.Element {
@@ -265,31 +143,34 @@ export function CategoryMegaMenu({
               </Link>
             </div>
 
-            {/* 3 Columns Grid - Balanced, Symmetric Spacing */}
-            <div className="grid grid-cols-3 gap-6">
+            {mainCategories.length === 0 && (
+              <p className="text-heritage-muted py-6 text-center text-sm">
+                Categories are coming soon.
+              </p>
+            )}
+            <div
+              className={cn(
+                'grid gap-6',
+                mainCategories.length >= 3 && 'grid-cols-3',
+                mainCategories.length === 2 && 'grid-cols-2',
+                mainCategories.length === 1 && 'mx-auto max-w-sm grid-cols-1',
+              )}
+            >
               {mainCategories.map((cat, idx) => {
                 const totalCount = cat.children?.length ?? 0;
-                const subcategories: SubcategoryData[] =
-                  cat.children && cat.children.length > 0
-                    ? cat.children.slice(0, 3).map((sub) => {
-                        const meta = DEFAULT_SUBCATEGORY_META[sub.handle] || {
-                          tagline: sub.description || 'Authentic heritage delicacy',
-                          imageUrl:
-                            sub.image?.url ||
-                            'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&auto=format&fit=crop&q=80',
-                          altText: sub.image?.altText || sub.name,
-                        };
-                        return {
-                          name: sub.name,
-                          handle: sub.handle,
-                          parentHandle: cat.handle,
-                          tagline: meta.tagline,
-                          imageUrl: meta.imageUrl,
-                          altText: meta.altText,
-                          badge: meta.badge,
-                        };
-                      })
-                    : [];
+                // Subcategories (admin > Products > Categories, nested). Image and
+                // badge are optional category metadata: `image_url`, `badge`.
+                const subcategories: SubcategoryData[] = (cat.children ?? [])
+                  .slice(0, 3)
+                  .map((sub) => ({
+                    name: sub.name,
+                    handle: sub.handle,
+                    parentHandle: cat.handle,
+                    tagline: sub.description,
+                    imageUrl: sub.image?.url ?? cat.image?.url ?? '',
+                    altText: sub.image?.altText ?? sub.name,
+                    badge: sub.badge,
+                  }));
 
                 return (
                   <div
@@ -315,7 +196,25 @@ export function CategoryMegaMenu({
                         </Link>
                       </div>
 
-                      {/* Subcategories List - Exactly 3 Items */}
+                      {subcategories.length === 0 && (
+                        <Link
+                          href={`/${cat.handle}`}
+                          onClick={handleClose}
+                          className="border-heritage-border/50 bg-heritage-cream-dark relative block aspect-16/10 overflow-hidden rounded-xl border"
+                        >
+                          {cat.image && (
+                            <Image
+                              src={cat.image.url}
+                              alt={cat.image.altText ?? cat.name}
+                              fill
+                              sizes="300px"
+                              className="object-cover"
+                            />
+                          )}
+                        </Link>
+                      )}
+
+                      {/* Subcategories (up to 3) */}
                       <ul className="space-y-2">
                         {subcategories.map((sub) => {
                           const href =
@@ -332,13 +231,15 @@ export function CategoryMegaMenu({
                               >
                                 {/* Thumbnail Image */}
                                 <div className="border-heritage-border/80 bg-heritage-cream-dark relative h-11 w-11 shrink-0 overflow-hidden rounded-lg border shadow-2xs">
-                                  <Image
-                                    src={sub.imageUrl}
-                                    alt={sub.altText}
-                                    fill
-                                    sizes="44px"
-                                    className="object-cover transition-transform duration-300 group-hover/item:scale-110"
-                                  />
+                                  {sub.imageUrl && (
+                                    <Image
+                                      src={sub.imageUrl}
+                                      alt={sub.altText}
+                                      fill
+                                      sizes="44px"
+                                      className="object-cover transition-transform duration-300 group-hover/item:scale-110"
+                                    />
+                                  )}
                                 </div>
 
                                 {/* Text & Meta with reserved right padding for top-right corner tag */}
@@ -346,9 +247,11 @@ export function CategoryMegaMenu({
                                   <span className="text-heritage-charcoal group-hover/item:text-heritage-maroon block truncate text-xs font-semibold transition-colors dark:text-neutral-200">
                                     {sub.name}
                                   </span>
-                                  <p className="text-heritage-muted mt-0.5 truncate text-[11px] leading-normal">
-                                    {sub.tagline}
-                                  </p>
+                                  {sub.tagline && (
+                                    <p className="text-heritage-muted mt-0.5 truncate text-[11px] leading-normal">
+                                      {sub.tagline}
+                                    </p>
+                                  )}
                                 </div>
 
                                 {/* Tag situated at the top right corner of the box card */}
@@ -372,7 +275,8 @@ export function CategoryMegaMenu({
                         className="text-heritage-maroon hover:text-heritage-maroon-hover inline-flex items-center gap-1 text-[11px] font-semibold transition-colors"
                       >
                         <span>
-                          View All {cat.name} ({totalCount})
+                          View all {cat.name}
+                          {totalCount > 0 ? ` (${totalCount} types)` : ''}
                         </span>
                         <ArrowRight className="h-3 w-3" />
                       </Link>
@@ -392,11 +296,11 @@ export function CategoryMegaMenu({
                 </span>
               </div>
               <Link
-                href="/collections/grandmas-specials"
+                href="/collections"
                 onClick={handleClose}
                 className="text-heritage-maroon text-[11px] font-semibold hover:underline"
               >
-                Grandma&apos;s Specials ➔
+                All collections ➔
               </Link>
             </div>
           </div>

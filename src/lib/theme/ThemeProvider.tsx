@@ -87,9 +87,7 @@ export interface ThemeProviderProps {
   defaultTheme?: ThemeMode;
 }
 
-export function ThemeProvider({
-  children,
-}: ThemeProviderProps): React.JSX.Element {
+export function ThemeProvider({ children }: ThemeProviderProps): React.JSX.Element {
   const theme = React.useSyncExternalStore(
     subscribeTheme,
     getThemeSnapshot,

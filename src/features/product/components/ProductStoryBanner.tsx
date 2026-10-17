@@ -26,26 +26,24 @@ export function ProductStoryBanner({
     <>
       <div
         className={cn(
-          'w-full overflow-hidden rounded-2xl border border-line bg-surface-soft grid grid-cols-1 lg:grid-cols-12 items-center',
+          'border-line bg-surface-soft grid w-full grid-cols-1 items-center overflow-hidden rounded-2xl border lg:grid-cols-12',
           className,
         )}
       >
         {/* Left Column: Story Copy & Video Trigger */}
-        <div className="lg:col-span-5 p-6 sm:p-8 lg:p-10 space-y-4">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-fg leading-tight">
+        <div className="space-y-4 p-6 sm:p-8 lg:col-span-5 lg:p-10">
+          <h2 className="text-fg font-serif text-2xl leading-tight font-bold sm:text-3xl">
             {title}
           </h2>
-          <p className="text-sm text-fg-muted leading-relaxed max-w-md">
-            {description}
-          </p>
+          <p className="text-fg-muted max-w-md text-sm leading-relaxed">{description}</p>
           <div className="pt-2">
             <button
               type="button"
               onClick={() => setIsPlayingVideo(true)}
-              className="inline-flex items-center gap-2.5 rounded-full bg-primary hover:bg-primary-hover text-on-primary px-5 py-2.5 text-xs sm:text-sm font-semibold transition-colors shadow-sm"
+              className="bg-primary hover:bg-primary-hover text-on-primary inline-flex items-center gap-2.5 rounded-full px-5 py-2.5 text-xs font-semibold shadow-sm transition-colors sm:text-sm"
             >
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-on-primary/20">
-                <Play className="h-3 w-3 fill-on-primary text-on-primary ml-0.5" />
+              <div className="bg-on-primary/20 flex h-5 w-5 items-center justify-center rounded-full">
+                <Play className="fill-on-primary text-on-primary ml-0.5 h-3 w-3" />
               </div>
               <span>Watch Our Story</span>
             </button>
@@ -53,7 +51,7 @@ export function ProductStoryBanner({
         </div>
 
         {/* Right Column: High Quality Artisanal Imagery */}
-        <div className="lg:col-span-7 relative h-64 sm:h-80 lg:h-96 w-full">
+        <div className="relative h-64 w-full sm:h-80 lg:col-span-7 lg:h-96">
           <Image
             src={imageUrl}
             alt={title}
@@ -70,17 +68,17 @@ export function ProductStoryBanner({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm duration-200"
           onClick={() => setIsPlayingVideo(false)}
         >
           <div
-            className="relative max-w-3xl w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
+            className="relative aspect-video w-full max-w-3xl overflow-hidden rounded-2xl bg-black shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setIsPlayingVideo(false)}
-              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
+              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
               aria-label="Close video"
             >
               <X className="h-5 w-5" />
@@ -88,7 +86,7 @@ export function ProductStoryBanner({
             <iframe
               src={`${videoUrl}?autoplay=1`}
               title="Bramhkanti Heritage Story"
-              className="w-full h-full border-0"
+              className="h-full w-full border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />

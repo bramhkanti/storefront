@@ -11,10 +11,6 @@ export const metadata: Metadata = buildMetadata({
   noindex: true,
 });
 
-export default function WishlistLayout({
-  children,
-}: {
-  children: ReactNode;
-}): ReactNode {
+export default function WishlistLayout({ children }: { children: ReactNode }): ReactNode {
   return children;
 }

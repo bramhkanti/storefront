@@ -50,15 +50,15 @@ export function ProductAccordion({
       title: 'Heritage Story & Traditional Craft',
       icon: BookOpen,
       content: (
-        <div className="space-y-4 text-xs sm:text-sm leading-relaxed text-heritage-muted">
-          <h4 className="text-heritage-charcoal font-serif text-base sm:text-lg font-bold">
+        <div className="text-heritage-muted space-y-4 text-xs leading-relaxed sm:text-sm">
+          <h4 className="text-heritage-charcoal font-serif text-base font-bold sm:text-lg">
             {content.heritageStory.title}
           </h4>
           {content.heritageStory.narrative.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
           {content.heritageStory.artisanQuote && (
-            <blockquote className="border-heritage-saffron bg-heritage-cream border-l-2 p-3 sm:p-4 rounded-r-lg italic text-heritage-charcoal font-serif">
+            <blockquote className="border-heritage-saffron bg-heritage-cream text-heritage-charcoal rounded-r-lg border-l-2 p-3 font-serif italic sm:p-4">
               {content.heritageStory.artisanQuote}
             </blockquote>
           )}
@@ -70,14 +70,14 @@ export function ProductAccordion({
       title: 'Tasting Notes & Culinary Pairings',
       icon: UtensilsCrossed,
       content: (
-        <div className="space-y-4 text-xs sm:text-sm leading-relaxed">
+        <div className="space-y-4 text-xs leading-relaxed sm:text-sm">
           <div>
-            <h5 className="text-heritage-charcoal font-semibold mb-2">Flavor Profile:</h5>
+            <h5 className="text-heritage-charcoal mb-2 font-semibold">Flavor Profile:</h5>
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {content.tastingAndPairings.flavorProfile.map((note, idx) => (
                 <li
                   key={idx}
-                  className="border-heritage-border bg-white rounded-lg border p-2.5 text-heritage-muted text-xs"
+                  className="border-heritage-border text-heritage-muted rounded-lg border bg-white p-2.5 text-xs"
                 >
                   • {note}
                 </li>
@@ -86,7 +86,9 @@ export function ProductAccordion({
           </div>
 
           <div>
-            <h5 className="text-heritage-charcoal font-semibold mb-2">Best Relished With:</h5>
+            <h5 className="text-heritage-charcoal mb-2 font-semibold">
+              Best Relished With:
+            </h5>
             <div className="flex flex-wrap gap-2">
               {content.tastingAndPairings.bestEnjoyedWith.map((dish, idx) => (
                 <span
@@ -99,9 +101,13 @@ export function ProductAccordion({
             </div>
           </div>
 
-          <div className="border-heritage-border bg-heritage-cream-dark/40 rounded-xl border p-3.5 text-xs text-heritage-charcoal">
-            <span className="font-semibold text-heritage-maroon">Artisan Kitchen Tip: </span>
-            <span className="text-heritage-muted">{content.tastingAndPairings.chefTip}</span>
+          <div className="border-heritage-border bg-heritage-cream-dark/40 text-heritage-charcoal rounded-xl border p-3.5 text-xs">
+            <span className="text-heritage-maroon font-semibold">
+              Artisan Kitchen Tip:{' '}
+            </span>
+            <span className="text-heritage-muted">
+              {content.tastingAndPairings.chefTip}
+            </span>
           </div>
         </div>
       ),
@@ -129,40 +135,42 @@ export function ProductAccordion({
       title: 'Pan-India Delivery & Transit Guarantee',
       icon: Truck,
       content: (
-        <div className="space-y-3 text-xs sm:text-sm text-heritage-muted leading-relaxed">
+        <div className="text-heritage-muted space-y-3 text-xs leading-relaxed sm:text-sm">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="border-heritage-border bg-white rounded-xl border p-3.5">
-              <div className="text-heritage-charcoal font-semibold mb-1 flex items-center gap-1.5">
-                <Truck className="h-4 w-4 text-heritage-maroon" />
+            <div className="border-heritage-border rounded-xl border bg-white p-3.5">
+              <div className="text-heritage-charcoal mb-1 flex items-center gap-1.5 font-semibold">
+                <Truck className="text-heritage-maroon h-4 w-4" />
                 <span>24-Hour Dispatch</span>
               </div>
-              <p className="text-[11px] text-heritage-muted leading-snug">
+              <p className="text-heritage-muted text-[11px] leading-snug">
                 {content.shippingHighlights.dispatchTime}
               </p>
             </div>
 
-            <div className="border-heritage-border bg-white rounded-xl border p-3.5">
-              <div className="text-heritage-charcoal font-semibold mb-1 flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-heritage-green" />
+            <div className="border-heritage-border rounded-xl border bg-white p-3.5">
+              <div className="text-heritage-charcoal mb-1 flex items-center gap-1.5 font-semibold">
+                <ShieldCheck className="text-heritage-green h-4 w-4" />
                 <span>Zero-Breakage Guarantee</span>
               </div>
-              <p className="text-[11px] text-heritage-muted leading-snug">
+              <p className="text-heritage-muted text-[11px] leading-snug">
                 {content.shippingHighlights.packagingStandard}
               </p>
             </div>
 
-            <div className="border-heritage-border bg-white rounded-xl border p-3.5">
-              <div className="text-heritage-charcoal font-semibold mb-1 flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-heritage-saffron" />
+            <div className="border-heritage-border rounded-xl border bg-white p-3.5">
+              <div className="text-heritage-charcoal mb-1 flex items-center gap-1.5 font-semibold">
+                <ShieldCheck className="text-heritage-saffron h-4 w-4" />
                 <span>Transit Insurance</span>
               </div>
-              <p className="text-[11px] text-heritage-muted leading-snug">
+              <p className="text-heritage-muted text-[11px] leading-snug">
                 {content.shippingHighlights.transitAssurance}
               </p>
             </div>
           </div>
-          <p className="text-[11px] text-heritage-muted">
-            All orders are carefully tracked with SMS and WhatsApp live updates. If your parcel arrives damaged or delayed, our Varanasi support desk resolves it with an instant free replacement.
+          <p className="text-heritage-muted text-[11px]">
+            All orders are carefully tracked with SMS and WhatsApp live updates. If your
+            parcel arrives damaged or delayed, our Varanasi support desk resolves it with
+            an instant free replacement.
           </p>
         </div>
       ),
@@ -171,18 +179,18 @@ export function ProductAccordion({
 
   return (
     <div className={cn('space-y-4', className)}>
-      <div className="flex items-center justify-between border-b border-heritage-border pb-3">
+      <div className="border-heritage-border flex items-center justify-between border-b pb-3">
         <div>
           <span className="text-heritage-saffron-dark text-xs font-bold tracking-wider uppercase">
             Deep Dive
           </span>
-          <h2 className="text-heritage-charcoal font-serif text-xl sm:text-2xl font-bold">
+          <h2 className="text-heritage-charcoal font-serif text-xl font-bold sm:text-2xl">
             Product Knowledge & Transparency
           </h2>
         </div>
       </div>
 
-      <div className="border-heritage-border divide-heritage-border divide-y rounded-2xl border bg-white/70 overflow-hidden shadow-none">
+      <div className="border-heritage-border divide-heritage-border divide-y overflow-hidden rounded-2xl border bg-white/70 shadow-none">
         {sections.map((section) => {
           const isOpen = openSections.includes(section.id);
           const SectionIcon = section.icon;
@@ -197,20 +205,20 @@ export function ProductAccordion({
                 aria-expanded={isOpen}
                 aria-controls={contentId}
                 onClick={() => toggleSection(section.id)}
-                className="flex w-full items-center justify-between gap-4 p-4 text-left transition-colors sm:p-5 hover:bg-neutral-50/70 focus-visible:outline-2 focus-visible:outline-heritage-maroon"
+                className="focus-visible:outline-heritage-maroon flex w-full items-center justify-between gap-4 p-4 text-left transition-colors hover:bg-neutral-50/70 focus-visible:outline-2 sm:p-5"
               >
                 <span className="flex items-center gap-3">
                   <span className="border-heritage-border bg-heritage-cream text-heritage-maroon flex h-8 w-8 items-center justify-center rounded-lg border">
                     <SectionIcon className="h-4 w-4" />
                   </span>
-                  <span className="text-heritage-charcoal text-sm sm:text-base font-bold">
+                  <span className="text-heritage-charcoal text-sm font-bold sm:text-base">
                     {section.title}
                   </span>
                 </span>
                 <span
                   className={cn(
                     'border-heritage-border bg-heritage-cream text-heritage-charcoal flex h-6 w-6 items-center justify-center rounded-full border transition-transform duration-200',
-                    isOpen && 'rotate-180 bg-heritage-cream-dark text-heritage-maroon',
+                    isOpen && 'bg-heritage-cream-dark text-heritage-maroon rotate-180',
                   )}
                   aria-hidden="true"
                 >

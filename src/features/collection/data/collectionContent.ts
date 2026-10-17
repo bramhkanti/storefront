@@ -1,5 +1,15 @@
 export interface CollectionCraftPillar {
-  icon: 'sun' | 'leaf' | 'shield' | 'package' | 'award' | 'flame' | 'sparkles' | 'clock' | 'heart' | 'gift';
+  icon:
+    | 'sun'
+    | 'leaf'
+    | 'shield'
+    | 'package'
+    | 'award'
+    | 'flame'
+    | 'sparkles'
+    | 'clock'
+    | 'heart'
+    | 'gift';
   title: string;
   description: string;
 }
@@ -13,10 +23,12 @@ export interface CollectionEditorialStory {
   title: string;
   subtitle: string;
   paragraphs: string[];
-  quote?: {
-    text: string;
-    author: string;
-  } | undefined;
+  quote?:
+    | {
+        text: string;
+        author: string;
+      }
+    | undefined;
 }
 
 export interface EnrichedCollectionData {
@@ -36,27 +48,32 @@ const COLLECTION_REGISTRY: Record<string, EnrichedCollectionData> = {
       {
         icon: 'heart',
         title: '1952 Heirloom Formulations',
-        description: 'Transcribed verbatim from grandmother’s handwritten recipe notebooks in Varanasi.',
+        description:
+          'Transcribed verbatim from grandmother’s handwritten recipe notebooks in Varanasi.',
       },
       {
         icon: 'sun',
         title: 'Terrace Sun-Cured Pickles',
-        description: 'Naturally aged in glazed ceramic barnies without artificial heating or chemical accelerants.',
+        description:
+          'Naturally aged in glazed ceramic barnies without artificial heating or chemical accelerants.',
       },
       {
         icon: 'sparkles',
         title: 'Bilona Desi Cow Ghee',
-        description: 'Sweets and snacks crafted exclusively in slow-clarified native cow milk ghee.',
+        description:
+          'Sweets and snacks crafted exclusively in slow-clarified native cow milk ghee.',
       },
       {
         icon: 'shield',
         title: 'Zero Synthetic Preservatives',
-        description: '100% free from industrial acetic acid, refined white sugar, or artificial colors.',
+        description:
+          '100% free from industrial acetic acid, refined white sugar, or artificial colors.',
       },
     ],
     editorialStory: {
       title: 'Transcribed from Grandmother’s 1952 Recipe Diary',
-      subtitle: 'Preserving the reverence, patience, and authentic flavours of old Indian kitchens',
+      subtitle:
+        'Preserving the reverence, patience, and authentic flavours of old Indian kitchens',
       paragraphs: [
         'Before commercial processing replaced culinary patience, food in our family home was prepared in harmony with seasons and sunlight. The Grandma’s Specials collection represents the most sacred heirloom recipes passed down through four generations in Varanasi.',
         'From our oil-free digestive Khatta Meetha Nimbu cured for eighteen months under open skies, to authentic Heeng Aam Achar seasoned with pure asafoetida and hand-pounded spices, every jar carries the unadulterated warmth of grandmother’s kitchen.',
@@ -74,7 +91,8 @@ const COLLECTION_REGISTRY: Record<string, EnrichedCollectionData> = {
           'This curated collection features vintage heritage recipes that strictly follow our family’s 1952 culinary archives. They use zero oil or cold-pressed mustard oil, pure desi cow ghee, unrefined sweeteners (jaggery and khand), and long-duration sun maturation.',
       },
       {
-        question: 'Are the products in Grandma’s Specials suitable for elderly family members?',
+        question:
+          'Are the products in Grandma’s Specials suitable for elderly family members?',
         answer:
           'Yes, absolutely. Varieties like our Oil-Free Lemon Pickle and Gond Ladoo with Kashmiri Walnuts were traditionally formulated for digestive comfort, joint strength, and natural Ayurvedic vitality without harsh synthetic additives.',
       },
@@ -103,27 +121,32 @@ const COLLECTION_REGISTRY: Record<string, EnrichedCollectionData> = {
       {
         icon: 'award',
         title: 'Top 1% Customer Favorites',
-        description: 'Handpicked products with over 95% repeat customer satisfaction and 4.9★ reviews.',
+        description:
+          'Handpicked products with over 95% repeat customer satisfaction and 4.9★ reviews.',
       },
       {
         icon: 'leaf',
         title: 'Cold-Pressed Virgin Oils',
-        description: 'Authentic wood-pressed Kachi Ghani mustard oil and native cow bilona ghee.',
+        description:
+          'Authentic wood-pressed Kachi Ghani mustard oil and native cow bilona ghee.',
       },
       {
         icon: 'sun',
         title: '21-Day Terrace Aging',
-        description: 'Sun-matured raw mangoes and hand-stuffed Banarasi red chillies for peak flavor.',
+        description:
+          'Sun-matured raw mangoes and hand-stuffed Banarasi red chillies for peak flavor.',
       },
       {
         icon: 'package',
         title: 'Breakage-Safe Delivery',
-        description: 'Packed in aroma-locked food-grade glass jars with 5-layer transit cushioning.',
+        description:
+          'Packed in aroma-locked food-grade glass jars with 5-layer transit cushioning.',
       },
     ],
     editorialStory: {
       title: 'The Signature Delicacies Loved Across 50,000+ Dining Tables',
-      subtitle: 'The timeless classics that defined Bramhkanti’s artisanal reputation across India',
+      subtitle:
+        'The timeless classics that defined Bramhkanti’s artisanal reputation across India',
       paragraphs: [
         'Over the past decades, hundreds of thousands of food connoisseurs across India have made Bramhkanti a cherished staple of their daily meals. This Best Sellers collection brings together our most acclaimed culinary masterpieces in one place.',
         'Here you will find our iconic Banarasi Bharwa Lal Mirch stuffed with stone-ground spices, our crisp sun-cured Ramkela Mango Pickle, slow-roasted Besan Ladoo made in pure cow ghee, and crunchy Himalayan Pink Salt Makhana.',
@@ -170,27 +193,32 @@ const COLLECTION_REGISTRY: Record<string, EnrichedCollectionData> = {
       {
         icon: 'gift',
         title: 'Royal Festive Presentation',
-        description: 'Artisanal gift boxes featuring glazed ceramic barnies, brass accents, and festive ribbons.',
+        description:
+          'Artisanal gift boxes featuring glazed ceramic barnies, brass accents, and festive ribbons.',
       },
       {
         icon: 'sparkles',
         title: '100% Desi Cow Ghee Sweets',
-        description: 'Freshly prepared festive mithai cooked exclusively in pure aromatic cow ghee.',
+        description:
+          'Freshly prepared festive mithai cooked exclusively in pure aromatic cow ghee.',
       },
       {
         icon: 'heart',
         title: 'Custom Handwritten Greeting',
-        description: 'Complimentary handwritten personalized festive message card placed inside every box.',
+        description:
+          'Complimentary handwritten personalized festive message card placed inside every box.',
       },
       {
         icon: 'shield',
         title: 'Express Pan-India Transit',
-        description: 'Guaranteed intact festive delivery with real-time SMS and WhatsApp tracking.',
+        description:
+          'Guaranteed intact festive delivery with real-time SMS and WhatsApp tracking.',
       },
     ],
     editorialStory: {
       title: 'The Sacred Indian Tradition of Wholesome Festive Gifting',
-      subtitle: 'Replace commercial mass-produced gift boxes with pure, handcrafted heritage delicacies',
+      subtitle:
+        'Replace commercial mass-produced gift boxes with pure, handcrafted heritage delicacies',
       paragraphs: [
         'Festivals in India are celebrated around the dinner table, where families reunite over the aroma of warm ghee, fragrant roasted spices, and melt-in-mouth confections. Our Festive Gifting collection was created to bring genuine culinary reverence back to Indian celebrations.',
         'Instead of mass-manufactured confections loaded with artificial palm oil, chemical essences, and industrial preservatives, Bramhkanti festive hampers feature pure cow ghee sweets, sun-matured heirloom pickles, and jumbo roasted makhana.',
@@ -249,17 +277,20 @@ export function getEnrichedCollection(
       {
         icon: 'sparkles',
         title: 'Handcrafted Heritage Recipe',
-        description: 'Prepared using traditional Banarasi methods with zero chemical preservatives.',
+        description:
+          'Prepared using traditional Banarasi methods with zero chemical preservatives.',
       },
       {
         icon: 'leaf',
         title: 'Pure Natural Ingredients',
-        description: 'Seasoned with cold-pressed virgin oils, pure cow ghee, and unrefined sweeteners.',
+        description:
+          'Seasoned with cold-pressed virgin oils, pure cow ghee, and unrefined sweeteners.',
       },
       {
         icon: 'package',
         title: 'Aroma-Lock Packaging',
-        description: 'Hermetically sealed food-grade packaging ensuring fresh pantry arrival.',
+        description:
+          'Hermetically sealed food-grade packaging ensuring fresh pantry arrival.',
       },
       {
         icon: 'shield',

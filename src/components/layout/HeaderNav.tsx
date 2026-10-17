@@ -52,14 +52,14 @@ export function HeaderNav({ categories, cartCount = 0 }: HeaderNavProps) {
             color={wishlistCount > 0 ? '#dc2626' : 'currentColor'}
             className={cn(
               'h-5 w-5 transition-transform duration-200',
-              wishlistCount > 0 && 'text-red-600 scale-105',
+              wishlistCount > 0 && 'scale-105 text-red-600',
             )}
             aria-hidden="true"
           />
           <span className="sr-only">Wishlist</span>
           {wishlistCount > 0 && (
             <span
-              className="bg-red-600 absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white shadow-xs"
+              className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-xs"
               aria-hidden="true"
             >
               {wishlistCount > 99 ? '99+' : wishlistCount}

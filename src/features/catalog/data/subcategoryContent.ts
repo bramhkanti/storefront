@@ -1,5 +1,14 @@
 export interface SubcategoryCraftPillar {
-  icon: 'sun' | 'leaf' | 'shield' | 'package' | 'award' | 'flame' | 'sparkles' | 'clock' | 'droplets';
+  icon:
+    | 'sun'
+    | 'leaf'
+    | 'shield'
+    | 'package'
+    | 'award'
+    | 'flame'
+    | 'sparkles'
+    | 'clock'
+    | 'droplets';
   title: string;
   description: string;
 }
@@ -26,7 +35,8 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'droplets',
         title: 'Zero Oil Formulation',
-        description: 'Naturally preserved in native lemon juice without a single drop of cooking oil.',
+        description:
+          'Naturally preserved in native lemon juice without a single drop of cooking oil.',
       },
       {
         icon: 'sun',
@@ -36,12 +46,14 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'leaf',
         title: 'Black Salt & Roasted Cumin',
-        description: 'Seasoned with hand-pounded kala namak, bhuna jeera, and organic jaggery.',
+        description:
+          'Seasoned with hand-pounded kala namak, bhuna jeera, and organic jaggery.',
       },
       {
         icon: 'shield',
         title: 'Natural Digestive Tonic',
-        description: 'Traditional Ayurvedic preparation that soothes gut health and digestion.',
+        description:
+          'Traditional Ayurvedic preparation that soothes gut health and digestion.',
       },
     ],
     faqs: [
@@ -85,12 +97,14 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sparkles',
         title: 'Ramkela Sour Mangoes',
-        description: 'Hand-sliced firm raw mangoes known for their sharp, long-lasting bite.',
+        description:
+          'Hand-sliced firm raw mangoes known for their sharp, long-lasting bite.',
       },
       {
         icon: 'shield',
         title: 'Zero Synthetic Acetic Acid',
-        description: '100% free from industrial vinegar, artificial coloring, or preservatives.',
+        description:
+          '100% free from industrial vinegar, artificial coloring, or preservatives.',
       },
     ],
     faqs: [
@@ -124,12 +138,14 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'flame',
         title: 'Signature Banarasi Red Chillies',
-        description: 'Plump, fleshy winter red chillies hand-selected from Varanasi farms.',
+        description:
+          'Plump, fleshy winter red chillies hand-selected from Varanasi farms.',
       },
       {
         icon: 'leaf',
         title: 'Stone-Pounded Masala Stuffing',
-        description: 'Generously hand-stuffed with amchur, yellow mustard seeds, saunf, and kalonji.',
+        description:
+          'Generously hand-stuffed with amchur, yellow mustard seeds, saunf, and kalonji.',
       },
       {
         icon: 'droplets',
@@ -139,7 +155,8 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sun',
         title: 'Patient Terrace Aging',
-        description: 'Cured under natural sunlight until the chilli skin softens to buttery perfection.',
+        description:
+          'Cured under natural sunlight until the chilli skin softens to buttery perfection.',
       },
     ],
     faqs: [
@@ -173,12 +190,14 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'leaf',
         title: 'Indigenous Elephant Foot Yam',
-        description: 'Meticulously peeled and slow-treated to eliminate any throat irritation.',
+        description:
+          'Meticulously peeled and slow-treated to eliminate any throat irritation.',
       },
       {
         icon: 'flame',
         title: 'Spiced Ginger-Mustard Kick',
-        description: 'Grated jimikand folded with pungent yellow rai, fresh ginger, and green chillies.',
+        description:
+          'Grated jimikand folded with pungent yellow rai, fresh ginger, and green chillies.',
       },
       {
         icon: 'droplets',
@@ -188,7 +207,8 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'shield',
         title: 'Vedic Nutritional Heritage',
-        description: 'Celebrated in Ayurvedic traditions for supporting metabolic and digestive balance.',
+        description:
+          'Celebrated in Ayurvedic traditions for supporting metabolic and digestive balance.',
       },
     ],
     faqs: [
@@ -222,22 +242,26 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sun',
         title: 'Cotton-Sheet Sun Drying',
-        description: 'Seasonal winter cauliflower florets sun-dried on clean cotton sheets.',
+        description:
+          'Seasonal winter cauliflower florets sun-dried on clean cotton sheets.',
       },
       {
         icon: 'sparkles',
         title: 'Touch of Organic Jaggery',
-        description: 'Marinated with sweet unrefined gur to balance the mustard pungency.',
+        description:
+          'Marinated with sweet unrefined gur to balance the mustard pungency.',
       },
       {
         icon: 'leaf',
         title: 'Ginger & Rai Seeds',
-        description: 'Spiced with freshly cracked ginger slivers and whole yellow mustard.',
+        description:
+          'Spiced with freshly cracked ginger slivers and whole yellow mustard.',
       },
       {
         icon: 'shield',
         title: 'Crunch Preservation',
-        description: 'Preserved without boiling to maintain an extraordinarily crisp, satisfying bite.',
+        description:
+          'Preserved without boiling to maintain an extraordinarily crisp, satisfying bite.',
       },
     ],
     faqs: [
@@ -271,12 +295,14 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'leaf',
         title: 'Tender Raw Green Jackfruit',
-        description: 'Hand-cut young raw kathal before seeds mature for maximum tenderness.',
+        description:
+          'Hand-cut young raw kathal before seeds mature for maximum tenderness.',
       },
       {
         icon: 'flame',
         title: 'Whole Roasted Masala Blend',
-        description: 'Seasoned with roasted coriander, cumin, methi, and aromatic turmeric.',
+        description:
+          'Seasoned with roasted coriander, cumin, methi, and aromatic turmeric.',
       },
       {
         icon: 'droplets',
@@ -286,7 +312,8 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sun',
         title: 'Patient Sun Fermentation',
-        description: 'Matured for 3 weeks in ceramic barnies for authentic rustic texture.',
+        description:
+          'Matured for 3 weeks in ceramic barnies for authentic rustic texture.',
       },
     ],
     faqs: [
@@ -320,22 +347,26 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sparkles',
         title: 'Crunchy Kamal Kakdi (Lotus Stem)',
-        description: 'Infused with crisp water-lily root for a distinctive, luxurious crunch.',
+        description:
+          'Infused with crisp water-lily root for a distinctive, luxurious crunch.',
       },
       {
         icon: 'leaf',
         title: '5-Harvest Farm Blend',
-        description: 'Harmonious medley of raw mango, tender carrot, green chilli, lime, and ginger.',
+        description:
+          'Harmonious medley of raw mango, tender carrot, green chilli, lime, and ginger.',
       },
       {
         icon: 'droplets',
         title: 'Pure Kachi Ghani Mustard Oil',
-        description: 'Bound together with cold-pressed mustard oil and hand-crushed whole spices.',
+        description:
+          'Bound together with cold-pressed mustard oil and hand-crushed whole spices.',
       },
       {
         icon: 'sun',
         title: 'Natural Sun Curing',
-        description: 'Aged in sunlight without chemical stabilizers, vinegar, or synthetic coloring.',
+        description:
+          'Aged in sunlight without chemical stabilizers, vinegar, or synthetic coloring.',
       },
     ],
     faqs: [
@@ -370,22 +401,26 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'award',
         title: 'Top 5% Jumbo Grade',
-        description: 'Only the largest, fluffiest lotus seeds hand-selected from Bihar wetlands.',
+        description:
+          'Only the largest, fluffiest lotus seeds hand-selected from Bihar wetlands.',
       },
       {
         icon: 'flame',
         title: 'Never Deep-Fried',
-        description: 'Slow-roasted gently in pure cow ghee and cold-pressed extra virgin olive oil.',
+        description:
+          'Slow-roasted gently in pure cow ghee and cold-pressed extra virgin olive oil.',
       },
       {
         icon: 'leaf',
         title: 'Natural Stone-Ground Spices',
-        description: 'Dusted with Himalayan pink rock salt, mint pudina, and authentic peri peri.',
+        description:
+          'Dusted with Himalayan pink rock salt, mint pudina, and authentic peri peri.',
       },
       {
         icon: 'shield',
         title: 'Zero Trans Fat & Gluten-Free',
-        description: '100% natural, clean protein superfood snack with zero synthetic MSG.',
+        description:
+          '100% natural, clean protein superfood snack with zero synthetic MSG.',
       },
     ],
     faqs: [
@@ -419,22 +454,26 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sparkles',
         title: 'Organic Jaggery Caramel',
-        description: 'Glazed with unrefined mineral-rich desi gur for deep caramel sweetness.',
+        description:
+          'Glazed with unrefined mineral-rich desi gur for deep caramel sweetness.',
       },
       {
         icon: 'flame',
         title: 'A2 Cow Ghee Toasted',
-        description: 'Lightly tossed in pure cow ghee to achieve a delicate candy-like crisp.',
+        description:
+          'Lightly tossed in pure cow ghee to achieve a delicate candy-like crisp.',
       },
       {
         icon: 'leaf',
         title: 'Roasted White Sesame (Til)',
-        description: 'Garnished with nutty roasted sesame seeds for added calcium and warmth.',
+        description:
+          'Garnished with nutty roasted sesame seeds for added calcium and warmth.',
       },
       {
         icon: 'shield',
         title: '0% Refined White Sugar',
-        description: 'Pure, guilt-free sweetening with no synthetic flavors or food dyes.',
+        description:
+          'Pure, guilt-free sweetening with no synthetic flavors or food dyes.',
       },
     ],
     faqs: [
@@ -468,7 +507,8 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'award',
         title: 'GI-Tagged Mithila Origin',
-        description: 'Sourced directly from farmer-owned wetlands in Darbhanga & Madhubani.',
+        description:
+          'Sourced directly from farmer-owned wetlands in Darbhanga & Madhubani.',
       },
       {
         icon: 'sparkles',
@@ -478,12 +518,14 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'shield',
         title: 'Zero Chemical Bleaching',
-        description: 'Naturally sun-dried with no sulfur fumes or chemical whitening agents.',
+        description:
+          'Naturally sun-dried with no sulfur fumes or chemical whitening agents.',
       },
       {
         icon: 'leaf',
         title: 'Versatile Culinary Staple',
-        description: 'Perfect for roasting at home, rich kheer, or royal makhana curries.',
+        description:
+          'Perfect for roasting at home, rich kheer, or royal makhana curries.',
       },
     ],
     faqs: [
@@ -518,22 +560,26 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'flame',
         title: '3-Hour Slow Low-Flame Roasting',
-        description: 'Gram flour roasted patiently in brass woks until deeply golden and fragrant.',
+        description:
+          'Gram flour roasted patiently in brass woks until deeply golden and fragrant.',
       },
       {
         icon: 'droplets',
         title: '100% Pure A2 Cow Ghee',
-        description: 'Prepared strictly in pure cow milk bilona ghee with zero vegetable dalda.',
+        description:
+          'Prepared strictly in pure cow milk bilona ghee with zero vegetable dalda.',
       },
       {
         icon: 'leaf',
         title: 'Unrefined Desi Khand Sugar',
-        description: 'Sweetened with traditional raw sulfur-free bura sugar for authentic grain (danedar).',
+        description:
+          'Sweetened with traditional raw sulfur-free bura sugar for authentic grain (danedar).',
       },
       {
         icon: 'sparkles',
         title: 'Almonds, Cashews & Green Cardamom',
-        description: 'Folded with crushed California nuts and freshly pounded green cardamom.',
+        description:
+          'Folded with crushed California nuts and freshly pounded green cardamom.',
       },
     ],
     faqs: [
@@ -567,22 +613,26 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sparkles',
         title: 'Sacred Chhath Puja Heritage',
-        description: 'Crafted following sacred Vedic protocols of ritual culinary purity.',
+        description:
+          'Crafted following sacred Vedic protocols of ritual culinary purity.',
       },
       {
         icon: 'leaf',
         title: 'Stone-Ground Whole Wheat & Gur',
-        description: 'Milled wheat flour kneaded with organic jaggery syrup, cardamom, and fennel.',
+        description:
+          'Milled wheat flour kneaded with organic jaggery syrup, cardamom, and fennel.',
       },
       {
         icon: 'droplets',
         title: 'Fried in Pure A2 Desi Cow Ghee',
-        description: 'Golden-fried in slow-heated cow ghee for an incomparably crisp (khasta) crumb.',
+        description:
+          'Golden-fried in slow-heated cow ghee for an incomparably crisp (khasta) crumb.',
       },
       {
         icon: 'shield',
         title: 'Traditional Wooden Moulds',
-        description: 'Hand-pressed onto heritage carved wooden sancha moulds for auspicious floral motifs.',
+        description:
+          'Hand-pressed onto heritage carved wooden sancha moulds for auspicious floral motifs.',
       },
     ],
     faqs: [
@@ -616,17 +666,20 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'sparkles',
         title: 'Slow-Simmered Fresh Mawa',
-        description: 'Crafted from pure organic whole milk condensed slowly in copper woks.',
+        description:
+          'Crafted from pure organic whole milk condensed slowly in copper woks.',
       },
       {
         icon: 'droplets',
         title: 'Pure Desi Ghee Touch',
-        description: 'Enriched with a touch of native cow ghee to keep the fudge tender and moist.',
+        description:
+          'Enriched with a touch of native cow ghee to keep the fudge tender and moist.',
       },
       {
         icon: 'leaf',
         title: 'Shahi Kashmiri Kesar & Pista',
-        description: 'Garnished with fragrant saffron strands and slivers of green Iranian pistachio.',
+        description:
+          'Garnished with fragrant saffron strands and slivers of green Iranian pistachio.',
       },
       {
         icon: 'shield',
@@ -670,17 +723,20 @@ const SUBCATEGORY_REGISTRY: Record<string, EnrichedSubcategoryData> = {
       {
         icon: 'flame',
         title: 'Pure Desi Cow Ghee Cooked',
-        description: 'Boondi fried exclusively in fragrant cow ghee with no blended fats.',
+        description:
+          'Boondi fried exclusively in fragrant cow ghee with no blended fats.',
       },
       {
         icon: 'leaf',
         title: 'Infused with Real Saffron',
-        description: 'Simmered in saffron-scented syrup garnished with roasted melon seeds (magaz).',
+        description:
+          'Simmered in saffron-scented syrup garnished with roasted melon seeds (magaz).',
       },
       {
         icon: 'shield',
         title: 'Melt-in-Mouth Juiciness',
-        description: 'Gently hand-rolled while warm to lock in succulent sweetness in every bite.',
+        description:
+          'Gently hand-rolled while warm to lock in succulent sweetness in every bite.',
       },
     ],
     faqs: [
@@ -745,59 +801,68 @@ export function getEnrichedSubcategory(
           {
             icon: 'shield',
             title: 'Zero Synthetic Vinegar',
-            description: '100% free from industrial acetic acid, colors, and preservatives.',
+            description:
+              '100% free from industrial acetic acid, colors, and preservatives.',
           },
           {
             icon: 'package',
             title: 'Aroma-Lock Glass Jar',
-            description: 'Packed in food-safe glass jars with breakage-proof transit cushion.',
+            description:
+              'Packed in food-safe glass jars with breakage-proof transit cushion.',
           },
         ]
       : isMakhana
-      ? [
-          {
-            icon: 'award',
-            title: 'GI-Tagged Mithila Origin',
-            description: 'Sourced sustainably from wetland farmers across Mithila, Bihar.',
-          },
-          {
-            icon: 'sparkles',
-            title: 'Top 5% Jumbo Grade',
-            description: 'Hand-selected largest lotus seeds for peak crunch and featherlight texture.',
-          },
-          {
-            icon: 'flame',
-            title: 'Slow-Roasted in Pure Ghee',
-            description: 'Never deep-fried. Gently roasted in native cow ghee and olive oil.',
-          },
-          {
-            icon: 'shield',
-            title: 'Pure Mineral Seasoning',
-            description: 'Dusted with Himalayan pink salt and stone-ground natural spices.',
-          },
-        ]
-      : [
-          {
-            icon: 'sparkles',
-            title: '100% Pure Desi Cow Ghee',
-            description: 'Crafted exclusively in aromatic slow-clarified native cow ghee.',
-          },
-          {
-            icon: 'leaf',
-            title: 'Unrefined Heritage Sweetener',
-            description: 'Infused with organic jaggery and sulfur-free unrefined desi khand.',
-          },
-          {
-            icon: 'clock',
-            title: 'Small-Batch Fresh Preparation',
-            description: 'Cooked fresh upon order confirmation to preserve melt-in-mouth texture.',
-          },
-          {
-            icon: 'shield',
-            title: 'Dedicated Satvik Facility',
-            description: 'Prepared in a 100% vegetarian, hygienic heritage facility.',
-          },
-        ],
+        ? [
+            {
+              icon: 'award',
+              title: 'GI-Tagged Mithila Origin',
+              description:
+                'Sourced sustainably from wetland farmers across Mithila, Bihar.',
+            },
+            {
+              icon: 'sparkles',
+              title: 'Top 5% Jumbo Grade',
+              description:
+                'Hand-selected largest lotus seeds for peak crunch and featherlight texture.',
+            },
+            {
+              icon: 'flame',
+              title: 'Slow-Roasted in Pure Ghee',
+              description:
+                'Never deep-fried. Gently roasted in native cow ghee and olive oil.',
+            },
+            {
+              icon: 'shield',
+              title: 'Pure Mineral Seasoning',
+              description:
+                'Dusted with Himalayan pink salt and stone-ground natural spices.',
+            },
+          ]
+        : [
+            {
+              icon: 'sparkles',
+              title: '100% Pure Desi Cow Ghee',
+              description:
+                'Crafted exclusively in aromatic slow-clarified native cow ghee.',
+            },
+            {
+              icon: 'leaf',
+              title: 'Unrefined Heritage Sweetener',
+              description:
+                'Infused with organic jaggery and sulfur-free unrefined desi khand.',
+            },
+            {
+              icon: 'clock',
+              title: 'Small-Batch Fresh Preparation',
+              description:
+                'Cooked fresh upon order confirmation to preserve melt-in-mouth texture.',
+            },
+            {
+              icon: 'shield',
+              title: 'Dedicated Satvik Facility',
+              description: 'Prepared in a 100% vegetarian, hygienic heritage facility.',
+            },
+          ],
     faqs: [
       {
         question: `What makes Bramhkanti's ${subName} authentic?`,

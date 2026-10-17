@@ -3,6 +3,10 @@ export interface SignatureRangeItem {
   name: string;
   tagline: string;
   href: string;
+  /** Category handles this card can point to (first that exists wins). */
+  categoryHandles?: string[] | undefined;
+  /** Or a collection handle. Cards matching neither are hidden. */
+  collectionHandle?: string | undefined;
   linkText: string;
   imageUrl: string;
   imageAlt: string;
@@ -44,4 +48,23 @@ export interface PromoBannerData {
   trustBadges: string[];
   imageUrl: string;
   imageAlt: string;
+}
+
+export interface HeroSlide {
+  id: string;
+  eyebrow?: string | undefined;
+  title: string;
+  description?: string | undefined;
+  imageUrl: string;
+  /** Optional portrait image for phones. */
+  mobileImageUrl?: string | undefined;
+  imageAlt: string;
+  /** Tailwind object-position class, e.g. 'object-[70%_center]'. */
+  imagePosition?: string | undefined;
+  ctaLabel: string;
+  ctaHref: string;
+  secondaryLabel?: string | undefined;
+  secondaryHref?: string | undefined;
+  /** Short trust points under the buttons. */
+  badges?: string[] | undefined;
 }

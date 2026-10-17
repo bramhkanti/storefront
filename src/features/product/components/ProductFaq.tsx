@@ -26,12 +26,12 @@ export function ProductFaq({
   return (
     <section aria-labelledby="faq-heading" className={cn('space-y-4', className)}>
       {title && (
-        <h2 id="faq-heading" className="text-xl font-bold text-fg leading-snug">
+        <h2 id="faq-heading" className="text-fg text-xl leading-snug font-bold">
           {title}
         </h2>
       )}
 
-      <div className="rounded-2xl border border-line bg-surface px-5 py-2 divide-y divide-line">
+      <div className="border-line bg-surface divide-line divide-y rounded-2xl border px-5 py-2">
         <Accordion type="single" collapsible defaultValue="faq-0">
           {faqs.map((faq, idx) => (
             <AccordionItem
@@ -39,10 +39,10 @@ export function ProductFaq({
               value={`faq-${idx}`}
               className="border-none py-1"
             >
-              <AccordionTrigger className="w-full py-3.5 text-left text-sm font-semibold text-fg hover:text-primary transition-colors [&>svg]:text-fg-muted [&[data-state=open]>svg]:text-primary">
+              <AccordionTrigger className="text-fg hover:text-primary [&>svg]:text-fg-muted [&[data-state=open]>svg]:text-primary w-full py-3.5 text-left text-sm font-semibold transition-colors">
                 <span>{faq.question}</span>
               </AccordionTrigger>
-              <AccordionContent className="pb-3 text-sm text-fg-muted leading-relaxed">
+              <AccordionContent className="text-fg-muted pb-3 text-sm leading-relaxed">
                 {faq.answer}
               </AccordionContent>
             </AccordionItem>

@@ -32,7 +32,10 @@ export interface AddressesModalProps {
   onClose: () => void;
 }
 
-export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.JSX.Element {
+export function AddressesModal({
+  isOpen,
+  onClose,
+}: AddressesModalProps): React.JSX.Element {
   const { user, addAddress, updateAddress, deleteAddress, setDefaultAddress } = useAuth();
   const { addToast } = useToast();
 
@@ -50,29 +53,18 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
   const [isDefault, setIsDefault] = React.useState(false);
   const [isLocating, setIsLocating] = React.useState(false);
   const [formError, setFormError] = React.useState('');
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [busyId, setBusyId] = React.useState<string | null>(null);
 
-  const addresses = user?.addresses || [
-    {
-      id: 'addr_default',
-      tag: 'home' as const,
-      label: 'Home (Primary Delivery)',
-      name: user?.name || 'Aditya Sharma',
-      phone: user?.phone || '+91 98765 43210',
-      street: 'Bramhkanti Heritage Works, Ghat Road',
-      city: 'Varanasi',
-      state: 'Uttar Pradesh',
-      pincode: '221001',
-      isDefault: true,
-    },
-  ];
+  const addresses = user?.addresses ?? [];
 
   const resetForm = React.useCallback(() => {
     setTag('home');
-    setName(user?.name || '');
-    setPhone(user?.phone.replace('+91 ', '').replace('+91', '').trim() || '');
+    setName(user?.name === 'Bramhkanti customer' ? '' : (user?.name ?? ''));
+    setPhone(user?.phone.replace(/\D/g, '').slice(-10) ?? '');
     setStreet('');
-    setCity('Varanasi');
-    setState('Uttar Pradesh');
+    setCity('');
+    setState('');
     setPincode('');
     setIsDefault(false);
     setFormError('');
@@ -99,9 +91,15 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
     setView('form');
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !phone.trim() || !street.trim() || !city.trim() || !pincode.trim()) {
+    if (
+      !name.trim() ||
+      !phone.trim() ||
+      !street.trim() ||
+      !city.trim() ||
+      !pincode.trim()
+    ) {
       setFormError('Please fill in all address details');
       return;
     }
@@ -118,12 +116,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
       return;
     }
 
-    const label =
-      tag === 'home'
-        ? 'Home (Primary Delivery)'
-        : tag === 'work'
-          ? 'Work / Office'
-          : 'Other Delivery Address';
+    const label = tag === 'home' ? 'Home' : tag === 'work' ? 'Work' : 'Other';
 
     const addressPayload = {
       tag,
@@ -132,24 +125,24 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
       phone: `+91 ${cleanPhoneDigits}`,
       street: street.trim(),
       city: city.trim(),
-      state: state.trim() || 'Uttar Pradesh',
+      state: state.trim(),
       pincode: cleanPincode,
       isDefault,
     };
 
-    if (editingId) {
-      updateAddress(editingId, addressPayload);
-      addToast({
-        type: 'success',
-        message: 'Delivery address updated successfully.',
-      });
-    } else {
-      addAddress(addressPayload);
-      addToast({
-        type: 'success',
-        message: 'New delivery address added successfully.',
-      });
+    setIsSaving(true);
+    const result = editingId
+      ? await updateAddress(editingId, addressPayload)
+      : await addAddress(addressPayload);
+    setIsSaving(false);
+    if (!result.ok) {
+      setFormError(result.error);
+      return;
     }
+    addToast({
+      type: 'success',
+      message: editingId ? 'Address updated' : 'Address saved',
+    });
 
     setView('list');
     resetForm();
@@ -194,9 +187,16 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
               .join(', ');
 
             const detectedCity =
-              addr.city || addr.town || addr.village || addr.city_district || addr.county || 'Varanasi';
-            const detectedState = addr.state || 'Uttar Pradesh';
-            const detectedPincode = addr.postcode ? addr.postcode.replace(/\D/g, '').slice(0, 6) : '';
+              addr.city ||
+              addr.town ||
+              addr.village ||
+              addr.city_district ||
+              addr.county ||
+              '';
+            const detectedState = addr.state || '';
+            const detectedPincode = addr.postcode
+              ? addr.postcode.replace(/\D/g, '').slice(0, 6)
+              : '';
 
             if (detectedStreet) setStreet(detectedStreet);
             if (detectedCity) setCity(detectedCity);
@@ -209,20 +209,18 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
             });
           } else {
             // Fallback gracefully
-            setCity('Varanasi');
-            setState('Uttar Pradesh');
             addToast({
               type: 'info',
-              message: 'Location coordinates captured. Please review and complete your street address.',
+              message:
+                'Location coordinates captured. Please review and complete your street address.',
             });
           }
         } catch {
           // If network / sandbox is blocked, provide helpful feedback
-          setCity('Varanasi');
-          setState('Uttar Pradesh');
           addToast({
             type: 'info',
-            message: 'GPS coordinates detected. Please confirm your street address and PIN code.',
+            message:
+              'GPS coordinates detected. Please confirm your street address and PIN code.',
           });
         } finally {
           setIsLocating(false);
@@ -250,20 +248,26 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
     );
   };
 
-  const handleDelete = (id: string, label: string) => {
-    deleteAddress(id);
-    addToast({
-      type: 'info',
-      message: `${label} has been removed.`,
-    });
+  const handleDelete = async (id: string, label: string) => {
+    setBusyId(id);
+    const result = await deleteAddress(id);
+    setBusyId(null);
+    addToast(
+      result.ok
+        ? { type: 'info', message: `${label} address removed` }
+        : { type: 'error', message: result.error },
+    );
   };
 
-  const handleSetDefault = (id: string, label: string) => {
-    setDefaultAddress(id);
-    addToast({
-      type: 'success',
-      message: `${label} is now your default delivery address.`,
-    });
+  const handleSetDefault = async (id: string, label: string) => {
+    setBusyId(id);
+    const result = await setDefaultAddress(id);
+    setBusyId(null);
+    addToast(
+      result.ok
+        ? { type: 'success', message: `${label} is now your default address` }
+        : { type: 'error', message: result.error },
+    );
   };
 
   return (
@@ -277,22 +281,22 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
         }
       }}
     >
-      <DialogContent className="border-heritage-border bg-heritage-cream dark:bg-[#1c1917] dark:border-neutral-800 max-h-[90vh] max-w-lg overflow-y-auto p-6 sm:p-7">
+      <DialogContent className="border-heritage-border bg-heritage-cream max-h-[90vh] max-w-lg overflow-y-auto p-6 sm:p-7 dark:border-neutral-800 dark:bg-[#1c1917]">
         <DialogHeader className="text-left">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="bg-heritage-maroon-light dark:bg-heritage-maroon/20 text-heritage-maroon flex h-9 w-9 items-center justify-center rounded-full shrink-0">
+              <div className="bg-heritage-maroon-light dark:bg-heritage-maroon/20 text-heritage-maroon flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
                 <MapPin className="h-5 w-5" />
               </div>
               <div>
-                <DialogTitle className="text-heritage-maroon dark:text-red-400 font-serif text-xl font-bold">
+                <DialogTitle className="text-heritage-maroon font-serif text-xl font-bold dark:text-red-400">
                   {view === 'form'
                     ? editingId
-                    ? 'Edit Delivery Address'
-                    : 'Add New Delivery Address'
+                      ? 'Edit Delivery Address'
+                      : 'Add New Delivery Address'
                     : 'Saved Addresses'}
                 </DialogTitle>
-                <DialogDescription className="text-heritage-muted dark:text-neutral-400 text-xs">
+                <DialogDescription className="text-heritage-muted text-xs dark:text-neutral-400">
                   {view === 'form'
                     ? 'Enter delivery destination or use GPS location.'
                     : 'Manage saved delivery addresses for swift checkout.'}
@@ -307,7 +311,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
                   setView('list');
                   resetForm();
                 }}
-                className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 inline-flex items-center gap-1"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 <span>Back</span>
@@ -322,103 +326,105 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
              ========================================================= */
           <div className="mt-4 space-y-3">
             {addresses.length === 0 ? (
-              <div className="text-center py-8 px-4 bg-white dark:bg-[#201d1a] rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-800">
-                <MapPin className="h-8 w-8 text-neutral-300 dark:text-neutral-600 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">No saved addresses yet</p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-xs mx-auto">
-                  Add your delivery address below for swift dispatch and tracking from Varanasi.
+              <div className="rounded-2xl border border-dashed border-neutral-300 bg-white px-4 py-8 text-center dark:border-neutral-800 dark:bg-[#201d1a]">
+                <MapPin className="mx-auto mb-2 h-8 w-8 text-neutral-300 dark:text-neutral-600" />
+                <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                  No saved addresses yet
+                </p>
+                <p className="mx-auto mt-1 max-w-xs text-xs text-neutral-500 dark:text-neutral-400">
+                  Save an address for faster checkout.
                 </p>
               </div>
             ) : (
               addresses.map((addr) => {
                 const TagIcon =
-                  addr.tag === 'home'
-                    ? Home
-                    : addr.tag === 'work'
-                      ? Briefcase
-                      : Building;
+                  addr.tag === 'home' ? Home : addr.tag === 'work' ? Briefcase : Building;
 
-              return (
-                <div
-                  key={addr.id}
-                  className={`rounded-2xl border p-4 transition-all ${
-                    addr.isDefault
-                      ? 'border-heritage-maroon/40 dark:border-red-500/40 bg-white dark:bg-[#25211d] ring-1 ring-heritage-maroon/20'
-                      : 'border-neutral-200/80 dark:border-neutral-800 bg-white dark:bg-[#201d1a] hover:border-neutral-300 dark:hover:border-neutral-700'
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <TagIcon className="h-4 w-4 text-heritage-maroon dark:text-red-400 shrink-0" />
-                      <span className="text-heritage-charcoal dark:text-neutral-200 text-xs font-bold uppercase tracking-wider">
-                        {addr.label || `${addr.tag} address`}
-                      </span>
+                return (
+                  <div
+                    key={addr.id}
+                    className={`rounded-2xl border p-4 transition-all ${
+                      addr.isDefault
+                        ? 'border-heritage-maroon/40 ring-heritage-maroon/20 bg-white ring-1 dark:border-red-500/40 dark:bg-[#25211d]'
+                        : 'border-neutral-200/80 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-[#201d1a] dark:hover:border-neutral-700'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <TagIcon className="text-heritage-maroon h-4 w-4 shrink-0 dark:text-red-400" />
+                        <span className="text-heritage-charcoal text-xs font-bold tracking-wider uppercase dark:text-neutral-200">
+                          {addr.label || `${addr.tag} address`}
+                        </span>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        {addr.isDefault && (
+                          <Badge variant="maroon" className="text-[10px]">
+                            Default
+                          </Badge>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {addr.isDefault && (
-                        <Badge variant="maroon" className="text-[10px]">
-                          Default
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+                    <p className="text-heritage-charcoal mt-2.5 text-sm font-semibold dark:text-neutral-100">
+                      {addr.name}
+                    </p>
+                    <p className="text-heritage-muted mt-0.5 text-xs leading-relaxed dark:text-neutral-400">
+                      {addr.street}, {addr.city}, {addr.state} –{' '}
+                      <span className="font-mono font-medium">{addr.pincode}</span>
+                    </p>
+                    <p className="text-heritage-muted mt-1.5 text-xs dark:text-neutral-400">
+                      Contact: <span className="font-mono">{addr.phone}</span>
+                    </p>
 
-                  <p className="text-heritage-charcoal dark:text-neutral-100 mt-2.5 text-sm font-semibold">
-                    {addr.name}
-                  </p>
-                  <p className="text-heritage-muted dark:text-neutral-400 text-xs leading-relaxed mt-0.5">
-                    {addr.street}, {addr.city}, {addr.state} – <span className="font-mono font-medium">{addr.pincode}</span>
-                  </p>
-                  <p className="text-heritage-muted dark:text-neutral-400 mt-1.5 text-xs">
-                    Contact: <span className="font-mono">{addr.phone}</span>
-                  </p>
+                    <div className="mt-3.5 flex items-center justify-between border-t border-neutral-100 pt-3 text-xs dark:border-neutral-800">
+                      <div>
+                        {!addr.isDefault && (
+                          <button
+                            type="button"
+                            onClick={() => handleSetDefault(addr.id, addr.label)}
+                            disabled={busyId === addr.id}
+                            className="text-heritage-maroon font-semibold hover:underline dark:text-red-400"
+                          >
+                            Set as Default
+                          </button>
+                        )}
+                      </div>
 
-                  <div className="mt-3.5 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs">
-                    <div>
-                      {!addr.isDefault && (
+                      <div className="flex items-center gap-3">
                         <button
                           type="button"
-                          onClick={() => handleSetDefault(addr.id, addr.label)}
-                          className="font-semibold text-heritage-maroon dark:text-red-400 hover:underline"
+                          onClick={() => handleOpenEdit(addr)}
+                          className="inline-flex items-center gap-1 font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200"
                         >
-                          Set as Default
+                          <Edit2 className="h-3 w-3" />
+                          <span>Edit</span>
                         </button>
-                      )}
-                    </div>
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEdit(addr)}
-                        className="inline-flex items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium"
-                      >
-                        <Edit2 className="h-3 w-3" />
-                        <span>Edit</span>
-                      </button>
-
-                      {addresses.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(addr.id, addr.label)}
-                          className="inline-flex items-center gap-1 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                          <span>Delete</span>
-                        </button>
-                      )}
+                        {
+                          <button
+                            type="button"
+                            disabled={busyId === addr.id}
+                            onClick={() => handleDelete(addr.id, addr.label)}
+                            className="inline-flex items-center gap-1 font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            <span>Delete</span>
+                          </button>
+                        }
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            }))}
+                );
+              })
+            )}
 
             <div className="pt-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleOpenAdd}
-                className="w-full gap-2 border-dashed border-heritage-maroon/40 text-heritage-maroon dark:text-red-400 hover:bg-heritage-maroon-light dark:hover:bg-red-950/30 py-2.5 rounded-2xl"
+                className="border-heritage-maroon/40 text-heritage-maroon hover:bg-heritage-maroon-light w-full gap-2 rounded-2xl border-dashed py-2.5 dark:text-red-400 dark:hover:bg-red-950/30"
               >
                 <Plus className="h-4 w-4" />
                 <span>Add New Delivery Address</span>
@@ -431,13 +437,13 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
              ========================================================= */
           <form onSubmit={handleFormSubmit} className="mt-4 space-y-4">
             {/* GPS Fetch Button */}
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200/80 dark:border-amber-800/60 rounded-2xl p-3.5">
+            <div className="rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-50 to-orange-50 p-3.5 dark:border-amber-800/60 dark:from-amber-950/30 dark:to-orange-950/20">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <p className="text-xs font-bold text-neutral-900 dark:text-neutral-100">
                     Auto-Fill Current Address
                   </p>
-                  <p className="text-[11px] text-neutral-600 dark:text-neutral-400 mt-0.5">
+                  <p className="mt-0.5 text-[11px] text-neutral-600 dark:text-neutral-400">
                     Fetch your GPS location to instantly populate city, state, &amp; PIN.
                   </p>
                 </div>
@@ -447,7 +453,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
                   size="sm"
                   onClick={handleFetchCurrentLocation}
                   disabled={isLocating}
-                  className="shrink-0 gap-1.5 text-xs rounded-xl shadow-xs"
+                  className="shrink-0 gap-1.5 rounded-xl text-xs shadow-xs"
                 >
                   {isLocating ? (
                     <>
@@ -465,14 +471,14 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
             </div>
 
             {formError && (
-              <p className="text-red-600 text-xs font-semibold bg-red-50 dark:bg-red-950/50 p-2.5 rounded-xl border border-red-200 dark:border-red-900/60">
+              <p className="rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs font-semibold text-red-600 dark:border-red-900/60 dark:bg-red-950/50">
                 {formError}
               </p>
             )}
 
             {/* Address Tag Selector */}
             <div>
-              <label className="text-heritage-charcoal dark:text-neutral-200 block text-xs font-semibold tracking-wider uppercase mb-1.5">
+              <label className="text-heritage-charcoal mb-1.5 block text-xs font-semibold tracking-wider uppercase dark:text-neutral-200">
                 Address Tag
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -481,10 +487,10 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
                     key={t}
                     type="button"
                     onClick={() => setTag(t)}
-                    className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all capitalize ${
+                    className={`rounded-xl border px-3 py-2 text-xs font-semibold capitalize transition-all ${
                       tag === t
                         ? 'bg-heritage-maroon border-heritage-maroon text-white shadow-xs'
-                        : 'bg-white dark:bg-[#201d1a] border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-[#25211d]'
+                        : 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-[#201d1a] dark:text-neutral-300 dark:hover:bg-[#25211d]'
                     }`}
                   >
                     {t}
@@ -497,19 +503,19 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
             <div>
               <label
                 htmlFor="addr-name"
-                className="text-heritage-charcoal dark:text-neutral-200 block text-xs font-semibold tracking-wider uppercase"
+                className="text-heritage-charcoal block text-xs font-semibold tracking-wider uppercase dark:text-neutral-200"
               >
                 Recipient Full Name
               </label>
               <div className="relative mt-1">
-                <User className="text-heritage-muted dark:text-neutral-400 pointer-events-none absolute top-3 left-3 h-4 w-4" />
+                <User className="text-heritage-muted pointer-events-none absolute top-3 left-3 h-4 w-4 dark:text-neutral-400" />
                 <input
                   id="addr-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="border-heritage-border dark:border-neutral-700 bg-white dark:bg-[#25211d] text-heritage-charcoal dark:text-neutral-100 focus:border-heritage-maroon w-full rounded-xl border py-2.5 pr-3 pl-10 text-sm shadow-xs transition-colors"
+                  className="border-heritage-border text-heritage-charcoal focus:border-heritage-maroon w-full rounded-xl border bg-white py-2.5 pr-3 pl-10 text-sm shadow-xs transition-colors dark:border-neutral-700 dark:bg-[#25211d] dark:text-neutral-100"
                   placeholder="Aditya Sharma"
                 />
               </div>
@@ -519,12 +525,12 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
             <div>
               <label
                 htmlFor="addr-phone"
-                className="text-heritage-charcoal dark:text-neutral-200 block text-xs font-semibold tracking-wider uppercase"
+                className="text-heritage-charcoal block text-xs font-semibold tracking-wider uppercase dark:text-neutral-200"
               >
                 Delivery Contact Phone
               </label>
-              <div className="relative mt-1 flex rounded-xl shadow-xs overflow-hidden border border-heritage-border dark:border-neutral-700 bg-white dark:bg-[#25211d] focus-within:border-heritage-maroon transition-colors">
-                <span className="bg-neutral-50 dark:bg-neutral-800 text-heritage-muted dark:text-neutral-400 inline-flex items-center gap-1.5 border-r border-heritage-border dark:border-neutral-700 px-3 text-xs font-semibold select-none">
+              <div className="border-heritage-border focus-within:border-heritage-maroon relative mt-1 flex overflow-hidden rounded-xl border bg-white shadow-xs transition-colors dark:border-neutral-700 dark:bg-[#25211d]">
+                <span className="text-heritage-muted border-heritage-border inline-flex items-center gap-1.5 border-r bg-neutral-50 px-3 text-xs font-semibold select-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
                   <Phone className="h-3.5 w-3.5 text-neutral-400" />
                   <span>+91</span>
                 </span>
@@ -535,7 +541,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                   required
-                  className="text-heritage-charcoal dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 block w-full flex-1 border-0 px-3 py-2.5 text-sm font-mono tracking-wider focus:ring-0 focus:outline-none"
+                  className="text-heritage-charcoal block w-full flex-1 border-0 px-3 py-2.5 font-mono text-sm tracking-wider placeholder:text-neutral-400 focus:ring-0 focus:outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500"
                   placeholder="9876543210"
                 />
               </div>
@@ -545,19 +551,19 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
             <div>
               <label
                 htmlFor="addr-street"
-                className="text-heritage-charcoal dark:text-neutral-200 block text-xs font-semibold tracking-wider uppercase"
+                className="text-heritage-charcoal block text-xs font-semibold tracking-wider uppercase dark:text-neutral-200"
               >
                 House / Flat / Street / Landmark
               </label>
               <div className="relative mt-1">
-                <MapPin className="text-heritage-muted dark:text-neutral-400 pointer-events-none absolute top-3 left-3 h-4 w-4" />
+                <MapPin className="text-heritage-muted pointer-events-none absolute top-3 left-3 h-4 w-4 dark:text-neutral-400" />
                 <input
                   id="addr-street"
                   type="text"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
                   required
-                  className="border-heritage-border dark:border-neutral-700 bg-white dark:bg-[#25211d] text-heritage-charcoal dark:text-neutral-100 focus:border-heritage-maroon w-full rounded-xl border py-2.5 pr-3 pl-10 text-sm shadow-xs transition-colors"
+                  className="border-heritage-border text-heritage-charcoal focus:border-heritage-maroon w-full rounded-xl border bg-white py-2.5 pr-3 pl-10 text-sm shadow-xs transition-colors dark:border-neutral-700 dark:bg-[#25211d] dark:text-neutral-100"
                   placeholder="Bramhkanti Heritage Works, Ghat Road"
                 />
               </div>
@@ -568,7 +574,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
               <div>
                 <label
                   htmlFor="addr-city"
-                  className="text-heritage-charcoal dark:text-neutral-200 block text-xs font-semibold tracking-wider uppercase"
+                  className="text-heritage-charcoal block text-xs font-semibold tracking-wider uppercase dark:text-neutral-200"
                 >
                   City
                 </label>
@@ -578,7 +584,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   required
-                  className="border-heritage-border dark:border-neutral-700 bg-white dark:bg-[#25211d] text-heritage-charcoal dark:text-neutral-100 focus:border-heritage-maroon mt-1 w-full rounded-xl border py-2.5 px-3 text-sm shadow-xs transition-colors"
+                  className="border-heritage-border text-heritage-charcoal focus:border-heritage-maroon mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm shadow-xs transition-colors dark:border-neutral-700 dark:bg-[#25211d] dark:text-neutral-100"
                   placeholder="Varanasi"
                 />
               </div>
@@ -586,7 +592,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
               <div>
                 <label
                   htmlFor="addr-state"
-                  className="text-heritage-charcoal dark:text-neutral-200 block text-xs font-semibold tracking-wider uppercase"
+                  className="text-heritage-charcoal block text-xs font-semibold tracking-wider uppercase dark:text-neutral-200"
                 >
                   State
                 </label>
@@ -596,7 +602,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
                   value={state}
                   onChange={(e) => setState(e.target.value)}
                   required
-                  className="border-heritage-border dark:border-neutral-700 bg-white dark:bg-[#25211d] text-heritage-charcoal dark:text-neutral-100 focus:border-heritage-maroon mt-1 w-full rounded-xl border py-2.5 px-3 text-sm shadow-xs transition-colors"
+                  className="border-heritage-border text-heritage-charcoal focus:border-heritage-maroon mt-1 w-full rounded-xl border bg-white px-3 py-2.5 text-sm shadow-xs transition-colors dark:border-neutral-700 dark:bg-[#25211d] dark:text-neutral-100"
                   placeholder="Uttar Pradesh"
                 />
               </div>
@@ -606,7 +612,7 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
             <div>
               <label
                 htmlFor="addr-pincode"
-                className="text-heritage-charcoal dark:text-neutral-200 block text-xs font-semibold tracking-wider uppercase"
+                className="text-heritage-charcoal block text-xs font-semibold tracking-wider uppercase dark:text-neutral-200"
               >
                 PIN Code
               </label>
@@ -618,21 +624,23 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
                 value={pincode}
                 onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
                 required
-                className="border-heritage-border dark:border-neutral-700 bg-white dark:bg-[#25211d] text-heritage-charcoal dark:text-neutral-100 focus:border-heritage-maroon mt-1 w-full rounded-xl border py-2.5 px-3 text-sm font-mono tracking-wider shadow-xs transition-colors"
+                className="border-heritage-border text-heritage-charcoal focus:border-heritage-maroon mt-1 w-full rounded-xl border bg-white px-3 py-2.5 font-mono text-sm tracking-wider shadow-xs transition-colors dark:border-neutral-700 dark:bg-[#25211d] dark:text-neutral-100"
                 placeholder="221001"
               />
             </div>
 
             {/* Set as Default Checkbox */}
             <div className="pt-1">
-              <label className="flex items-center gap-2.5 text-xs text-neutral-800 dark:text-neutral-200 cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-2.5 text-xs text-neutral-800 dark:text-neutral-200">
                 <input
                   type="checkbox"
                   checked={isDefault}
                   onChange={(e) => setIsDefault(e.target.checked)}
-                  className="h-4 w-4 rounded-md text-heritage-maroon focus:ring-heritage-maroon border-neutral-300 dark:border-neutral-700"
+                  className="text-heritage-maroon focus:ring-heritage-maroon h-4 w-4 rounded-md border-neutral-300 dark:border-neutral-700"
                 />
-                <span className="font-medium">Set as default delivery address for all orders</span>
+                <span className="font-medium">
+                  Set as default delivery address for all orders
+                </span>
               </label>
             </div>
 
@@ -648,7 +656,13 @@ export function AddressesModal({ isOpen, onClose }: AddressesModalProps): React.
               >
                 Cancel
               </Button>
-              <Button type="submit" variant="primary" size="sm" className="gap-1.5">
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                className="gap-1.5"
+                isLoading={isSaving}
+              >
                 <Check className="h-4 w-4" />
                 <span>{editingId ? 'Update Address' : 'Save Address'}</span>
               </Button>

@@ -36,6 +36,16 @@ export class UpstreamError extends AppError {
   }
 }
 
+/**
+ * A 4xx from the backend whose message is safe to show the shopper
+ * (e.g. "Incorrect or expired OTP", "Promotion code is invalid").
+ */
+export class UserFacingError extends AppError {
+  constructor(message: string, status = 400, details?: unknown) {
+    super(message, 'USER_ERROR', status, details);
+  }
+}
+
 export class TimeoutError extends AppError {
   constructor(operation: string, timeoutMs: number) {
     super(`Operation "${operation}" timed out after ${timeoutMs}ms.`, 'TIMEOUT', 504);

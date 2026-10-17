@@ -54,6 +54,8 @@ export interface Category {
   introContent?: string | undefined;
   faqs: FaqItem[];
   image?: CategoryImage | undefined;
+  /** Short label such as 'Bestseller' (metadata `badge`). */
+  badge?: string | undefined;
   seo: SeoMetadata;
   children?: Category[] | undefined;
 }
@@ -72,7 +74,13 @@ export interface Collection {
   title: string;
   description: string;
   introContent?: string | undefined;
+  /** Banner (admin: collection metadata `banner_url`). */
   image?: CollectionImage | undefined;
+  /** Optional narrow banner for phones (metadata `banner_mobile_url`). */
+  mobileImage?: CollectionImage | undefined;
+  subtitle?: string | undefined;
+  badge?: string | undefined;
+  highlights?: string[] | undefined;
   productCount?: number | undefined;
   seo: SeoMetadata;
 }
@@ -154,6 +162,10 @@ export interface Product {
   description: string;
   images: ProductImage[];
   primaryCategoryId: string;
+  /** Handle of the primary category when the backend provides it. */
+  primaryCategoryHandle?: string | undefined;
+  /** Short line under the title, e.g. the Hindi name. */
+  subtitle?: string | undefined;
   categoryIds: string[];
   collectionIds: string[];
   tags: string[];
@@ -191,16 +203,133 @@ export interface Cart {
   id: string;
   items: CartItem[];
   itemCount: number;
+  /** Item total (GST-inclusive), before shipping and discounts. */
   subtotal: Money;
+  /** Shipping once a delivery method is chosen; undefined before that. */
   shippingEstimate?: Money | undefined;
+  discountTotal?: Money | undefined;
+  /** GST contained in the prices (prices are tax-inclusive). */
+  taxTotal?: Money | undefined;
   total: Money;
   currencyCode: string;
+  email?: string | undefined;
+  customerId?: string | undefined;
+  shippingAddress?: Address | undefined;
+  /** Shipping option id of the selected delivery method. */
+  shippingOptionId?: string | undefined;
+  promoCodes?: string[] | undefined;
+}
+
+/** Postal address. Only India is supported, so countryCode is 'in'. */
+export interface Address {
+  id?: string | undefined;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  address1: string;
+  address2?: string | undefined;
+  city: string;
+  /** State, e.g. 'Uttar Pradesh'. */
+  province: string;
+  postalCode: string;
+  countryCode: string;
+  /** Short name such as 'Home' or 'Work'. */
+  label?: string | undefined;
+  isDefault?: boolean | undefined;
+}
+
+export interface Customer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email?: string | undefined;
+  /** E.164, e.g. '+919876543210'. */
+  phone?: string | undefined;
+  addresses: Address[];
+}
+
+export interface ShippingOption {
+  id: string;
+  name: string;
+  amount: Money;
+}
+
+export type PaymentMethodKind = 'razorpay' | 'cod' | 'other';
+
+export interface PaymentMethod {
+  providerId: string;
+  kind: PaymentMethodKind;
+  label: string;
+}
+
+/** What the browser needs to open the payment UI. Never contains secrets. */
+export interface PaymentSession {
+  providerId: string;
+  /** Razorpay: razorpay_order_id, key_id, amount (paise), currency. */
+  data: Record<string, unknown>;
+}
+
+export interface OrderLine {
+  id: string;
+  title: string;
+  variantTitle: string;
+  handle: string;
+  thumbnailUrl?: string | undefined;
+  quantity: number;
+  unitPrice: Money;
+  total: Money;
+}
+
+export type OrderPaymentStatus =
+  | 'not_paid'
+  | 'awaiting'
+  | 'authorized'
+  | 'captured'
+  | 'partially_refunded'
+  | 'refunded'
+  | 'canceled'
+  | 'requires_action'
+  | 'other';
+
+export type OrderFulfillmentStatus =
+  'not_fulfilled' | 'fulfilled' | 'shipped' | 'delivered' | 'canceled' | 'other';
+
+export interface Order {
+  id: string;
+  /** Human-facing order number, e.g. 1042. */
+  displayId: number;
+  createdAt: string;
+  status: string;
+  paymentStatus: OrderPaymentStatus;
+  fulfillmentStatus: OrderFulfillmentStatus;
+  email?: string | undefined;
+  items: OrderLine[];
+  itemCount: number;
+  shippingAddress?: Address | undefined;
+  shippingMethodName?: string | undefined;
+  paymentProviderId?: string | undefined;
+  subtotal: Money;
+  shippingTotal: Money;
+  discountTotal: Money;
+  taxTotal: Money;
+  total: Money;
+  currencyCode: string;
+}
+
+export type CompleteCartResult =
+  { type: 'order'; order: Order } | { type: 'cart'; error: string };
+
+export interface OtpVerifyResult {
+  token: string;
+  /** True when this phone has no customer yet; call registerCustomer next. */
+  needsRegistration: boolean;
 }
 
 export interface ProductFilterParams {
   categoryHandle?: string | undefined;
   collectionHandle?: string | undefined;
   tags?: string[] | undefined;
+  /** Minor units (paise), like all domain money. */
   minPrice?: number | undefined;
   maxPrice?: number | undefined;
   inStockOnly?: boolean | undefined;

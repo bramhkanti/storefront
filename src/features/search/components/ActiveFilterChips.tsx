@@ -1,12 +1,7 @@
 import * as React from 'react';
 import { X, RotateCcw } from 'lucide-react';
 import type { Category } from '@/lib/api/contracts/domain';
-import {
-  PRICE_RANGES,
-  SPICE_LEVELS,
-  OIL_BASES,
-  type FilterState,
-} from '../types';
+import { PRICE_RANGES, SPICE_LEVELS, OIL_BASES, type FilterState } from '../types';
 import { cn } from '@/lib/utils/cn';
 
 export interface ActiveFilterChipsProps {
@@ -83,18 +78,16 @@ export function ActiveFilterChips({
   return (
     <div
       aria-label="Active Filters"
-      className={cn('flex items-center gap-2 flex-wrap pt-1', className)}
+      className={cn('flex flex-wrap items-center gap-2 pt-1', className)}
     >
-      <span className="text-xs font-semibold text-fg-muted">
-        Active Filters:
-      </span>
+      <span className="text-fg-muted text-xs font-semibold">Active Filters:</span>
 
       {chips.map((chip) => (
         <button
           key={chip.id}
           type="button"
           onClick={chip.onRemove}
-          className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 border border-brand-600/30 px-3 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition-colors"
+          className="bg-brand-50 border-brand-600/30 text-brand-700 hover:bg-brand-100 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-colors"
         >
           <span>{chip.label}</span>
           <X className="h-3 w-3" />
@@ -104,7 +97,7 @@ export function ActiveFilterChips({
       <button
         type="button"
         onClick={onResetAll}
-        className="inline-flex items-center gap-1 text-xs font-bold text-fg-muted hover:text-brand-700 hover:underline px-2 py-1 transition-colors"
+        className="text-fg-muted hover:text-brand-700 inline-flex items-center gap-1 px-2 py-1 text-xs font-bold transition-colors hover:underline"
       >
         <RotateCcw className="h-3 w-3" />
         <span>Clear All</span>

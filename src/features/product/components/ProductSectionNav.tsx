@@ -17,16 +17,21 @@ export function ProductSectionNav({
   hasRelated = false,
   className,
 }: ProductSectionNavProps): React.JSX.Element {
-  const tabs: TabItem[] = React.useMemo(() => [
-    { id: 'section-story', label: 'Story & Craft' },
-    { id: 'section-specs', label: 'Ingredients & Specs' },
-    { id: 'section-reviews', label: 'Rating & Reviews' },
-    { id: 'section-policy', label: 'Delivery & Policy' },
-    { id: 'section-faqs', label: 'FAQs' },
-    ...(hasRelated ? [{ id: 'section-related', label: 'Pairing Products' }] : []),
-  ], [hasRelated]);
+  const tabs: TabItem[] = React.useMemo(
+    () => [
+      { id: 'section-story', label: 'Story & Craft' },
+      { id: 'section-specs', label: 'Ingredients & Specs' },
+      { id: 'section-reviews', label: 'Rating & Reviews' },
+      { id: 'section-policy', label: 'Delivery & Policy' },
+      { id: 'section-faqs', label: 'FAQs' },
+      ...(hasRelated ? [{ id: 'section-related', label: 'Pairing Products' }] : []),
+    ],
+    [hasRelated],
+  );
 
-  const [activeTab, setActiveTab] = React.useState<string>(tabs[0]?.id ?? 'section-story');
+  const [activeTab, setActiveTab] = React.useState<string>(
+    tabs[0]?.id ?? 'section-story',
+  );
   const navContainerRef = React.useRef<HTMLDivElement>(null);
   const tabButtonRefs = React.useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -129,7 +134,7 @@ export function ProductSectionNav({
       aria-label="Product Sections Navigation"
       style={{ top: `${headerHeight}px` }}
       className={cn(
-        'sticky top-14 lg:top-20 z-30 w-full bg-white/95 backdrop-blur-md border-b border-neutral-200/80 py-2.5 transition-colors',
+        'sticky top-14 z-30 w-full border-b border-neutral-200/80 bg-white/95 py-2.5 backdrop-blur-md transition-colors lg:top-20',
         className,
       )}
     >
@@ -137,7 +142,7 @@ export function ProductSectionNav({
         ref={navContainerRef}
         role="tablist"
         aria-orientation="horizontal"
-        className="mx-auto max-w-7xl px-3 sm:px-6 flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mx-auto flex max-w-7xl [scrollbar-width:none] items-center gap-2 overflow-x-auto px-3 sm:px-6 [&::-webkit-scrollbar]:hidden"
       >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -155,7 +160,7 @@ export function ProductSectionNav({
               style={{ fontSize: '14px' }}
               onClick={() => scrollToSection(tab.id)}
               className={cn(
-                'shrink-0 rounded-full border px-4 py-2 text-[14px] leading-5 font-semibold transition-all duration-200 active:scale-95 shadow-none select-none',
+                'shrink-0 rounded-full border px-4 py-2 text-[14px] leading-5 font-semibold shadow-none transition-all duration-200 select-none active:scale-95',
                 isActive
                   ? 'border-heritage-maroon bg-heritage-maroon text-white'
                   : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-400 hover:text-neutral-900',

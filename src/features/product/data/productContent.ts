@@ -100,34 +100,46 @@ export function getEnrichedProductContent(
   // 1. Snapshot highlights based on category
   let highlights: SnapshotHighlight[];
 
-  if (normCategory.includes('achar') || titleLower.includes('achar') || titleLower.includes('pickle')) {
+  if (
+    normCategory.includes('achar') ||
+    titleLower.includes('achar') ||
+    titleLower.includes('pickle')
+  ) {
     highlights = [
       {
         id: 'sun-curing',
         icon: 'sun',
         label: '21-Day Sun Cured',
-        description: 'Matured slowly in glazed ceramic barnies under the natural Indian sun.',
+        description:
+          'Matured slowly in glazed ceramic barnies under the natural Indian sun.',
       },
       {
         id: 'pure-oil',
         icon: 'leaf',
         label: 'Wood-Pressed Virgin Mustard Oil',
-        description: 'Kachi Ghani cold-pressed mustard oil creates a natural, breathable seal.',
+        description:
+          'Kachi Ghani cold-pressed mustard oil creates a natural, breathable seal.',
       },
       {
         id: 'no-chemicals',
         icon: 'shield',
         label: 'Zero Synthetic Preservatives',
-        description: '100% free from synthetic vinegar, acetic acid, and chemical stabilizers.',
+        description:
+          '100% free from synthetic vinegar, acetic acid, and chemical stabilizers.',
       },
       {
         id: 'breakage-proof',
         icon: 'package',
         label: 'Aroma-Lock Glass Packaging',
-        description: 'Packed in food-grade glass jars with 5-layer shockproof transit cushion.',
+        description:
+          'Packed in food-grade glass jars with 5-layer shockproof transit cushion.',
       },
     ];
-  } else if (normCategory.includes('sweet') || titleLower.includes('sweet') || titleLower.includes('laddu')) {
+  } else if (
+    normCategory.includes('sweet') ||
+    titleLower.includes('sweet') ||
+    titleLower.includes('laddu')
+  ) {
     highlights = [
       {
         id: 'desi-ghee',
@@ -139,28 +151,36 @@ export function getEnrichedProductContent(
         id: 'fresh-batch',
         icon: 'clock',
         label: 'Small-Batch Fresh Preparation',
-        description: 'Cooked fresh upon order confirmation to preserve melt-in-mouth texture.',
+        description:
+          'Cooked fresh upon order confirmation to preserve melt-in-mouth texture.',
       },
       {
         id: 'natural-sweeteners',
         icon: 'leaf',
         label: 'Unrefined Heritage Sweetening',
-        description: 'Infused with organic jaggery and bura sugar with no artificial coloring.',
+        description:
+          'Infused with organic jaggery and bura sugar with no artificial coloring.',
       },
       {
         id: 'transit-fresh',
         icon: 'package',
         label: 'Vacuum Fresh Transit Pack',
-        description: 'Sealed with food-safe aroma locks to reach you as fresh as from the wok.',
+        description:
+          'Sealed with food-safe aroma locks to reach you as fresh as from the wok.',
       },
     ];
-  } else if (normCategory.includes('makhana') || titleLower.includes('makhana') || titleLower.includes('snack')) {
+  } else if (
+    normCategory.includes('makhana') ||
+    titleLower.includes('makhana') ||
+    titleLower.includes('snack')
+  ) {
     highlights = [
       {
         id: 'jumbo-grade',
         icon: 'sparkles',
         label: 'Jumbo Grade 6+ Lotus Pops',
-        description: 'Directly sourced from pristine Mithila wetlands for maximum crunch.',
+        description:
+          'Directly sourced from pristine Mithila wetlands for maximum crunch.',
       },
       {
         id: 'slow-roasted',
@@ -178,7 +198,8 @@ export function getEnrichedProductContent(
         id: 'moisture-barrier',
         icon: 'package',
         label: 'Quad-Layer Crunch Guard Pack',
-        description: 'Nitrogen-flushed foil pouch preserving peak crispness across all seasons.',
+        description:
+          'Nitrogen-flushed foil pouch preserving peak crispness across all seasons.',
       },
     ];
   } else {
@@ -193,19 +214,22 @@ export function getEnrichedProductContent(
         id: 'clean-ingredients',
         icon: 'leaf',
         label: '100% Natural Raw Materials',
-        description: 'Directly sourced from indigenous farmer cooperatives across Uttar Pradesh & Bihar.',
+        description:
+          'Directly sourced from indigenous farmer cooperatives across Uttar Pradesh & Bihar.',
       },
       {
         id: 'pure-veg',
         icon: 'shield',
         label: 'Pure Vegetarian Kitchen',
-        description: 'Prepared in a dedicated, hygienic, and FSSAI-compliant heritage facility.',
+        description:
+          'Prepared in a dedicated, hygienic, and FSSAI-compliant heritage facility.',
       },
       {
         id: 'safe-transit',
         icon: 'package',
         label: 'Breakage-Free Courier Transit',
-        description: 'Eco-conscious protective cushioning with a free replacement guarantee.',
+        description:
+          'Eco-conscious protective cushioning with a free replacement guarantee.',
       },
     ];
   }
@@ -365,7 +389,8 @@ export function getEnrichedProductContent(
     shippingHighlights: {
       dispatchTime: 'Dispatched within 24 hours directly from Varanasi',
       packagingStandard: 'Aroma-sealed food-grade glass jar with bubble cocoon armor',
-      transitAssurance: 'Pan-India insured express delivery via premium air/surface couriers',
+      transitAssurance:
+        'Pan-India insured express delivery via premium air/surface couriers',
     },
     keyHighlights,
     ingredientsGrid,

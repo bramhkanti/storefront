@@ -72,7 +72,7 @@ function AcharAttributesCard({ attributes }: { attributes: Partial<AcharAttribut
   };
 
   return (
-    <div className="border-heritage-border bg-white rounded-2xl border p-5 shadow-none">
+    <div className="border-heritage-border rounded-2xl border bg-white p-5 shadow-none">
       <h3 className="text-heritage-charcoal flex items-center gap-2 font-serif text-sm font-semibold tracking-wide">
         <Sun className="text-heritage-saffron h-4 w-4" />
         <span>Authentic Pickling Attributes</span>
@@ -127,7 +127,7 @@ function AcharAttributesCard({ attributes }: { attributes: Partial<AcharAttribut
 
 function SweetsAttributesCard({ attributes }: { attributes: Partial<SweetsAttributes> }) {
   return (
-    <div className="border-heritage-border bg-white rounded-2xl border p-5 shadow-none">
+    <div className="border-heritage-border rounded-2xl border bg-white p-5 shadow-none">
       <h3 className="text-heritage-charcoal flex items-center gap-2 font-serif text-sm font-semibold tracking-wide">
         <Sparkles className="text-heritage-gold h-4 w-4" />
         <span>Pure Desi Ghee Specifications</span>
@@ -180,7 +180,7 @@ function MakhanaAttributesCard({
   attributes: Partial<MakhanaAttributes>;
 }) {
   return (
-    <div className="border-heritage-border bg-white rounded-2xl border p-5 shadow-none">
+    <div className="border-heritage-border rounded-2xl border bg-white p-5 shadow-none">
       <h3 className="text-heritage-charcoal flex items-center gap-2 font-serif text-sm font-semibold tracking-wide">
         <Utensils className="text-heritage-saffron h-4 w-4" />
         <span>Roasting & Seasoning Specifications</span>
@@ -218,7 +218,7 @@ function MakhanaAttributesCard({
 
 function GenericAttributesCard({ attributes }: { attributes: Record<string, unknown> }) {
   return (
-    <div className="border-heritage-border bg-white rounded-2xl border p-5 shadow-none">
+    <div className="border-heritage-border rounded-2xl border bg-white p-5 shadow-none">
       <h3 className="text-heritage-charcoal font-serif text-sm font-semibold tracking-wide">
         Product Specifications
       </h3>
@@ -239,7 +239,7 @@ function GenericAttributesCard({ attributes }: { attributes: Record<string, unkn
 
 function FoodRegulatoryCard({ foodAttributes }: { foodAttributes: FoodAttributes }) {
   return (
-    <div className="border-heritage-border bg-white space-y-4 rounded-2xl border p-5 shadow-none">
+    <div className="border-heritage-border space-y-4 rounded-2xl border bg-white p-5 shadow-none">
       <div className="border-heritage-border/60 flex items-center justify-between border-b pb-3">
         <div className="flex items-center gap-2">
           <Badge variant="vegetarian">100% Pure Vegetarian</Badge>

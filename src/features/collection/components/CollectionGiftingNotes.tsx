@@ -19,31 +19,31 @@ export function CollectionGiftingNotes({
     <div
       aria-label="Gifting Recommendations"
       className={cn(
-        'rounded-2xl border border-line bg-surface p-5 sm:p-6 transition-colors',
+        'border-line bg-surface rounded-2xl border p-5 transition-colors sm:p-6',
         className,
       )}
     >
-      <div className="flex items-center gap-2.5 pb-3 border-b border-line/60">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+      <div className="border-line/60 flex items-center gap-2.5 border-b pb-3">
+        <div className="bg-brand-50 text-brand-700 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
           <Gift className="h-4 w-4" />
         </div>
         <div>
-          <h3 className="text-sm sm:text-base font-bold text-fg leading-tight">
+          <h3 className="text-fg text-sm leading-tight font-bold sm:text-base">
             Gifting Occasions & Hamper Presentation
           </h3>
-          <p className="text-xs text-fg-muted mt-0.5">
+          <p className="text-fg-muted mt-0.5 text-xs">
             Thoughtful ways to celebrate and share our {collectionTitle} selection
           </p>
         </div>
       </div>
 
-      <ul className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-4">
+      <ul className="grid grid-cols-1 gap-3 pt-4 md:grid-cols-3">
         {notes.map((note, idx) => (
           <li
             key={idx}
-            className="flex items-start gap-2.5 text-xs sm:text-sm text-fg-muted leading-relaxed"
+            className="text-fg-muted flex items-start gap-2.5 text-xs leading-relaxed sm:text-sm"
           >
-            <CheckCircle2 className="h-4 w-4 text-brand-600 shrink-0 mt-0.5" />
+            <CheckCircle2 className="text-brand-600 mt-0.5 h-4 w-4 shrink-0" />
             <span>{note}</span>
           </li>
         ))}
