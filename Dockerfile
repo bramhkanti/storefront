@@ -10,7 +10,9 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+# pnpm-workspace.yaml holds pnpm 12 settings the install needs (allowBuilds,
+# minimumReleaseAgeExclude); without it the install fails with ERR_PNPM_IGNORED_BUILDS.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Step 2: Build the Next.js standalone application
