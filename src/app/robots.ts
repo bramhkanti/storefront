@@ -25,7 +25,10 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    // sitemap.ts splits into one file per section (generateSitemaps), so there is no /sitemap.xml.
+    sitemap: ['pages', 'categories', 'collections', 'products'].map(
+      (id) => `${baseUrl}/sitemap/${id}.xml`,
+    ),
     host: baseUrl,
   };
 }
