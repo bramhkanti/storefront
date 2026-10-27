@@ -8,6 +8,7 @@ tests
 docs
 *.tsbuildinfo
 .DS_Store
-.env*.local
+.env*
+!.env.example
 .npmrc
 *.log

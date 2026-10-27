@@ -22,6 +22,37 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# Build-time settings. NEXT_PUBLIC_* are inlined into the browser bundle, and the
+# build prerenders catalog pages, so it needs a reachable Medusa (see deploy guide).
+ARG API_ADAPTER=medusa
+ARG API_BASE_URL
+ARG MEDUSA_PUBLISHABLE_KEY
+ARG MEDUSA_REGION_ID
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_BRAND_NAME=Bramhkanti
+ARG NEXT_PUBLIC_DEFAULT_LOCALE=en-IN
+ARG NEXT_PUBLIC_DEFAULT_CURRENCY=INR
+ARG NEXT_PUBLIC_SUPPORT_EMAIL
+ARG NEXT_PUBLIC_WHATSAPP_NUMBER
+ARG NEXT_PUBLIC_FSSAI_LICENSE_NUMBER
+ARG NEXT_PUBLIC_GA_MEASUREMENT_ID
+ARG NEXT_PUBLIC_SENTRY_DSN
+ARG BUILD_VERSION
+ENV API_ADAPTER=$API_ADAPTER \
+    API_BASE_URL=$API_BASE_URL \
+    MEDUSA_PUBLISHABLE_KEY=$MEDUSA_PUBLISHABLE_KEY \
+    MEDUSA_REGION_ID=$MEDUSA_REGION_ID \
+    NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
+    NEXT_PUBLIC_BRAND_NAME=$NEXT_PUBLIC_BRAND_NAME \
+    NEXT_PUBLIC_DEFAULT_LOCALE=$NEXT_PUBLIC_DEFAULT_LOCALE \
+    NEXT_PUBLIC_DEFAULT_CURRENCY=$NEXT_PUBLIC_DEFAULT_CURRENCY \
+    NEXT_PUBLIC_SUPPORT_EMAIL=$NEXT_PUBLIC_SUPPORT_EMAIL \
+    NEXT_PUBLIC_WHATSAPP_NUMBER=$NEXT_PUBLIC_WHATSAPP_NUMBER \
+    NEXT_PUBLIC_FSSAI_LICENSE_NUMBER=$NEXT_PUBLIC_FSSAI_LICENSE_NUMBER \
+    NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID \
+    NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN \
+    BUILD_VERSION=$BUILD_VERSION
+
 RUN pnpm build
 
 # Step 3: Production runner (unprivileged user, minimal footprint ~150MB)
@@ -44,6 +75,8 @@ RUN chown -R nextjs:nodejs .next public
 # Copy standalone build and static assets
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Standalone output does not include public/ (logo, home page images, fonts).
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
 
