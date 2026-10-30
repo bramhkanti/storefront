@@ -15,6 +15,10 @@ export const CACHE_TAGS = {
   productCollection: (collectionHandle: string): string =>
     `products:collection:${collectionHandle}`,
 
+  // Approved customer reviews
+  reviews: 'reviews',
+  productReviews: (productId: string): string => `reviews:${productId}`,
+
   // Category and navigation hierarchy tags
   categories: 'categories',
   category: (slug: string): string => `category:${slug}`,

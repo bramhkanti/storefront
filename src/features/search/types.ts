@@ -20,7 +20,7 @@ export const SORT_OPTIONS: Array<{ value: SortOption; label: string }> = [
   { value: 'featured', label: 'Featured & Best Match' },
   { value: 'price-asc', label: 'Price: Low to High' },
   { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'rating', label: 'Top Customer Rated (★ 4.9)' },
+  { value: 'rating', label: 'Top rated' },
   { value: 'name-asc', label: 'Alphabetical: A to Z' },
 ];
 

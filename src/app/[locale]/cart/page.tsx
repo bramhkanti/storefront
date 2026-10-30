@@ -10,11 +10,7 @@ export const instant = false;
 //   description: 'Review your items and check out.',
 //   robots: { index: false, follow: false },
 // };
-import { Button } from '@/components/ui/Button';
-import { getCart } from '@/lib/cart/queries';
-import { formatPrice } from '@/lib/utils/money';
 import { buildMetadata } from '@/lib/seo/metadata';
-import { SITE_CONFIG } from '@/content/site';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Shopping Bag',

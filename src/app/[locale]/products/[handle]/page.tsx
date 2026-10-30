@@ -11,7 +11,6 @@ import { ProductHeader } from '@/features/product/components/ProductHeader';
 import { ProductGallery } from '@/features/product/components/ProductGallery';
 import { ProductDetails } from '@/features/product/components/ProductDetails';
 import { ProductAttributeBar } from '@/features/product/components/ProductAttributeBar';
-import { ProductStoryBanner } from '@/features/product/components/ProductStoryBanner';
 import { ProductContentGrid } from '@/features/product/components/ProductContentGrid';
 import { ProductReviewsSection } from '@/features/product/components/ProductReviewsSection';
 import { ProductFaq } from '@/features/product/components/ProductFaq';
@@ -24,6 +23,7 @@ import {
   getProductsByCategory,
   getTopProductHandles,
 } from '@/features/product/queries';
+import { getProductReviews } from '@/features/product/reviews.queries';
 import { getCategoryByHandle } from '@/features/catalog/queries';
 
 import { buildProductJsonLd } from '@/lib/seo/json-ld';
@@ -79,10 +79,11 @@ export default async function ProductPage({
   // Medusa products carry the category handle; mock fixtures use the ID as handle.
   const categoryHandle = product.primaryCategoryHandle ?? product.primaryCategoryId;
 
-  const [category, relatedProducts, featured] = await Promise.all([
+  const [category, relatedProducts, featured, reviewPage] = await Promise.all([
     categoryHandle ? getCategoryByHandle(categoryHandle) : Promise.resolve(null),
     categoryHandle ? getProductsByCategory(categoryHandle, 8) : Promise.resolve([]),
     getFeaturedProducts(8),
+    getProductReviews(product.id),
   ]);
 
   // Show same-category products first, then popular products to fill the row.
@@ -103,7 +104,7 @@ export default async function ProductPage({
   const enrichedContent = getEnrichedProductContent(product, category?.name);
 
   // Product structured data for search engines.
-  const productJsonLd = buildProductJsonLd(product);
+  const productJsonLd = buildProductJsonLd(product, undefined, reviewPage);
 
   // FAQPage structured data.
   const faqJsonLd = {
@@ -168,12 +169,12 @@ export default async function ProductPage({
           </div>
 
           {/* Mobile breadcrumbs */}
-          <div className="block px-3 pt-2.5 pb-2 sm:px-4 lg:hidden">
+          <div className="block px-4 pt-3 pb-2 sm:px-6 lg:hidden">
             <Breadcrumbs items={breadcrumbs} singleLine />
           </div>
 
           <div className="grid grid-cols-1 items-start lg:grid-cols-2 lg:gap-12">
-            <div className="px-3 sm:px-4 lg:px-0">
+            <div className="px-4 sm:px-6 lg:px-0">
               <ProductGallery
                 images={product.images}
                 title={product.title}
@@ -198,15 +199,6 @@ export default async function ProductPage({
         />
       </Container>
 
-      {/* 4. Product story banner */}
-      <Container className="pt-6 sm:pt-8">
-        <ProductStoryBanner
-          title="The Perfect Blend of Tradition & Taste"
-          description={enrichedContent.subtitle}
-          imageUrl="/images/home/category-pickle.jpg"
-        />
-      </Container>
-
       {/* 5. Product details, ingredients and storage information */}
       <Container className="pt-8 sm:pt-10">
         <ProductContentGrid
@@ -219,12 +211,12 @@ export default async function ProductPage({
       </Container>
 
       {/* 6. Customer reviews and ratings */}
-      <Container className="pt-8 sm:pt-10">
+      <Container className="pt-12 sm:pt-16">
         <div id="section-reviews" className="scroll-mt-36">
           <ProductReviewsSection
-            reviews={enrichedContent.reviews}
-            rating={enrichedContent.rating}
+            productId={product.id}
             productTitle={product.title}
+            initial={reviewPage}
           />
         </div>
       </Container>

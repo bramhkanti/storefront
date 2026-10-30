@@ -4,7 +4,7 @@ export * from './components/HomeHero';
 export * from './components/SignatureRange';
 export * from './components/TrustBar';
 export * from './components/HeritageStory';
-export * from './components/Testimonials';
+export * from './components/CustomerReviews';
 export * from './components/PromoBanner';
 export * from './resolve';
 export * from './components/CollectionSpotlight';

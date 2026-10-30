@@ -121,8 +121,7 @@ const COLLECTION_REGISTRY: Record<string, EnrichedCollectionData> = {
       {
         icon: 'award',
         title: 'Top 1% Customer Favorites',
-        description:
-          'Handpicked products with over 95% repeat customer satisfaction and 4.9★ reviews.',
+        description: 'Our most ordered pickles, sweets and makhana, picked for you.',
       },
       {
         icon: 'leaf',

@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
       revalidate: 7200, // 2 hours
       expire: 604800, // 7 days
     },
+    // Approved reviews; the backend also revalidates the `reviews` tag on approval.
+    reviews: {
+      stale: 60, // 1 minute
+      revalidate: 300, // 5 minutes
+      expire: 86400, // 1 day
+    },
     redirects: {
       stale: 86400, // 1 day
       revalidate: 86400, // 1 day

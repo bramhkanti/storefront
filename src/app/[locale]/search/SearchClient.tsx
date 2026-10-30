@@ -211,8 +211,12 @@ export function SearchClient({
         });
         break;
       case 'rating':
-        // Featured products and primary bestsellers first
-        sorted.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        // Highest average from approved reviews; ties by review count.
+        sorted.sort(
+          (a, b) =>
+            (b.rating?.average ?? 0) - (a.rating?.average ?? 0) ||
+            (b.rating?.count ?? 0) - (a.rating?.count ?? 0),
+        );
         break;
       case 'name-asc':
         sorted.sort((a, b) => a.title.localeCompare(b.title));

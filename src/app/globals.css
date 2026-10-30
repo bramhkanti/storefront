@@ -48,11 +48,12 @@
   --color-warm-800: #33271f;
   --color-warm-900: #241814;
 
-  --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-sans:
     var(--font-plus-jakarta-sans), var(--font-noto-sans-devanagari), system-ui,
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
     sans-serif;
+  /* One typeface across the shop: `font-serif` headings use the sans stack too. */
+  --font-serif: var(--font-sans);
 }
 
 /* Legacy aliases: same names as before, now pointing at the new scales */

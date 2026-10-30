@@ -1,7 +1,6 @@
 import type {
   SignatureRangeItem,
   TrustPillarItem,
-  TestimonialItem,
   StorySectionData,
   PromoBannerData,
   HeroSlide,
@@ -118,36 +117,6 @@ export const HERITAGE_STORY_DATA: StorySectionData = {
     'Handcrafted rustic wooden bowl filled with yellow mustard seeds, raw green mangoes, and sun-dried chillies',
   overlayText: 'Timeless Recipes Passed Down Through Generations',
 };
-
-export const TESTIMONIALS_DATA: TestimonialItem[] = [
-  {
-    id: 'review_priya',
-    quote:
-      'Bramhkanti ka mango achar bilkul ghar jaisa swaad deta hai. The cold-pressed mustard oil aroma and tangy kick are authentic, spicy and completely natural!',
-    author: 'Priya Sharma',
-    location: 'Lucknow, Uttar Pradesh',
-    rating: 5,
-    avatarUrl: '/images/home/avatar-priya.jpg',
-  },
-  {
-    id: 'review_rahul',
-    quote:
-      'Makhana is super crunchy, fresh and non-greasy. Very healthy, tasty and roasted to perfection. My entire family loves it!',
-    author: 'Rahul Verma',
-    location: 'Noida, NCR',
-    rating: 5,
-    avatarUrl: '/images/home/avatar-rahul.jpg',
-  },
-  {
-    id: 'review_neha',
-    quote:
-      'The sweets are pure, rich and melt-in-mouth authentic. The festive gift box was the absolute highlight of our celebration!',
-    author: 'Neha Singh',
-    location: 'Varanasi, Uttar Pradesh',
-    rating: 5,
-    avatarUrl: '/images/home/avatar-neha.jpg',
-  },
-];
 
 export const PROMO_BANNER_DATA: PromoBannerData = {
   eyebrow: 'BRING HOME THE TRUE TASTE OF INDIA',

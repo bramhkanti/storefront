@@ -220,3 +220,34 @@ export type MedusaAddressDto = z.infer<typeof medusaAddressDtoSchema>;
 export type MedusaShippingOptionDto = z.infer<typeof medusaShippingOptionDtoSchema>;
 export type MedusaOrderDto = z.infer<typeof medusaOrderDtoSchema>;
 export type MedusaCustomerDto = z.infer<typeof medusaCustomerDtoSchema>;
+
+const ratingDistributionDtoSchema = z.record(z.string(), z.number());
+
+export const medusaRatingSummaryDtoSchema = z.object({
+  average: z.number(),
+  count: z.number(),
+  distribution: ratingDistributionDtoSchema,
+});
+
+export const medusaReviewDtoSchema = z.object({
+  id: z.string(),
+  display_name: z.string(),
+  rating: z.number(),
+  title: str,
+  body: z.string(),
+  verified_purchase: z.boolean().nullable().optional(),
+  created_at: z.string(),
+  product: z
+    .object({ handle: z.string(), title: z.string(), thumbnail: str })
+    .nullable()
+    .optional(),
+});
+
+export const medusaReviewListDtoSchema = z.object({
+  reviews: z.array(medusaReviewDtoSchema),
+  count: z.number(),
+  summary: medusaRatingSummaryDtoSchema,
+});
+
+export type MedusaRatingSummaryDto = z.infer<typeof medusaRatingSummaryDtoSchema>;
+export type MedusaReviewDto = z.infer<typeof medusaReviewDtoSchema>;

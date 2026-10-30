@@ -40,17 +40,19 @@ export default function NotFound(): ReactNode {
           </Link>
         </div>
 
-        <p className="text-heritage-muted pt-6 text-xs">
-          Need assistance? WhatsApp our culinary team at{' '}
-          <a
-            href={SITE_CONFIG.contact.whatsappMessageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-heritage-green font-medium underline"
-          >
-            {SITE_CONFIG.contact.whatsappNumber}
-          </a>
-        </p>
+        {SITE_CONFIG.contact.whatsappMessageUrl && (
+          <p className="text-heritage-muted pt-6 text-xs">
+            Need assistance? WhatsApp our culinary team at{' '}
+            <a
+              href={SITE_CONFIG.contact.whatsappMessageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-heritage-green font-medium underline"
+            >
+              {SITE_CONFIG.contact.whatsappNumber}
+            </a>
+          </p>
+        )}
       </Container>
     </div>
   );

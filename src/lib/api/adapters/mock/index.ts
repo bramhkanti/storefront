@@ -12,7 +12,11 @@ import type {
   PaymentSession,
   Product,
   ProductFilterParams,
+  ProductReview,
+  ProductReviewPage,
+  RatingSummary,
   Redirect,
+  ReviewInput,
   ShippingOption,
 } from '../../contracts/domain';
 import type {
@@ -23,6 +27,8 @@ import type {
   CustomerAuthService,
   ProductReader,
   RedirectReader,
+  ReviewReader,
+  ReviewService,
   SearchService,
 } from '../../contracts/readers';
 import { NotFoundError, UserFacingError } from '../../errors';
@@ -47,7 +53,9 @@ export class MockAdapter
     SearchService,
     CartService,
     CheckoutService,
-    CustomerAuthService
+    CustomerAuthService,
+    ReviewReader,
+    ReviewService
 {
   private categories: Category[];
   private products: Product[];
@@ -57,6 +65,10 @@ export class MockAdapter
   private orders = new Map<string, Order & { customerId?: string | undefined }>();
   private customers = new Map<string, Customer>();
   private pendingOtps = new Set<string>();
+  /** Starts empty: the demo never shows made-up reviews. */
+  private reviews: Array<
+    ProductReview & { productId: string; customerId: string; approved: boolean }
+  > = [];
 
   constructor(
     categories: Category[] = MOCK_CATEGORIES,
@@ -629,6 +641,83 @@ export class MockAdapter
   async getCustomerOrder(token: string, orderId: string): Promise<Order | null> {
     const order = this.orders.get(orderId);
     return order && order.customerId === this.customerIdFromToken(token) ? order : null;
+  }
+
+  // --- ReviewReader / ReviewService ---
+
+  private approvedReviews(productId?: string) {
+    return this.reviews
+      .filter((r) => r.approved && (!productId || r.productId === productId))
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+
+  async listProductReviews(
+    productId: string,
+    options: { limit?: number | undefined; offset?: number | undefined } = {},
+  ): Promise<ProductReviewPage> {
+    const { limit = 10, offset = 0 } = options;
+    const approved = this.approvedReviews(productId);
+    const summary = (await this.getRatingSummaries([productId]))[productId]!;
+    return {
+      reviews: approved.slice(offset, offset + limit),
+      total: approved.length,
+      summary,
+    };
+  }
+
+  async getRatingSummaries(productIds: string[]): Promise<Record<string, RatingSummary>> {
+    const result: Record<string, RatingSummary> = {};
+    for (const id of productIds) {
+      const approved = this.approvedReviews(id);
+      const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      for (const review of approved) {
+        distribution[review.rating as 1 | 2 | 3 | 4 | 5] += 1;
+      }
+      const total = approved.reduce((sum, review) => sum + review.rating, 0);
+      result[id] = {
+        average: approved.length ? Math.round((total / approved.length) * 10) / 10 : 0,
+        count: approved.length,
+        distribution,
+      };
+    }
+    return result;
+  }
+
+  async listLatestReviews(limit = 6, minRating = 1): Promise<ProductReview[]> {
+    return this.approvedReviews()
+      .filter((review) => review.rating >= minRating)
+      .slice(0, limit);
+  }
+
+  async submitReview(
+    token: string,
+    input: ReviewInput,
+  ): Promise<{ status: 'pending'; verifiedPurchase: boolean }> {
+    const customerId = this.customerIdFromToken(token);
+    if (!customerId) throw new UserFacingError('Please log in to write a review', 401);
+    if (!this.products.some((p) => p.id === input.productId)) {
+      throw new NotFoundError('Product', input.productId);
+    }
+    if (
+      this.reviews.some(
+        (r) => r.productId === input.productId && r.customerId === customerId,
+      )
+    ) {
+      throw new UserFacingError('You have already reviewed this product', 422);
+    }
+    this.reviews.push({
+      id: `rev_mock_${this.reviews.length + 1}`,
+      productId: input.productId,
+      customerId,
+      authorName: 'Demo customer',
+      rating: input.rating,
+      title: input.title,
+      body: input.body,
+      verifiedPurchase: false,
+      createdAt: new Date().toISOString(),
+      approved: false,
+    });
+    return { status: 'pending', verifiedPurchase: false };
   }
 }
 

@@ -13,7 +13,11 @@ import type {
   PaymentSession,
   Product,
   ProductFilterParams,
+  ProductReview,
+  ProductReviewPage,
+  RatingSummary,
   Redirect,
+  ReviewInput,
   ShippingOption,
 } from '../../contracts/domain';
 import type {
@@ -24,6 +28,8 @@ import type {
   CustomerAuthService,
   ProductReader,
   RedirectReader,
+  ReviewReader,
+  ReviewService,
   SearchService,
 } from '../../contracts/readers';
 import { UpstreamError, UserFacingError } from '../../errors';
@@ -40,6 +46,9 @@ import {
   medusaCustomerDtoSchema,
   medusaOrderDtoSchema,
   medusaProductDtoSchema,
+  medusaRatingSummaryDtoSchema,
+  medusaReviewDtoSchema,
+  medusaReviewListDtoSchema,
   medusaShippingOptionDtoSchema,
 } from './dto';
 import {
@@ -51,6 +60,8 @@ import {
   mapMedusaCustomerToDomain,
   mapMedusaOrderToDomain,
   mapMedusaProductToDomain,
+  mapMedusaRatingSummaryToDomain,
+  mapMedusaReviewToDomain,
   mapMedusaShippingOptionToDomain,
 } from './mappers';
 
@@ -97,7 +108,9 @@ export class MedusaAdapter
     SearchService,
     CartService,
     CheckoutService,
-    CustomerAuthService
+    CustomerAuthService,
+    ReviewReader,
+    ReviewService
 {
   private client: Medusa;
   private regionIdPromise: Promise<string> | null = null;
@@ -134,6 +147,23 @@ export class MedusaAdapter
       if (parsed.success) items.push(mapMedusaProductToDomain(parsed.data));
     }
     return items;
+  }
+
+  /** Adds review ratings to products. Ratings are optional: failures are ignored. */
+  private async withRatings(products: Product[]): Promise<Product[]> {
+    if (!products.length) return products;
+    try {
+      const summaries = await this.getRatingSummaries(products.map((p) => p.id));
+      return products.map((product) => {
+        const summary = summaries[product.id];
+        return summary?.count
+          ? { ...product, rating: { average: summary.average, count: summary.count } }
+          : product;
+      });
+    } catch (error: unknown) {
+      console.warn('Could not load review ratings', error);
+      return products;
+    }
   }
 
   private parseCart(raw: unknown): Cart {
@@ -225,7 +255,8 @@ export class MedusaAdapter
         region_id: await this.regionId(),
         fields: PRODUCT_FIELDS,
       });
-      return this.parseProducts(products)[0] ?? null;
+      const [product] = await this.withRatings(this.parseProducts(products).slice(0, 1));
+      return product ?? null;
     } catch (error: unknown) {
       throw toAppError(error, `Failed to fetch product ${handle}`);
     }
@@ -269,7 +300,7 @@ export class MedusaAdapter
 
     try {
       const response = await this.client.store.product.list(query);
-      let items = this.parseProducts(response.products);
+      let items = await this.withRatings(this.parseProducts(response.products));
 
       if (!inMemory) {
         const total = response.count ?? items.length;
@@ -383,9 +414,96 @@ export class MedusaAdapter
         region_id: await this.regionId(),
         fields: PRODUCT_FIELDS,
       });
-      return this.parseProducts(products);
+      return await this.withRatings(this.parseProducts(products));
     } catch (error: unknown) {
       throw toAppError(error, `Failed to search products for "${query}"`);
+    }
+  }
+
+  // --- ReviewReader / ReviewService ---
+
+  async listProductReviews(
+    productId: string,
+    options: { limit?: number | undefined; offset?: number | undefined } = {},
+  ): Promise<ProductReviewPage> {
+    const { limit = 10, offset = 0 } = options;
+    try {
+      const raw = await this.client.client.fetch<unknown>(
+        `/store/products/${encodeURIComponent(productId)}/reviews`,
+        { query: { limit, offset } },
+      );
+      const parsed = medusaReviewListDtoSchema.safeParse(raw);
+      if (!parsed.success) throw new UpstreamError('Unexpected reviews response');
+      return {
+        reviews: parsed.data.reviews.map(mapMedusaReviewToDomain),
+        total: parsed.data.count,
+        summary: mapMedusaRatingSummaryToDomain(parsed.data.summary),
+      };
+    } catch (error: unknown) {
+      throw toAppError(error, 'Failed to load reviews');
+    }
+  }
+
+  async getRatingSummaries(productIds: string[]): Promise<Record<string, RatingSummary>> {
+    if (!productIds.length) return {};
+    try {
+      const { summaries } = await this.client.client.fetch<{ summaries: unknown }>(
+        '/store/review-summaries',
+        { query: { product_ids: productIds.join(',') } },
+      );
+      const result: Record<string, RatingSummary> = {};
+      for (const [id, raw] of Object.entries(
+        (summaries ?? {}) as Record<string, unknown>,
+      )) {
+        const parsed = medusaRatingSummaryDtoSchema.safeParse(raw);
+        if (parsed.success) result[id] = mapMedusaRatingSummaryToDomain(parsed.data);
+      }
+      return result;
+    } catch (error: unknown) {
+      throw toAppError(error, 'Failed to load ratings');
+    }
+  }
+
+  async listLatestReviews(limit = 6, minRating = 1): Promise<ProductReview[]> {
+    try {
+      const { reviews } = await this.client.client.fetch<{ reviews: unknown[] }>(
+        '/store/reviews',
+        { query: { limit, min_rating: minRating } },
+      );
+      const items: ProductReview[] = [];
+      for (const raw of reviews ?? []) {
+        const parsed = medusaReviewDtoSchema.safeParse(raw);
+        if (parsed.success) items.push(mapMedusaReviewToDomain(parsed.data));
+      }
+      return items;
+    } catch (error: unknown) {
+      throw toAppError(error, 'Failed to load reviews');
+    }
+  }
+
+  async submitReview(
+    token: string,
+    input: ReviewInput,
+  ): Promise<{ status: 'pending' | 'approved' | 'rejected'; verifiedPurchase: boolean }> {
+    try {
+      const { review } = await this.client.client.fetch<{
+        review: {
+          status: 'pending' | 'approved' | 'rejected';
+          verified_purchase: boolean;
+        };
+      }>('/store/reviews', {
+        method: 'POST',
+        headers: bearer(token),
+        body: {
+          product_id: input.productId,
+          rating: input.rating,
+          body: input.body,
+          ...(input.title ? { title: input.title } : {}),
+        },
+      });
+      return { status: review.status, verifiedPurchase: review.verified_purchase };
+    } catch (error: unknown) {
+      throw toAppError(error, 'Could not submit your review');
     }
   }
 
