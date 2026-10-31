@@ -34,7 +34,6 @@ export function ProductGallery({
   const touchStartX = React.useRef<number | null>(null);
 
   const count = images.length;
-  const selectedImage = images[selectedIndex] ?? images[0];
 
   const goTo = React.useCallback(
     (nextIndex: number) => {

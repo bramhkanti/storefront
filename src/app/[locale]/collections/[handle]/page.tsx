@@ -3,10 +3,9 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowRight, HelpCircle, Check } from 'lucide-react';
+import { ArrowRight, HelpCircle } from 'lucide-react';
 
 import { atLeastOne, PLACEHOLDER_SLUG } from '@/lib/routing/static-params';
-import { cn } from '@/lib/utils/cn';
 import { isSupportedLocale } from '@/lib/i18n';
 import { buildCollectionJsonLd, buildFaqJsonLd } from '@/lib/seo/json-ld';
 import { buildMetadata } from '@/lib/seo/metadata';
@@ -128,8 +127,6 @@ export default async function CollectionPage({
   const collectionJsonLd = buildCollectionJsonLd(collection, allProducts);
 
   const faqJsonLd = enriched.faqs.length > 0 ? buildFaqJsonLd(enriched.faqs) : null;
-
-  const eyebrow = [collection.badge, collection.subtitle].filter(Boolean).join(' · ');
 
   return (
     <div className="bg-page text-fg space-y-10 py-8 sm:space-y-14 sm:py-12">

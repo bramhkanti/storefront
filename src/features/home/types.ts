@@ -19,15 +19,6 @@ export interface TrustPillarItem {
   iconName: 'leaf' | 'pot' | 'oil' | 'shield' | 'truck';
 }
 
-export interface TestimonialItem {
-  id: string;
-  quote: string;
-  author: string;
-  location: string;
-  rating: number;
-  avatarUrl: string;
-}
-
 export interface StorySectionData {
   eyebrow: string;
   title: string;

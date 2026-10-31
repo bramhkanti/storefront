@@ -55,6 +55,10 @@ function persistLocaleCookie(locale: Locale): void {
   }
 }
 
+// WhatsApp when configured, otherwise email.
+const SUPPORT_HREF =
+  SITE_CONFIG.contact.whatsappMessageUrl || `mailto:${SITE_CONFIG.contact.supportEmail}`;
+
 export function ProfileView(): React.JSX.Element {
   const router = useRouter();
   const pathname = usePathname() || '/';
@@ -371,7 +375,7 @@ export function ProfileView(): React.JSX.Element {
           <div className="divide-y divide-neutral-100/80 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white dark:divide-neutral-800/80 dark:border-neutral-800 dark:bg-[#1c1917]">
             {/* Help Center & WhatsApp Care */}
             <a
-              href={SITE_CONFIG.contact.whatsappMessageUrl}
+              href={SUPPORT_HREF}
               target="_blank"
               rel="noopener noreferrer"
               className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-neutral-50 active:bg-neutral-100/70 dark:hover:bg-[#25211d]/70"
@@ -636,7 +640,7 @@ export function ProfileView(): React.JSX.Element {
                 right here.
               </p>
               <a
-                href={SITE_CONFIG.contact.whatsappMessageUrl}
+                href={SUPPORT_HREF}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3.5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700"
@@ -865,7 +869,7 @@ export function ProfileView(): React.JSX.Element {
               <div className="divide-y divide-neutral-100 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-[#1c1917]">
                 {/* WhatsApp Support Desk */}
                 <a
-                  href={SITE_CONFIG.contact.whatsappMessageUrl}
+                  href={SUPPORT_HREF}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group flex w-full items-center justify-between p-5 text-left transition-colors hover:bg-neutral-50/80 dark:hover:bg-[#25211d]/70"

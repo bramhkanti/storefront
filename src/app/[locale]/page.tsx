@@ -5,7 +5,7 @@ import {
   SignatureRange,
   TrustBar,
   HeritageStory,
-  Testimonials,
+  CustomerReviews,
   PromoBanner,
   CollectionSpotlight,
   BRAND_HERO_SLIDE,
@@ -17,6 +17,7 @@ import { getCategoryTree } from '@/features/catalog/queries';
 import { listCollections } from '@/features/collection/queries';
 import { ProductShowcase } from '@/features/product/components/ProductShowcase';
 import { getFeaturedProducts } from '@/features/product/queries';
+import { getLatestReviews } from '@/features/product/reviews.queries';
 import {
   buildOrganizationJsonLd,
   buildWebSiteJsonLd,
@@ -52,10 +53,11 @@ export async function generateMetadata({
 }
 
 export default async function HomePage(): Promise<ReactNode> {
-  const [categories, collections, featured] = await Promise.all([
+  const [categories, collections, featured, latestReviews] = await Promise.all([
     getCategoryTree(),
     listCollections(),
     getFeaturedProducts(8),
+    getLatestReviews(6),
   ]);
   const signatureItems = resolveSignatureRange(
     SIGNATURE_RANGE_ITEMS,
@@ -153,8 +155,8 @@ export default async function HomePage(): Promise<ReactNode> {
       {/* 6. Brand story */}
       <HeritageStory />
 
-      {/* 7. Reviews */}
-      <Testimonials />
+      {/* 7. Real customer reviews (hidden until there are approved ones) */}
+      <CustomerReviews reviews={latestReviews} />
 
       {/* 8. Closing call to action */}
       <PromoBanner />

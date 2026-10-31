@@ -16,7 +16,13 @@ import { CACHE_TAGS } from '@/lib/cache/tags';
 export async function getProductByHandle(handle: string): Promise<Product | null> {
   'use cache';
   cacheLife('catalog');
-  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.products, CACHE_TAGS.product(handle));
+  // `reviews`: the product carries its rating.
+  cacheTag(
+    CACHE_TAGS.catalog,
+    CACHE_TAGS.products,
+    CACHE_TAGS.product(handle),
+    CACHE_TAGS.reviews,
+  );
 
   const reader = getProductReader();
   return reader.getProductByHandle(handle);
@@ -33,6 +39,7 @@ export async function listProducts(
   cacheTag(
     CACHE_TAGS.catalog,
     CACHE_TAGS.products,
+    CACHE_TAGS.reviews,
     ...(filter?.categoryHandle
       ? [CACHE_TAGS.productCategory(filter.categoryHandle)]
       : []),
@@ -51,7 +58,7 @@ export async function listProducts(
 export async function getFeaturedProducts(limit: number = 6): Promise<Product[]> {
   'use cache';
   cacheLife('catalog');
-  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.products);
+  cacheTag(CACHE_TAGS.catalog, CACHE_TAGS.products, CACHE_TAGS.reviews);
 
   const reader = getProductReader();
   return reader.getFeaturedProducts(limit);
@@ -83,6 +90,7 @@ export async function getProductsByCategory(
   cacheTag(
     CACHE_TAGS.catalog,
     CACHE_TAGS.products,
+    CACHE_TAGS.reviews,
     CACHE_TAGS.productCategory(categoryHandle),
   );
 

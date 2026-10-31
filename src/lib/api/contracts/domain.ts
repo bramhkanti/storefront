@@ -176,8 +176,45 @@ export interface Product {
   seo: SeoMetadata;
   status: 'published' | 'draft' | 'archived';
   featured?: boolean | undefined;
+  /** Average of approved customer reviews; undefined until someone reviews it. */
+  rating?: { average: number; count: number } | undefined;
   createdAt: string;
   updatedAt: string;
+}
+
+/** Approved reviews only. `distribution` counts reviews per star, 1 to 5. */
+export interface RatingSummary {
+  average: number;
+  count: number;
+  distribution: Record<1 | 2 | 3 | 4 | 5, number>;
+}
+
+export interface ProductReview {
+  id: string;
+  /** Public name, e.g. 'Priya S.'. */
+  authorName: string;
+  rating: number;
+  title?: string | undefined;
+  body: string;
+  /** The reviewer has an order containing this product. */
+  verifiedPurchase: boolean;
+  createdAt: string;
+  /** Set on cross-product lists (home page). */
+  product?:
+    { handle: string; title: string; thumbnailUrl?: string | undefined } | undefined;
+}
+
+export interface ProductReviewPage {
+  reviews: ProductReview[];
+  total: number;
+  summary: RatingSummary;
+}
+
+export interface ReviewInput {
+  productId: string;
+  rating: number;
+  title?: string | undefined;
+  body: string;
 }
 
 export interface Redirect {

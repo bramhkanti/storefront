@@ -12,7 +12,11 @@ import type {
   PaymentSession,
   Product,
   ProductFilterParams,
+  ProductReview,
+  ProductReviewPage,
+  RatingSummary,
   Redirect,
+  ReviewInput,
   ShippingOption,
 } from './domain';
 
@@ -44,6 +48,25 @@ export interface CollectionReader {
 export interface RedirectReader {
   getRedirect(path: string): Promise<Redirect | null>;
   listAllRedirects(): Promise<Redirect[]>;
+}
+
+/** Approved customer reviews. */
+export interface ReviewReader {
+  listProductReviews(
+    productId: string,
+    options?: { limit?: number | undefined; offset?: number | undefined },
+  ): Promise<ProductReviewPage>;
+  getRatingSummaries(productIds: string[]): Promise<Record<string, RatingSummary>>;
+  /** Newest approved reviews across the catalog, e.g. for the home page. */
+  listLatestReviews(limit?: number, minRating?: number): Promise<ProductReview[]>;
+}
+
+export interface ReviewService {
+  /** New reviews wait for moderation before they are shown. */
+  submitReview(
+    token: string,
+    input: ReviewInput,
+  ): Promise<{ status: 'pending' | 'approved' | 'rejected'; verifiedPurchase: boolean }>;
 }
 
 export interface SearchService {

@@ -11,6 +11,8 @@ import type {
   CustomerAuthService,
   ProductReader,
   RedirectReader,
+  ReviewReader,
+  ReviewService,
   SearchService,
 } from './contracts/readers';
 
@@ -31,6 +33,8 @@ interface ApiContainer {
   cartService: CartService;
   checkoutService: CheckoutService;
   customerAuthService: CustomerAuthService;
+  reviewReader: ReviewReader;
+  reviewService: ReviewService;
 }
 
 let containerInstance: ApiContainer | null = null;
@@ -59,6 +63,8 @@ function createContainer(): ApiContainer {
       cartService: medusaAdapter,
       checkoutService: medusaAdapter,
       customerAuthService: medusaAdapter,
+      reviewReader: medusaAdapter,
+      reviewService: medusaAdapter,
     };
   }
 
@@ -74,6 +80,8 @@ function createContainer(): ApiContainer {
     cartService: mockAdapter,
     checkoutService: mockAdapter,
     customerAuthService: mockAdapter,
+    reviewReader: mockAdapter,
+    reviewService: mockAdapter,
   };
 }
 
@@ -115,4 +123,12 @@ export function getCheckoutService(): CheckoutService {
 
 export function getCustomerAuthService(): CustomerAuthService {
   return getContainer().customerAuthService;
+}
+
+export function getReviewReader(): ReviewReader {
+  return getContainer().reviewReader;
+}
+
+export function getReviewService(): ReviewService {
+  return getContainer().reviewService;
 }

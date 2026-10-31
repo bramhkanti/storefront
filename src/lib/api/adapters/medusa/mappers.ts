@@ -14,7 +14,9 @@ import type {
   OrderPaymentStatus,
   Product,
   ProductImage,
+  ProductReview,
   ProductVariant,
+  RatingSummary,
   ShippingOption,
 } from '../../contracts/domain';
 import type {
@@ -26,6 +28,8 @@ import type {
   MedusaLineItemDto,
   MedusaOrderDto,
   MedusaProductDto,
+  MedusaRatingSummaryDto,
+  MedusaReviewDto,
   MedusaShippingOptionDto,
 } from './dto';
 
@@ -370,5 +374,35 @@ export function mapMedusaCustomerToDomain(dto: MedusaCustomerDto): Customer {
     email: dto.email ?? undefined,
     phone: dto.phone ?? undefined,
     addresses: (dto.addresses ?? []).map(mapMedusaAddressToDomain),
+  };
+}
+
+export function mapMedusaRatingSummaryToDomain(
+  dto: MedusaRatingSummaryDto,
+): RatingSummary {
+  const star = (n: number) => dto.distribution[String(n)] ?? 0;
+  return {
+    average: dto.average,
+    count: dto.count,
+    distribution: { 1: star(1), 2: star(2), 3: star(3), 4: star(4), 5: star(5) },
+  };
+}
+
+export function mapMedusaReviewToDomain(dto: MedusaReviewDto): ProductReview {
+  return {
+    id: dto.id,
+    authorName: dto.display_name,
+    rating: dto.rating,
+    title: dto.title ?? undefined,
+    body: dto.body,
+    verifiedPurchase: Boolean(dto.verified_purchase),
+    createdAt: dto.created_at,
+    product: dto.product
+      ? {
+          handle: dto.product.handle,
+          title: dto.product.title,
+          thumbnailUrl: dto.product.thumbnail ?? undefined,
+        }
+      : undefined,
   };
 }

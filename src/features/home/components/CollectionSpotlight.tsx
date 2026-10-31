@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { Container } from '@/components/layout/Container';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 import type { Collection } from '@/lib/api/contracts/domain';
 import { cn } from '@/lib/utils/cn';
 
@@ -18,31 +19,21 @@ export function CollectionSpotlight({
   if (tiles.length === 0) return null;
 
   return (
-    <section className="py-14 sm:py-20" aria-labelledby="collections-heading">
+    <section className="py-10 sm:py-16" aria-labelledby="collections-heading">
       <Container>
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-heritage-maroon text-xs font-semibold tracking-[0.18em] uppercase">
-              Curated for you
-            </p>
-            <h2
-              id="collections-heading"
-              className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
-            >
-              Shop our collections
-            </h2>
-          </div>
-          <Link
-            href="/collections"
-            className="text-heritage-maroon inline-flex items-center gap-1 text-sm font-semibold hover:underline"
-          >
-            View all <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
+        <SectionHeading
+          id="collections-heading"
+          eyebrow="Curated for you"
+          title="Shop our collections"
+          action={{ href: '/collections', label: 'View all' }}
+        />
+      </Container>
 
+      <Container className="mt-6 px-0 sm:mt-8 sm:px-6 lg:px-8">
         <div
           className={cn(
-            'mt-8 grid gap-4 sm:gap-5',
+            // Swipeable on phones, a 1 large + 2 stacked grid on desktop.
+            'flex snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] gap-3 overflow-x-auto px-4 pb-2 sm:grid sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden',
             tiles.length > 1 && 'lg:grid-cols-2 lg:grid-rows-2',
           )}
         >
@@ -53,8 +44,10 @@ export function CollectionSpotlight({
                 key={c.id}
                 href={`/collections/${c.handle}`}
                 className={cn(
-                  'group relative isolate flex flex-col justify-end overflow-hidden rounded-3xl bg-neutral-900 p-6 text-white sm:p-8',
-                  large ? 'aspect-[4/3] lg:row-span-2 lg:aspect-auto' : 'aspect-[16/9]',
+                  'group relative isolate flex w-[82vw] max-w-md shrink-0 snap-start flex-col justify-end overflow-hidden rounded-2xl bg-neutral-900 p-5 text-white sm:w-auto sm:max-w-none sm:rounded-3xl sm:p-8',
+                  large
+                    ? 'aspect-[4/5] sm:aspect-[16/9] lg:row-span-2 lg:aspect-auto'
+                    : 'aspect-[4/5] sm:aspect-[16/9]',
                 )}
               >
                 <Image

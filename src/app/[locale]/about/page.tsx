@@ -93,8 +93,12 @@ export default function AboutPage(): ReactNode {
                 <ShieldCheck className="h-4 w-4" />
                 <span>{SITE_CONFIG.brand.fssaiBadgeText}</span>
               </span>
-              <span>•</span>
-              <span>FSSAI Lic. No. {SITE_CONFIG.brand.fssaiLicenseNumber}</span>
+              {SITE_CONFIG.brand.fssaiLicenseNumber && (
+                <>
+                  <span>•</span>
+                  <span>FSSAI Lic. No. {SITE_CONFIG.brand.fssaiLicenseNumber}</span>
+                </>
+              )}
               <span>•</span>
               <span>Est. {SITE_CONFIG.brand.foundedYear}</span>
             </div>

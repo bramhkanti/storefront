@@ -12,11 +12,9 @@ import {
   Lock,
   Minus,
   Plus,
-  Share2,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
-  Star,
   Truck,
   Zap,
 } from 'lucide-react';
@@ -29,12 +27,12 @@ import {
   AccordionTrigger,
 } from '@/components/ui/Accordion';
 import { Button } from '@/components/ui/Button';
+import { StarRating } from '@/components/ui/StarRating';
 import { SITE_CONFIG } from '@/content/site';
 import { useCart } from '@/lib/cart';
 import { useCartUi, useToast } from '@/lib/store';
 import { calculateDiscountPercent, formatPrice } from '@/lib/utils/money';
 import { cn } from '@/lib/utils/cn';
-import { WishlistButton } from './WishlistButton';
 
 import type { SnapshotHighlight } from '../data/productContent';
 
@@ -46,7 +44,6 @@ export interface ProductDetailsProps {
   className?: string | undefined;
 }
 
-const LOW_STOCK = 5;
 const MAX_QUANTITY = 20;
 
 /** Convert values such as "spice_level" into "Spice level". */
@@ -126,7 +123,7 @@ export function ProductDetails({
 
   const ctaRef = React.useRef<HTMLDivElement | null>(null);
 
-  const variants = product.variants ?? [];
+  const variants = React.useMemo(() => product.variants ?? [], [product.variants]);
   const firstAvailable = variants.find((variant) => variant.inStock) ?? variants[0];
 
   const unpriced =
@@ -435,29 +432,6 @@ export function ProductDetails({
     }
   };
 
-  const handleShare = async () => {
-    const url = window.location.href;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: product.title,
-          url,
-        });
-        return;
-      }
-
-      await navigator.clipboard.writeText(url);
-
-      addToast({
-        type: 'success',
-        message: 'Link copied',
-      });
-    } catch {
-      // The user may dismiss the native share sheet.
-    }
-  };
-
   const food = product.foodAttributes;
   const ingredients = food?.ingredients ?? [];
   const allergens = food?.allergens ?? [];
@@ -484,41 +458,29 @@ export function ProductDetails({
   }
 
   return (
-    <div className={cn('text-fg w-full space-y-6 pt-2 pb-24 sm:pb-8 lg:pt-0', className)}>
+    <div
+      className={cn(
+        'text-fg w-full space-y-6 px-4 pt-4 pb-24 sm:px-6 sm:pb-8 lg:px-0 lg:pt-0',
+        className,
+      )}
+    >
       {/* Product heading, category, sharing and wishlist */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          {categoryName ? (
-            categoryHref ? (
-              <Link
-                href={categoryHref}
-                className="text-primary text-xs font-semibold tracking-[0.15em] uppercase hover:underline"
-              >
-                {categoryName}
-              </Link>
-            ) : (
-              <span className="text-primary text-xs font-semibold tracking-[0.15em] uppercase">
-                {categoryName}
-              </span>
-            )
-          ) : (
-            <span />
-          )}
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleShare}
-              aria-label="Share this product"
-              className="border-line text-fg-muted hover:border-brand-600 hover:text-primary flex h-9 w-9 items-center justify-center rounded-full border transition-colors"
+        {categoryName &&
+          (categoryHref ? (
+            <Link
+              href={categoryHref}
+              className="text-primary text-xs font-semibold tracking-[0.14em] uppercase hover:underline"
             >
-              <Share2 className="h-4 w-4" />
-            </button>
-            <WishlistButton product={product} size="md" className="shrink-0" />
-          </div>
-        </div>
+              {categoryName}
+            </Link>
+          ) : (
+            <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+              {categoryName}
+            </p>
+          ))}
 
-        <h1 className="text-fg font-serif text-2xl leading-snug font-bold tracking-tight sm:text-3xl">
+        <h1 className="text-fg text-2xl leading-tight font-bold tracking-tight text-balance sm:text-3xl">
           {product.title}
         </h1>
 
@@ -528,24 +490,27 @@ export function ProductDetails({
           </p>
         )}
 
-        {/* Rating display retained from the redesign. */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-0.5" aria-label="Rated 4.9 out of 5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Star
-                key={index}
-                className="fill-star text-star h-4 w-4"
-                aria-hidden="true"
-              />
-            ))}
-          </div>
-          <span className="text-sm font-bold">4.9</span>
-          <span className="text-fg-muted text-xs">(1,240 reviews)</span>
-          <span className="bg-success-tint text-success-text inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold">
-            <Check className="h-3 w-3 stroke-[3]" />
-            Verified Buyers
-          </span>
-        </div>
+        {/* Rating from approved customer reviews. */}
+        <a
+          href="#section-reviews"
+          className="group inline-flex flex-wrap items-center gap-2 text-sm"
+        >
+          {product.rating && product.rating.count > 0 ? (
+            <>
+              <StarRating value={product.rating.average} size="md" />
+              <span className="font-semibold tabular-nums">
+                {product.rating.average.toFixed(1)}
+              </span>
+              <span className="text-fg-muted group-hover:text-primary underline-offset-4 group-hover:underline">
+                {product.rating.count} {product.rating.count === 1 ? 'review' : 'reviews'}
+              </span>
+            </>
+          ) : (
+            <span className="text-fg-muted group-hover:text-primary underline-offset-4 group-hover:underline">
+              No reviews yet. Be the first to review
+            </span>
+          )}
+        </a>
       </div>
 
       {/* Price information uses the actual product variant prices. */}
@@ -866,7 +831,9 @@ export function ProductDetails({
           {
             icon: ShieldCheck,
             title: 'FSSAI licensed',
-            text: `Lic. ${SITE_CONFIG.brand.fssaiLicenseNumber}`,
+            text: SITE_CONFIG.brand.fssaiLicenseNumber
+              ? `Lic. ${SITE_CONFIG.brand.fssaiLicenseNumber}`
+              : 'Made in a licensed kitchen',
           },
           {
             icon: Truck,

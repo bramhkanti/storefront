@@ -12,42 +12,9 @@ export interface ProductFaqItem {
   answer: string;
 }
 
-export interface ReviewImage {
-  url: string;
-  alt: string;
-}
-
-export interface AuthorReply {
-  author: string;
-  role?: string;
-  date: string;
-  body: string;
-}
-
-export interface ProductReviewItem {
-  id: string;
-  author: string;
-  location: string;
-  rating: number;
-  date: string;
-  title: string;
-  body: string;
-  verifiedBuyer: boolean;
-  orderId?: string | undefined;
-  packSizePurchased?: string | undefined;
-  helpfulCount: number;
-  images?: ReviewImage[] | undefined;
-  authorReply?: AuthorReply | undefined;
-}
-
 export interface EnrichedProductContent {
   brandOrigin: string;
   subtitle: string;
-  rating: {
-    average: number;
-    count: number;
-    label: string;
-  };
   highlights: SnapshotHighlight[];
   heritageStory: {
     title: string;
@@ -59,7 +26,6 @@ export interface EnrichedProductContent {
     bestEnjoyedWith: string[];
     chefTip: string;
   };
-  reviews: ProductReviewItem[];
   faqs: ProductFaqItem[];
   shippingHighlights: {
     dispatchTime: string;
@@ -292,49 +258,6 @@ export function getEnrichedProductContent(
     },
   ];
 
-  // 5. Verified Customer Reviews (Matching Mockup 3 cards)
-  const reviews: ProductReviewItem[] = [
-    {
-      id: 'rev-1',
-      author: 'Priya Sharma',
-      location: 'Bengaluru, Karnataka',
-      rating: 5,
-      date: '2 days ago',
-      orderId: 'BK-DEL-89241',
-      title: 'Tastes like childhood summers in Varanasi!',
-      body: "Authentic taste and perfect spice level. Reminds me of my mother's hand-made pickle. Highly recommended!",
-      verifiedBuyer: true,
-      packSizePurchased: '250 g',
-      helpfulCount: 48,
-    },
-    {
-      id: 'rev-2',
-      author: 'Rohit Verma',
-      location: 'New Delhi',
-      rating: 5,
-      date: '5 days ago',
-      orderId: 'BK-DEL-76518',
-      title: 'Best mango pickle I have had so far',
-      body: "Best mango pickle I've had so far. Quality is top-notch and the flavours are amazing.",
-      verifiedBuyer: true,
-      packSizePurchased: '500 g',
-      helpfulCount: 34,
-    },
-    {
-      id: 'rev-3',
-      author: 'Neha Singh',
-      location: 'Varanasi, UP',
-      rating: 5,
-      date: '1 week ago',
-      orderId: 'BK-DEL-65412',
-      title: 'The taste is exactly like traditional homemade',
-      body: 'Absolutely delicious! The taste is exactly like traditional homemade pickle.',
-      verifiedBuyer: true,
-      packSizePurchased: '1 kg',
-      helpfulCount: 29,
-    },
-  ];
-
   // 6. Section Specific Datasets matching the uploaded mockup
   const keyHighlights = [
     'Made with real, handpicked mangoes',
@@ -376,15 +299,9 @@ export function getEnrichedProductContent(
   return {
     brandOrigin: 'BRAMHKANTI HERITAGE • VARANASI KITCHEN',
     subtitle: categoryName ?? 'Heritage Collection',
-    rating: {
-      average: 4.9,
-      count: 1240,
-      label: '4.9 out of 5 stars based on 1,240 verified Indian households',
-    },
     highlights,
     heritageStory,
     tastingAndPairings,
-    reviews,
     faqs,
     shippingHighlights: {
       dispatchTime: 'Dispatched within 24 hours directly from Varanasi',

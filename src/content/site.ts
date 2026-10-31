@@ -1,6 +1,25 @@
+import { publicEnv } from '@/lib/env.public';
 import { ENGLISH_DICTIONARY } from '@/lib/i18n';
 
 const { common, navigation, cart } = ENGLISH_DICTIONARY;
+
+// Real business details come from NEXT_PUBLIC_* settings (deploy/.env, then
+// rebuild the storefront). Unset values are hidden instead of showing samples.
+const FSSAI_LICENSE = publicEnv.NEXT_PUBLIC_FSSAI_LICENSE_NUMBER ?? '';
+const WHATSAPP_DIGITS = publicEnv.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '';
+const SUPPORT_EMAIL =
+  publicEnv.NEXT_PUBLIC_SUPPORT_EMAIL ?? navigation.contact.supportEmail;
+
+/** 919876543210 -> '+91 98765 43210'. */
+function formatPhone(digits: string): string {
+  if (!digits) return '';
+  if (digits.length === 12 && digits.startsWith('91')) {
+    return `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`;
+  }
+  return `+${digits}`;
+}
+
+const ORDER_HELP_TEXT = 'Hello Bramhkanti, I have an inquiry about my order.';
 
 /**
  * Centralized site copy, brand constants, and regulatory metadata.
@@ -16,16 +35,20 @@ export const SITE_CONFIG = {
     description: common.brand.description,
     foundedYear: 2024,
     copyrightYear: 2026,
-    fssaiLicenseNumber: '10024011000123',
-    fssaiBadgeText: common.certifications.fssaiBadge,
+    fssaiLicenseNumber: FSSAI_LICENSE,
+    fssaiBadgeText: FSSAI_LICENSE
+      ? `FSSAI Lic. No. ${FSSAI_LICENSE} • 100% Pure Vegetarian`
+      : '100% Pure Vegetarian',
     countryOfOrigin: 'India',
   },
   contact: {
-    supportEmail: navigation.contact.supportEmail,
-    supportPhone: navigation.contact.supportPhone,
-    whatsappNumber: '+91 98765 43210',
-    whatsappMessageUrl:
-      'https://wa.me/919876543210?text=Hello%20Bramhkanti,%20I%20have%20an%20inquiry%20about%20my%20order.',
+    supportEmail: SUPPORT_EMAIL,
+    supportPhone: formatPhone(WHATSAPP_DIGITS),
+    whatsappNumber: formatPhone(WHATSAPP_DIGITS),
+    /** Empty when NEXT_PUBLIC_WHATSAPP_NUMBER is not set. */
+    whatsappMessageUrl: WHATSAPP_DIGITS
+      ? `https://wa.me/${WHATSAPP_DIGITS}?text=${encodeURIComponent(ORDER_HELP_TEXT)}`
+      : '',
     operatingHours: navigation.contact.operatingHours,
     address: {
       line1: 'Bramhkanti Heritage Works, Ghat Road',

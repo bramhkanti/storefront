@@ -1,4 +1,9 @@
-import type { Category, Collection, Product } from '@/lib/api/contracts/domain';
+import type {
+  Category,
+  Collection,
+  Product,
+  ProductReviewPage,
+} from '@/lib/api/contracts/domain';
 import { publicEnv } from '@/lib/env.public';
 import { SITE_CONFIG } from '@/content/site';
 
@@ -28,7 +33,10 @@ export function buildOrganizationJsonLd(baseUrl?: string) {
     contactPoint: [
       {
         '@type': 'ContactPoint',
-        telephone: SITE_CONFIG.contact.supportPhone,
+        ...(SITE_CONFIG.contact.supportPhone
+          ? { telephone: SITE_CONFIG.contact.supportPhone }
+          : {}),
+        email: SITE_CONFIG.contact.supportEmail,
         contactType: 'customer service',
         areaServed: 'IN',
         availableLanguage: ['English', 'Hindi'],
@@ -64,7 +72,11 @@ export function buildWebSiteJsonLd(baseUrl?: string) {
  * Generate Schema.org Product structured data for rich Google Shopping snippets.
  * Supports multi-variant AggregateOffer with price ranges and discrete variant offers.
  */
-export function buildProductJsonLd(product: Product, baseUrl?: string) {
+export function buildProductJsonLd(
+  product: Product,
+  baseUrl?: string,
+  reviewPage?: ProductReviewPage,
+) {
   const siteUrl = baseUrl ?? publicEnv.NEXT_PUBLIC_SITE_URL;
   const primaryVariant = product.variants[0];
   const hasMultipleVariants = product.variants.length > 1;
@@ -136,13 +148,30 @@ export function buildProductJsonLd(product: Product, baseUrl?: string) {
     countryOfOrigin: 'IN',
     suitableForDiet: 'https://schema.org/VegetarianDiet',
     offers,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      reviewCount: '142',
-      bestRating: '5',
-      worstRating: '1',
-    },
+    // Only real, approved reviews: Google penalises made-up ratings.
+    ...(reviewPage && reviewPage.summary.count > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: reviewPage.summary.average.toFixed(1),
+            reviewCount: reviewPage.summary.count,
+            bestRating: '5',
+            worstRating: '1',
+          },
+          review: reviewPage.reviews.map((review) => ({
+            '@type': 'Review',
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: review.rating,
+              bestRating: '5',
+            },
+            author: { '@type': 'Person', name: review.authorName },
+            datePublished: review.createdAt.slice(0, 10),
+            ...(review.title ? { name: review.title } : {}),
+            reviewBody: review.body,
+          })),
+        }
+      : {}),
   };
 }
 

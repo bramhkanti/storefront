@@ -182,14 +182,20 @@ export function CategoryBestSellers({
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className="fill-star text-star h-3 w-3" />
-                        ))}
+                    {product.rating && product.rating.count > 0 && (
+                      <div className="flex items-center gap-1">
+                        <Star
+                          className="fill-star text-star h-3 w-3"
+                          aria-hidden="true"
+                        />
+                        <span className="text-fg text-[11px] font-bold">
+                          {product.rating.average.toFixed(1)}
+                        </span>
+                        <span className="text-fg-muted text-[11px]">
+                          ({product.rating.count})
+                        </span>
                       </div>
-                      <span className="text-fg text-[11px] font-bold">4.9</span>
-                    </div>
+                    )}
                   </div>
 
                   {/* Title */}

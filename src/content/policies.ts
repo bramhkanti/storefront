@@ -63,7 +63,7 @@ export const POLICIES: Record<PolicySlug, PolicyContent> = {
       {
         heading: '5. Real-Time Consignment Tracking',
         paragraphs: [
-          'The moment your package departs Varanasi, a tracking link is sent via SMS and WhatsApp. You may also contact our customer care desk at care@bramhkanti.com or WhatsApp (+91 98765 43210) for real-time delivery status.',
+          'The moment your package departs Varanasi, a tracking link is sent via SMS and WhatsApp. You may also contact our customer care desk (see the Contact page) for real-time delivery status.',
         ],
       },
     ],
@@ -91,7 +91,7 @@ export const POLICIES: Record<PolicySlug, PolicyContent> = {
         bulletPoints: [
           'Step 1: Inspect your consignment upon receipt from the courier partner.',
           'Step 2: If the outer packaging or inner jar seal is compromised, take 1 or 2 clear photographs of the package.',
-          'Step 3: Share the photos with your Order ID on WhatsApp at +91 98765 43210 or email care@bramhkanti.com within 24 hours of delivery.',
+          'Step 3: Share the photos with your Order ID with our customer care desk (see the Contact page) within 24 hours of delivery.',
         ],
       },
       {
@@ -171,7 +171,9 @@ export const POLICIES: Record<PolicySlug, PolicyContent> = {
         heading: '1. Regulatory Identification & FSSAI Licensing',
         paragraphs: [
           `This e-commerce platform is owned and operated by ${SITE_CONFIG.brand.legalName}, registered in the Republic of India.`,
-          `All food processing, packaging, and distribution conforms strictly to the Food Safety and Standards Act, 2006 under FSSAI Central/State Registration License No. ${SITE_CONFIG.brand.fssaiLicenseNumber}.`,
+          SITE_CONFIG.brand.fssaiLicenseNumber
+            ? `All food processing, packaging, and distribution conforms strictly to the Food Safety and Standards Act, 2006 under FSSAI Central/State Registration License No. ${SITE_CONFIG.brand.fssaiLicenseNumber}.`
+            : 'All food processing, packaging, and distribution conforms strictly to the Food Safety and Standards Act, 2006.',
         ],
       },
       {

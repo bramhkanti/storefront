@@ -27,11 +27,11 @@ export function Footer({ categories = [] }: FooterProps) {
       )}
     >
       {/* Main Footer Links & Info */}
-      <div className="py-12 sm:py-16">
+      <div className="pt-12 pb-24 sm:py-16">
         <Container>
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-5">
             {/* Column 1: Brand & FSSAI (2 spans on desktop) */}
-            <div className="space-y-4 lg:col-span-2">
+            <div className="col-span-2 space-y-4">
               <Link href="/" className="inline-block">
                 <span className="text-heritage-maroon font-serif text-2xl font-extrabold tracking-tight">
                   {SITE_CONFIG.brand.name}
@@ -49,12 +49,14 @@ export function Footer({ categories = [] }: FooterProps) {
                     FSSAI Registered
                   </span>
                 </div>
-                <p className="text-heritage-muted mt-1.5 text-xs">
-                  Lic. No.{' '}
-                  <span className="font-mono font-medium">
-                    {SITE_CONFIG.brand.fssaiLicenseNumber}
-                  </span>
-                </p>
+                {SITE_CONFIG.brand.fssaiLicenseNumber && (
+                  <p className="text-heritage-muted mt-1.5 text-xs">
+                    Lic. No.{' '}
+                    <span className="font-mono font-medium">
+                      {SITE_CONFIG.brand.fssaiLicenseNumber}
+                    </span>
+                  </p>
+                )}
                 <p className="text-heritage-muted text-[11px]">
                   Manufactured in a certified pure vegetarian Indian kitchen.
                 </p>
@@ -102,24 +104,26 @@ export function Footer({ categories = [] }: FooterProps) {
                 {SITE_CONFIG.footer.customerCareTitle}
               </h4>
               <ul className="space-y-2.5 text-sm">
-                <li>
-                  <a
-                    href={SITE_CONFIG.contact.whatsappMessageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-heritage-green inline-flex items-center gap-2 font-medium hover:underline"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    <span>WhatsApp Order Help</span>
-                  </a>
-                </li>
+                {SITE_CONFIG.contact.whatsappMessageUrl && (
+                  <li>
+                    <a
+                      href={SITE_CONFIG.contact.whatsappMessageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-heritage-green inline-flex items-center gap-2 font-medium hover:underline"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      <span>WhatsApp Order Help</span>
+                    </a>
+                  </li>
+                )}
                 <li>
                   <a
                     href={`mailto:${SITE_CONFIG.contact.supportEmail}`}
                     className="text-heritage-muted hover:text-heritage-maroon inline-flex items-center gap-2"
                   >
                     <Mail className="h-4 w-4" />
-                    <span>{SITE_CONFIG.contact.supportEmail}</span>
+                    <span className="break-all">{SITE_CONFIG.contact.supportEmail}</span>
                   </a>
                 </li>
                 <li className="text-heritage-muted pt-1 text-xs">

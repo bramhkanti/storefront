@@ -17,13 +17,13 @@
   },
   "contact": {
     "supportEmail": "care@bramhkanti.com",
-    "supportPhone": "+91 98765 43210",
+    "supportPhone": "",
     "whatsapp": "WhatsApp Support",
     "operatingHours": "Mon - Sat: 9:00 AM - 7:00 PM IST",
     "location": "Varanasi, Uttar Pradesh, India"
   },
   "legal": {
     "rightsReserved": "All rights reserved.",
-    "fssaiLicense": "FSSAI Lic. No. 10024011000123"
+    "fssaiLicense": "FSSAI Lic. No."
   }
 }

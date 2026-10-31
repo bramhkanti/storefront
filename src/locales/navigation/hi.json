@@ -17,13 +17,13 @@
   },
   "contact": {
     "supportEmail": "care@bramhkanti.com",
-    "supportPhone": "+91 98765 43210",
+    "supportPhone": "",
     "whatsapp": "व्हाट्सएप सहायता",
     "operatingHours": "सोमवार - शनिवार: सुबह ९:०० से शाम ७:०० IST",
     "location": "वाराणसी, उत्तर प्रदेश, भारत"
   },
   "legal": {
     "rightsReserved": "सर्वाधिकार सुरक्षित।",
-    "fssaiLicense": "FSSAI लाइसेंस क्र. 10024011000123"
+    "fssaiLicense": "FSSAI लाइसेंस क्र."
   }
 }
