@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Check, Plus, Star } from 'lucide-react';
+import { Check, Star } from 'lucide-react';
 
 import type { Product } from '@/lib/api/contracts/domain';
 import { useCart } from '@/lib/cart';
@@ -40,7 +40,6 @@ export function ProductCard({
   // Show unpriced products as upcoming instead of displaying ₹0.
   const unpriced = product.variants.every((variant) => variant.price.amount === 0);
 
-  const hasChoice = product.variants.length > 1;
   const [primaryImage, hoverImage] = product.images;
   const href = `/products/${product.handle}`;
 
@@ -71,14 +70,17 @@ export function ProductCard({
   };
 
   const actionClass =
-    'flex h-10 w-full items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2';
+    'flex h-10 w-full items-center justify-center gap-1.5 rounded-lg text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2';
 
   return (
     <article
-      className={cn('group relative flex h-full min-h-[340px] flex-col', className)}
+      className={cn(
+        'group bg-surface border-line relative flex h-full flex-col rounded-2xl border p-2 shadow-[0_1px_3px_rgb(36_24_20/0.06),0_4px_12px_rgb(36_24_20/0.04)] transition-shadow duration-300 hover:shadow-[0_2px_6px_rgb(36_24_20/0.08),0_12px_28px_rgb(36_24_20/0.10)] sm:p-2.5',
+        className,
+      )}
     >
       {/* Image */}
-      <div className="bg-surface-soft relative aspect-square overflow-hidden rounded-2xl">
+      <div className="bg-surface-soft relative aspect-square overflow-hidden rounded-xl">
         <Link href={href} aria-label={product.title} className="absolute inset-0">
           {primaryImage ? (
             <>
@@ -132,38 +134,30 @@ export function ProductCard({
       </div>
 
       {/* Details */}
-      <div className="flex flex-1 flex-col pt-3">
-        <div className="flex items-start gap-1.5">
-          {product.foodAttributes.isVegetarian && <VegMark className="mt-[3px]" />}
-          <h3 className="text-fg line-clamp-2 text-sm leading-snug font-semibold sm:text-[15px]">
-            <Link href={href} className="hover:text-primary transition-colors">
-              {product.title}
-            </Link>
-          </h3>
-        </div>
-
-        {product.subtitle && (
-          <p className="text-fg-muted mt-0.5 line-clamp-1 text-xs">{product.subtitle}</p>
-        )}
+      <div className="flex flex-1 flex-col px-1 pt-3 pb-1">
+        <h3 className="text-fg line-clamp-2 text-sm leading-snug font-medium sm:text-[15px]">
+          <Link href={href} className="hover:text-primary transition-colors">
+            {product.foodAttributes.isVegetarian && (
+              <VegMark className="mr-1.5 inline-flex align-[-2px]" />
+            )}
+            {product.title}
+          </Link>
+        </h3>
 
         {product.rating && product.rating.count > 0 && (
-          <p className="text-fg mt-1.5 flex items-center gap-1 text-xs">
+          <p className="text-fg-muted mt-1 flex items-center gap-1 text-xs">
             <Star className="fill-star text-star h-3.5 w-3.5" aria-hidden="true" />
-            <span className="font-semibold tabular-nums">
-              {product.rating.average.toFixed(1)}
-            </span>
-            <span className="text-fg-muted tabular-nums">
-              ({product.rating.count}
-              <span className="sr-only"> reviews</span>)
+            <span className="tabular-nums">{product.rating.average.toFixed(1)}</span>
+            <span className="tabular-nums">
+              | {product.rating.count}
+              <span className="sr-only"> reviews</span>
             </span>
           </p>
         )}
 
-        {/* Price */}
-        <div className="mt-auto pt-2.5">
+        <div className="mt-auto pt-2">
           {cheapest && !unpriced ? (
-            <p className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-              {hasChoice && <span className="text-fg-muted text-xs">From</span>}
+            <p className="flex flex-wrap items-baseline gap-x-1.5">
               <span className="text-fg text-base font-bold tabular-nums">
                 {formatPrice(cheapest.price.amount, cheapest.price.currencyCode)}
               </span>
@@ -176,38 +170,24 @@ export function ProductCard({
                 </span>
               )}
               {cheapest.title && (
-                <span className="text-fg-muted w-full truncate text-[11px]">
-                  {cheapest.title}
-                </span>
+                <span className="text-fg-muted text-xs">· {cheapest.title}</span>
               )}
             </p>
           ) : (
-            <p className="text-fg-muted text-sm font-medium">Coming soon</p>
+            <p className="text-fg-muted text-sm">Coming soon</p>
           )}
 
-          {/* Action */}
           <div className="mt-2.5">
-            {inStock && hasChoice ? (
-              <Link
-                href={href}
-                aria-label={`Choose a pack of ${product.title}`}
-                className={cn(
-                  actionClass,
-                  'border-line text-fg hover:border-primary hover:text-primary border',
-                )}
-              >
-                Choose pack
-              </Link>
-            ) : inStock ? (
+            {inStock ? (
               <button
                 type="button"
                 onClick={quickAdd}
                 disabled={isPending || !cheapest}
-                aria-label={`Add ${product.title} ${cheapest?.title ?? ''} to bag`}
+                aria-label={`Add ${product.title} ${cheapest?.title ?? ''} to cart`}
                 className={cn(
                   actionClass,
-                  'bg-primary-tint text-primary hover:bg-primary hover:text-on-primary disabled:cursor-not-allowed disabled:opacity-60',
-                  justAdded && 'bg-success hover:bg-success text-white hover:text-white',
+                  'bg-primary text-on-primary hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60',
+                  justAdded && 'bg-success hover:bg-success',
                 )}
               >
                 {justAdded ? (
@@ -215,9 +195,7 @@ export function ProductCard({
                     <Check className="h-4 w-4" aria-hidden="true" /> Added
                   </>
                 ) : (
-                  <>
-                    <Plus className="h-4 w-4" aria-hidden="true" /> Add to bag
-                  </>
+                  'Add to cart'
                 )}
               </button>
             ) : (

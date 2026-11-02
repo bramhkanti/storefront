@@ -3,21 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  Check,
-  Clock,
-  Droplets,
-  Flame,
-  Leaf,
-  Lock,
-  Minus,
-  Plus,
-  ShieldCheck,
-  ShoppingBag,
-  Sparkles,
-  Truck,
-  Zap,
-} from 'lucide-react';
+import { Check, Minus, Plus, ShoppingBag, Zap } from 'lucide-react';
 
 import type { Product, ProductVariant } from '@/lib/api/contracts/domain';
 import {
@@ -28,7 +14,6 @@ import {
 } from '@/components/ui/Accordion';
 import { Button } from '@/components/ui/Button';
 import { StarRating } from '@/components/ui/StarRating';
-import { SITE_CONFIG } from '@/content/site';
 import { useCart } from '@/lib/cart';
 import { useCartUi, useToast } from '@/lib/store';
 import { calculateDiscountPercent, formatPrice } from '@/lib/utils/money';
@@ -308,52 +293,6 @@ export function ProductDetails({
         )
       : 0;
 
-  const productInfo = React.useMemo(() => {
-    const attributes = product.attributes ?? {};
-    const food = product.foodAttributes;
-
-    const isVeg = food?.isVegetarian ?? true;
-    const shelfLife = food?.shelfLife || '12 Months';
-
-    const rawOil =
-      (attributes.oilType as string | undefined) ??
-      (attributes.gheeType as string | undefined);
-
-    let oilOrBase = 'Oil: Mustard Oil';
-
-    if (rawOil) {
-      if (/oil[\s-]*free/i.test(rawOil)) {
-        oilOrBase = 'Sun-Dried / Oil-Free';
-      } else if (/ghee/i.test(rawOil)) {
-        oilOrBase = `Base: ${rawOil}`;
-      } else {
-        oilOrBase = `Oil: ${rawOil}`;
-      }
-    } else if (
-      product.categoryIds?.includes('cat_sweets') ||
-      product.primaryCategoryId === 'cat_sweets'
-    ) {
-      oilOrBase = 'Base: Pure Desi Ghee';
-    }
-
-    const rawSpice = attributes.spiceLevel as string | undefined;
-    const isSweet =
-      product.categoryIds?.includes('cat_sweets') ||
-      product.primaryCategoryId === 'cat_sweets';
-
-    return {
-      isVeg,
-      shelfLife: `Shelf Life: ${shelfLife}`,
-      oilOrBase,
-      spiceOrStyle: rawSpice
-        ? `Spice Level: ${rawSpice}`
-        : isSweet
-          ? 'Traditional Sweet'
-          : 'Artisanal Batch',
-      hasSpice: Boolean(rawSpice),
-    };
-  }, [product]);
-
   const handleAddToCart = async (): Promise<boolean> => {
     if (totalItems === 0 || isPending || isAdding) {
       return false;
@@ -551,59 +490,10 @@ export function ProductDetails({
         </div>
       )}
 
-      {/* Product specifications */}
-      <div className="border-line grid grid-cols-2 gap-x-4 gap-y-3 border-y py-4 text-xs">
-        <div className="flex items-center gap-2">
-          <span
-            className={cn(
-              'flex h-4 w-4 shrink-0 items-center justify-center rounded-[3px] border p-[2px]',
-              productInfo.isVeg ? 'border-emerald-600' : 'border-red-600',
-            )}
-            aria-label={productInfo.isVeg ? 'Vegetarian' : 'Non-vegetarian'}
-          >
-            <span
-              className={cn(
-                'h-2 w-2 rounded-full',
-                productInfo.isVeg ? 'bg-emerald-600' : 'bg-red-600',
-              )}
-            />
-          </span>
-          <span className="font-medium">
-            {productInfo.isVeg ? '100% Pure Vegetarian' : 'Non-vegetarian'}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {productInfo.hasSpice ? (
-            <Flame className="text-primary h-4 w-4 shrink-0" />
-          ) : (
-            <Sparkles className="text-primary h-4 w-4 shrink-0" />
-          )}
-          <span className="font-medium">{productInfo.spiceOrStyle}</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Droplets className="text-primary h-4 w-4 shrink-0" />
-          <span className="font-medium">{productInfo.oilOrBase}</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Clock className="text-primary h-4 w-4 shrink-0" />
-          <span className="font-medium">{productInfo.shelfLife}</span>
-        </div>
-      </div>
-
       {/* Multi-pack selector */}
       {!unpriced && (
         <div className="space-y-3">
-          <div>
-            <h2 className="text-fg text-lg font-bold sm:text-xl">
-              Choose your pack sizes
-            </h2>
-            <p className="text-fg-muted mt-1 text-sm">
-              Mix and match pack sizes. Each size is packed separately.
-            </p>
-          </div>
+          <h2 className="text-fg text-sm font-bold">Pack size</h2>
 
           <div className="space-y-3">
             {variants.map((variant, index) => {
@@ -819,42 +709,6 @@ export function ProductDetails({
           </div>
         </div>
       )}
-
-      {/* Delivery and checkout promises */}
-      <ul className="border-line bg-line grid grid-cols-2 gap-px overflow-hidden rounded-2xl border text-sm">
-        {[
-          {
-            icon: Leaf,
-            title: 'Vegetarian options',
-            text: 'Product details show ingredients',
-          },
-          {
-            icon: ShieldCheck,
-            title: 'FSSAI licensed',
-            text: SITE_CONFIG.brand.fssaiLicenseNumber
-              ? `Lic. ${SITE_CONFIG.brand.fssaiLicenseNumber}`
-              : 'Made in a licensed kitchen',
-          },
-          {
-            icon: Truck,
-            title: 'Ships across India',
-            text: 'Charges shown at checkout',
-          },
-          {
-            icon: Lock,
-            title: 'Secure checkout',
-            text: 'Verified checkout and payments',
-          },
-        ].map(({ icon: Icon, title, text }) => (
-          <li key={title} className="bg-surface flex items-start gap-3 p-3 sm:p-4">
-            <Icon className="text-primary mt-0.5 h-5 w-5 shrink-0" />
-            <span>
-              <span className="block font-semibold">{title}</span>
-              <span className="text-fg-muted mt-0.5 block text-xs">{text}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
 
       {/* Product information accordions */}
       <Accordion

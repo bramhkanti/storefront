@@ -22,8 +22,7 @@ export function SignatureRange({
       <Container>
         <SectionHeading
           id="signature-range-heading"
-          eyebrow="Shop by category"
-          title="Pure. Traditional. Delicious."
+          title="Shop by category"
           action={{ href: '/categories', label: 'All categories' }}
         />
 
@@ -54,12 +53,6 @@ export function SignatureRange({
               <h3 className="text-lg font-bold tracking-tight sm:text-2xl">
                 {item.name}
               </h3>
-              <p className="mt-0.5 line-clamp-1 text-xs text-white/80 sm:line-clamp-none sm:text-sm">
-                {item.tagline}
-              </p>
-              <span className="mt-3 hidden text-sm font-semibold underline-offset-4 group-hover:underline sm:block">
-                {item.linkText}
-              </span>
             </Link>
           ))}
         </div>
