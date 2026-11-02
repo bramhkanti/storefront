@@ -10,8 +10,6 @@ import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { ProductHeader } from '@/features/product/components/ProductHeader';
 import { ProductGallery } from '@/features/product/components/ProductGallery';
 import { ProductDetails } from '@/features/product/components/ProductDetails';
-import { ProductAttributeBar } from '@/features/product/components/ProductAttributeBar';
-import { ProductContentGrid } from '@/features/product/components/ProductContentGrid';
 import { ProductReviewsSection } from '@/features/product/components/ProductReviewsSection';
 import { ProductFaq } from '@/features/product/components/ProductFaq';
 import { ProductGrid } from '@/features/product/components/ProductGrid';
@@ -191,25 +189,6 @@ export default async function ProductPage({
         </div>
       </div>
 
-      {/* 3. Brand and craft attributes */}
-      <Container className="pt-6 sm:pt-8">
-        <ProductAttributeBar
-          desktopItems={enrichedContent.desktopAttributeBar}
-          mobileItems={enrichedContent.mobileTrustBadges}
-        />
-      </Container>
-
-      {/* 5. Product details, ingredients and storage information */}
-      <Container className="pt-8 sm:pt-10">
-        <ProductContentGrid
-          keyHighlights={enrichedContent.keyHighlights}
-          storyNarrative={enrichedContent.heritageStory.narrative.join(' ')}
-          ingredients={enrichedContent.ingredientsGrid}
-          storageInstructions={enrichedContent.storageInstructions}
-          shippingHighlights={enrichedContent.shippingHighlights}
-        />
-      </Container>
-
       {/* 6. Customer reviews and ratings */}
       <Container className="pt-12 sm:pt-16">
         <div id="section-reviews" className="scroll-mt-36">
@@ -237,25 +216,16 @@ export default async function ProductPage({
             className="scroll-mt-36 space-y-6"
           >
             <div className="flex items-center justify-between gap-4">
-              <div>
-                <span className="text-fg-muted text-xs font-bold tracking-wider uppercase">
-                  Handcrafted from the same Kitchen
-                </span>
-
-                <h2
-                  id="related-heading"
-                  className="text-fg mt-1 font-serif text-[20px] leading-snug font-semibold"
-                >
-                  You May Also Relish
-                </h2>
-              </div>
+              <h2 id="related-heading" className="text-fg text-xl font-bold">
+                You may also like
+              </h2>
 
               {category && (
                 <Link
                   href={`/${category.handle}`}
                   className="text-heritage-maroon hidden items-center gap-1 text-sm font-semibold hover:underline sm:inline-flex"
                 >
-                  Shop all {category.name}
+                  View all
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               )}

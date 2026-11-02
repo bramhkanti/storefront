@@ -23,7 +23,6 @@ export function CollectionSpotlight({
       <Container>
         <SectionHeading
           id="collections-heading"
-          eyebrow="Curated for you"
           title="Shop our collections"
           action={{ href: '/collections', label: 'View all' }}
         />

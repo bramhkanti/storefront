@@ -3,10 +3,7 @@ import type { ReactNode } from 'react';
 import {
   HomeHero,
   SignatureRange,
-  TrustBar,
-  HeritageStory,
   CustomerReviews,
-  PromoBanner,
   CollectionSpotlight,
   BRAND_HERO_SLIDE,
   SIGNATURE_RANGE_ITEMS,
@@ -131,15 +128,11 @@ export default async function HomePage(): Promise<ReactNode> {
       {/* 1. Banner slider: brand story + collection banners */}
       <HomeHero slides={heroSlides} />
 
-      {/* 2. Promises strip */}
-      <TrustBar />
-
       {/* 3. Shop by category */}
       <SignatureRange items={signatureItems} />
 
       {/* 4. Live products from the store */}
       <ProductShowcase
-        eyebrow="Fresh from our kitchen"
         title="Bestsellers"
         products={featured}
         viewAllHref={
@@ -152,14 +145,8 @@ export default async function HomePage(): Promise<ReactNode> {
       {/* 5. Collection banners */}
       <CollectionSpotlight collections={collections} />
 
-      {/* 6. Brand story */}
-      <HeritageStory />
-
       {/* 7. Real customer reviews (hidden until there are approved ones) */}
       <CustomerReviews reviews={latestReviews} />
-
-      {/* 8. Closing call to action */}
-      <PromoBanner />
     </div>
   );
 }
