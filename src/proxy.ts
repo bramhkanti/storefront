@@ -127,11 +127,13 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   // Content Security Policy
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    // Razorpay Checkout loads its script and opens its payment form in an iframe.
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "font-src 'self' data:",
     "connect-src 'self' https:",
+    "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "object-src 'none'",
