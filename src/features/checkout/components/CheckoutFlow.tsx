@@ -3,14 +3,15 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
+  Banknote,
   Check,
   CreditCard,
   Lock,
   MapPin,
   Plus,
+  ShieldCheck,
   Smartphone,
   Truck,
-  Wallet,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { INDIAN_STATES } from '@/content/indian-states';
@@ -31,7 +32,7 @@ import {
 import { isRazorpaySessionData, openRazorpayCheckout } from '../razorpay';
 import { OrderSummary } from './OrderSummary';
 
-type Step = 'address' | 'delivery' | 'payment';
+type Step = 'address' | 'payment';
 
 export interface CheckoutFlowProps {
   initialCart: Cart;
@@ -180,7 +181,25 @@ function StepCard({
   );
 }
 
-const PAYMENT_ICONS = { razorpay: CreditCard, cod: Wallet, other: CreditCard } as const;
+const PAYMENT_ICONS = { razorpay: CreditCard, cod: Banknote, other: CreditCard } as const;
+
+const PAYMENT_COPY: Partial<
+  Record<PaymentMethod['kind'], { title: string; hint: string; tag?: string }>
+> = {
+  razorpay: {
+    title: 'Pay online',
+    hint: 'UPI, cards, netbanking and wallets',
+    tag: 'Recommended',
+  },
+  cod: { title: 'Cash on delivery', hint: 'Pay in cash or UPI when your order arrives' },
+};
+
+function shippingLabel(option: ShippingOption | undefined): string {
+  if (!option) return '';
+  return option.amount.amount === 0
+    ? 'Free'
+    : formatPrice(option.amount.amount, option.amount.currencyCode);
+}
 
 export function CheckoutFlow({
   initialCart,
@@ -196,11 +215,7 @@ export function CheckoutFlow({
   const [cart, setCartState] = React.useState(initialCart);
   const [shippingOptions, setShippingOptions] = React.useState(initialShippingOptions);
   const [step, setStep] = React.useState<Step>(
-    initialCart.shippingAddress
-      ? initialCart.shippingOptionId
-        ? 'payment'
-        : 'delivery'
-      : 'address',
+    initialCart.shippingAddress ? 'payment' : 'address',
   );
   const [form, setForm] = React.useState<CheckoutAddressInput>(
     () => formFromCart(initialCart) ?? EMPTY_FORM,
@@ -210,7 +225,9 @@ export function CheckoutFlow({
   );
   const [fieldErrors, setFieldErrors] = React.useState<CheckoutFieldErrors>({});
   const [error, setError] = React.useState('');
-  const [busy, setBusy] = React.useState<null | 'address' | 'delivery' | 'order'>(null);
+  const [busy, setBusy] = React.useState<
+    null | 'address' | 'delivery' | 'order' | 'confirming'
+  >(null);
   const [paymentProviderId, setPaymentProviderId] = React.useState(
     paymentMethods[0]?.providerId ?? '',
   );
@@ -251,6 +268,32 @@ export function CheckoutFlow({
       setFieldErrors((errs) => ({ ...errs, [key]: undefined }));
     };
 
+  // Delivery is picked for the shopper: the current choice, else the cheapest.
+  const pickDefaultShipping = async (options: ShippingOption[]): Promise<boolean> => {
+    const cheapest = [...options].sort((a, b) => a.amount.amount - b.amount.amount)[0];
+    if (!cheapest) return false;
+    const result = await selectShippingOptionAction(cheapest.id);
+    if (!result.ok) {
+      setError(result.error);
+      return false;
+    }
+    setCart(result.data);
+    return true;
+  };
+
+  // A cart that already has an address but no delivery option (e.g. after a
+  // reload) gets the default option too.
+  const autoPicked = React.useRef(false);
+  React.useEffect(() => {
+    if (autoPicked.current || step !== 'payment' || cart.shippingOptionId) return;
+    if (shippingOptions.length === 0) return;
+    autoPicked.current = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time default once payment opens
+    setBusy('delivery');
+    void pickDefaultShipping(shippingOptions).finally(() => setBusy(null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once when payment opens
+  }, [step, cart.shippingOptionId, shippingOptions]);
+
   const submitAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy('address');
@@ -259,15 +302,23 @@ export function CheckoutFlow({
       ...form,
       saveToAccount: isAuthenticated && selectedAddressId === 'new' && form.saveToAccount,
     });
-    setBusy(null);
     if (!result.ok) {
+      setBusy(null);
       setError(result.error);
       setFieldErrors('fieldErrors' in result ? (result.fieldErrors ?? {}) : {});
       return;
     }
     setCart(result.data.cart);
     setShippingOptions(result.data.shippingOptions);
-    setStep('delivery');
+    const current = result.data.shippingOptions.some(
+      (o) => o.id === result.data.cart.shippingOptionId,
+    );
+    if (!current) {
+      autoPicked.current = true;
+      await pickDefaultShipping(result.data.shippingOptions);
+    }
+    setBusy(null);
+    setStep('payment');
   };
 
   const chooseShipping = async (optionId: string) => {
@@ -280,7 +331,6 @@ export function CheckoutFlow({
       return;
     }
     setCart(result.data);
-    setStep('payment');
   };
 
   const finishOrder = async (): Promise<boolean> => {
@@ -334,9 +384,14 @@ export function CheckoutFlow({
         );
         if (outcome.status === 'dismissed') {
           setBusy(null);
-          if (outcome.lastError) setError(outcome.lastError);
+          setError(
+            outcome.lastError
+              ? `${outcome.lastError}. You can try again or choose Cash on delivery.`
+              : 'Payment was cancelled. You can try again or choose Cash on delivery.',
+          );
           return;
         }
+        setBusy('confirming');
       } catch (err) {
         setBusy(null);
         setError(err instanceof Error ? err.message : 'Payment could not be started');
@@ -375,6 +430,7 @@ export function CheckoutFlow({
   ) : null;
 
   const selectedOption = shippingOptions.find((o) => o.id === cart.shippingOptionId);
+  const selectedMethod = paymentMethods.find((m) => m.providerId === paymentProviderId);
   const addressDone = Boolean(cart.shippingAddress);
   const deliveryDone = Boolean(cart.shippingOptionId);
 
@@ -633,7 +689,7 @@ export function CheckoutFlow({
                     isLoading={busy === 'address'}
                     className="w-full rounded-xl sm:w-auto sm:px-8"
                   >
-                    Continue to delivery
+                    Continue to payment
                   </Button>
                 </div>
               </form>
@@ -641,121 +697,165 @@ export function CheckoutFlow({
 
             <StepCard
               index={2}
-              title="Delivery option"
-              icon={Truck}
-              active={step === 'delivery'}
-              done={deliveryDone && step !== 'address'}
-              onEdit={busy ? undefined : () => setStep('delivery')}
-              summary={
-                selectedOption &&
-                `${selectedOption.name} · ${selectedOption.amount.amount === 0 ? 'Free' : formatPrice(selectedOption.amount.amount, selectedOption.amount.currencyCode)}`
-              }
-            >
-              {shippingOptions.length === 0 ? (
-                <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                  We can&apos;t deliver to this address online yet. Please contact us on
-                  WhatsApp to place the order.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {shippingOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      disabled={busy !== null}
-                      onClick={() => chooseShipping(option.id)}
-                      className={cn(
-                        'flex w-full items-center justify-between rounded-xl border p-4 text-left text-sm transition-colors disabled:opacity-60',
-                        cart.shippingOptionId === option.id
-                          ? 'border-heritage-maroon ring-heritage-maroon/15 ring-2'
-                          : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
-                      )}
-                    >
-                      <span className="font-medium">{option.name}</span>
-                      <span className="tabular-nums">
-                        {option.amount.amount === 0 ? (
-                          <span className="font-semibold text-emerald-700">Free</span>
-                        ) : (
-                          formatPrice(option.amount.amount, option.amount.currencyCode)
-                        )}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </StepCard>
-
-            <StepCard
-              index={3}
               title="Payment"
               icon={Lock}
               active={step === 'payment'}
               done={false}
             >
+              {/* Delivery: chosen automatically, switchable when there are several */}
+              {shippingOptions.length === 0 ? (
+                <p className="mb-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+                  We can&apos;t deliver to this address online yet. Please contact us on
+                  WhatsApp to place the order.
+                </p>
+              ) : shippingOptions.length === 1 || !selectedOption ? (
+                <div className="bg-surface-soft text-fg mb-5 flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm">
+                  <span className="flex items-center gap-2">
+                    <Truck className="text-fg-muted h-4 w-4" />
+                    {selectedOption?.name ?? shippingOptions[0]?.name}
+                  </span>
+                  <span className="font-semibold tabular-nums">
+                    {busy === 'delivery'
+                      ? '…'
+                      : shippingLabel(selectedOption ?? shippingOptions[0])}
+                  </span>
+                </div>
+              ) : (
+                <fieldset className="mb-5">
+                  <legend className="text-fg mb-2 text-sm font-semibold">Delivery</legend>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {shippingOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        disabled={busy !== null}
+                        onClick={() => chooseShipping(option.id)}
+                        aria-pressed={cart.shippingOptionId === option.id}
+                        className={cn(
+                          'flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-colors disabled:opacity-60',
+                          cart.shippingOptionId === option.id
+                            ? 'border-primary bg-primary-tint/40'
+                            : 'border-line hover:border-line-strong',
+                        )}
+                      >
+                        <span className="flex items-center gap-2 font-medium">
+                          <Truck className="text-fg-muted h-4 w-4" />
+                          {option.name}
+                        </span>
+                        <span className="font-semibold tabular-nums">
+                          {shippingLabel(option)}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
+
               {paymentMethods.length === 0 ? (
                 <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
                   Payments are not set up yet. Please try again later.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div role="radiogroup" aria-label="Payment method" className="space-y-3">
                   {paymentMethods.map((method) => {
                     const Icon = PAYMENT_ICONS[method.kind];
+                    const copy = PAYMENT_COPY[method.kind];
+                    const selected = paymentProviderId === method.providerId;
                     return (
-                      <label
+                      <button
                         key={method.providerId}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        disabled={busy === 'order' || busy === 'confirming'}
+                        onClick={() => {
+                          setPaymentProviderId(method.providerId);
+                          setError('');
+                        }}
                         className={cn(
-                          'flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-sm transition-colors',
-                          paymentProviderId === method.providerId
-                            ? 'border-heritage-maroon ring-heritage-maroon/15 ring-2'
-                            : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-700',
+                          'flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all disabled:cursor-not-allowed sm:p-5',
+                          selected
+                            ? 'border-primary bg-primary-tint/30 ring-primary/15 ring-2'
+                            : 'border-line hover:border-line-strong',
                         )}
                       >
-                        <input
-                          type="radio"
-                          name="payment"
-                          value={method.providerId}
-                          checked={paymentProviderId === method.providerId}
-                          onChange={() => setPaymentProviderId(method.providerId)}
-                          className="accent-heritage-maroon h-4 w-4"
-                        />
-                        <Icon className="text-heritage-muted h-4 w-4" />
-                        <span className="font-medium">{method.label}</span>
-                      </label>
+                        <span
+                          className={cn(
+                            'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2',
+                            selected ? 'border-primary' : 'border-line-strong',
+                          )}
+                        >
+                          {selected && (
+                            <span className="bg-primary h-2.5 w-2.5 rounded-full" />
+                          )}
+                        </span>
+                        <span
+                          className={cn(
+                            'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
+                            selected
+                              ? 'bg-primary text-on-primary'
+                              : 'bg-surface-soft text-fg',
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="text-fg flex flex-wrap items-center gap-2 text-sm font-semibold sm:text-base">
+                            {copy?.title ?? method.label}
+                            {copy?.tag && (
+                              <span className="bg-success-tint text-success-text rounded-full px-2 py-0.5 text-[11px] font-semibold">
+                                {copy.tag}
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-fg-muted mt-0.5 block text-xs sm:text-sm">
+                            {copy?.hint ?? ''}
+                          </span>
+                        </span>
+                      </button>
                     );
                   })}
                 </div>
               )}
 
+              {error && (
+                <p
+                  role="alert"
+                  className="bg-danger-tint text-danger mt-5 rounded-xl px-4 py-3 text-sm"
+                >
+                  {error}
+                </p>
+              )}
+
               <Button
                 size="lg"
                 onClick={placeOrder}
-                isLoading={busy === 'order'}
+                isLoading={busy === 'order' || busy === 'confirming'}
                 disabled={busy !== null || paymentMethods.length === 0 || !deliveryDone}
-                className="mt-5 w-full rounded-xl"
+                className="mt-5 h-13 w-full rounded-xl text-base"
               >
-                <Lock className="h-4 w-4" />
-                {paymentMethods.find((m) => m.providerId === paymentProviderId)?.kind ===
-                'razorpay'
-                  ? 'Pay'
-                  : 'Place order'}{' '}
-                {formatPrice(cart.total.amount, cart.currencyCode)}
+                {busy === 'confirming' ? (
+                  'Confirming your payment…'
+                ) : selectedMethod?.kind === 'cod' ? (
+                  <>Place order · {formatPrice(cart.total.amount, cart.currencyCode)}</>
+                ) : (
+                  <>
+                    <Lock className="h-4 w-4" />
+                    Pay {formatPrice(cart.total.amount, cart.currencyCode)} securely
+                  </>
+                )}
               </Button>
-              <p className="text-heritage-muted mt-3 text-center text-xs">
-                {paymentMethods.find((m) => m.providerId === paymentProviderId)?.kind ===
-                'cod'
-                  ? 'Pay in cash or UPI when your order arrives.'
-                  : 'Your order is confirmed once the payment is verified.'}
+              <p className="text-fg-muted mt-3 flex items-center justify-center gap-1.5 text-center text-xs">
+                {selectedMethod?.kind === 'cod' ? (
+                  'Pay in cash or UPI when your order arrives.'
+                ) : (
+                  <>
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Secured by Razorpay. Your order is confirmed once payment is verified.
+                  </>
+                )}
               </p>
             </StepCard>
-
-            {error && (
-              <p
-                role="alert"
-                className="rounded-xl bg-red-50 p-4 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300"
-              >
-                {error}
-              </p>
-            )}
           </>
         )}
       </div>
